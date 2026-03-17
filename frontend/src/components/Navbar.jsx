@@ -1,5 +1,8 @@
 import { useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
+import { ROLES } from '../utils/roles'
+import LoginModal from './LoginModal'
 
 const navLinks = [
   { to: '/', label: 'Home' },
@@ -9,6 +12,27 @@ const navLinks = [
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
+
+  const { user, profile, role, hasRole, loginWithGoogle, logout, authActionLoading } = useAuth()
+
+  const allowedLinks = navLinks.filter((link) => {
+    if (link.to !== '/faculty-marks-upload') {
+      return true
+    }
+
+    return hasRole([ROLES.FACULTY])
+  })
+
+  const handleGoogleLogin = async (selectedRole) => {
+    await loginWithGoogle(selectedRole)
+    setIsMobileMenuOpen(false)
+  }
+
+  const handleLogout = async () => {
+    await logout()
+    setIsMobileMenuOpen(false)
+  }
 
   const navLinkClassName = ({ isActive }) =>
     `rounded-lg px-4 py-2 text-sm font-medium transition ${
@@ -22,7 +46,7 @@ const Navbar = () => {
 
         <div className="hidden items-center gap-3 md:flex">
           <nav className="flex items-center gap-2" aria-label="Primary">
-            {navLinks.map((link) => (
+            {allowedLinks.map((link) => (
               <NavLink
                 key={link.to}
                 to={link.to}
@@ -34,12 +58,31 @@ const Navbar = () => {
             ))}
           </nav>
 
-          <Link
-            to="/login"
-            className="rounded-lg bg-sky-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-600"
-          >
-            Login
-          </Link>
+          {user ? (
+            <div className="flex items-center gap-2">
+              <div className="rounded-lg bg-neutral-100 px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-neutral-700">
+                {profile?.displayName || user.displayName || 'User'}
+                <span className="ml-2 rounded-md bg-sky-100 px-2 py-1 text-[10px] tracking-[0.08em] text-sky-700">
+                  {(role || ROLES.STUDENT).replace('_', ' ')}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="rounded-lg border border-neutral-300 px-4 py-2 text-sm font-semibold text-neutral-700 transition hover:bg-red-500 hover:text-white hover:cursor-pointer"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setIsLoginModalOpen(true)}
+              className="rounded-lg bg-sky-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-600 hover:cursor-pointer"
+            >
+              Login
+            </button>
+          )}
         </div>
 
         <button
@@ -62,7 +105,7 @@ const Navbar = () => {
       {isMobileMenuOpen && (
         <nav className="border-t border-neutral-200 bg-white px-4 py-3 md:hidden" aria-label="Mobile primary">
           <div className="flex flex-col gap-2">
-            {navLinks.map((link) => (
+            {allowedLinks.map((link) => (
               <NavLink
                 key={link.to}
                 to={link.to}
@@ -72,16 +115,45 @@ const Navbar = () => {
                 {link.label}
               </NavLink>
             ))}
-            <Link
-              to="/login"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="mt-1 rounded-lg bg-sky-500 px-4 py-2 text-center text-sm font-semibold text-white transition hover:bg-sky-600"
-            >
-              Login
-            </Link>
+
+            {user ? (
+              <>
+                <div className="mt-1 rounded-lg bg-neutral-100 px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-neutral-700">
+                  {profile?.displayName || user.displayName || 'User'}
+                  <span className="ml-2 rounded-md bg-sky-100 px-2 py-1 text-[10px] tracking-[0.08em] text-sky-700">
+                    {(role || ROLES.STUDENT).replace('_', ' ')}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="mt-1 rounded-lg border border-neutral-300 px-4 py-2 text-center text-sm font-semibold text-neutral-700 transition hover:bg-neutral-100"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsLoginModalOpen(true)
+                  setIsMobileMenuOpen(false)
+                }}
+                className="mt-1 rounded-lg bg-sky-500 px-4 py-2 text-center text-sm font-semibold text-white transition hover:bg-sky-600"
+              >
+                Login
+              </button>
+            )}
           </div>
         </nav>
       )}
+
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        onLogin={handleGoogleLogin}
+        loading={authActionLoading}
+      />
     </header>
   )
 }

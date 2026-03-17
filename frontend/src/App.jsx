@@ -1,10 +1,12 @@
 import { Route, Routes } from 'react-router-dom'
 import Footer from './components/Footer.jsx'
 import Navbar from './components/Navbar.jsx'
+import ProtectedRoute from './components/ProtectedRoute.jsx'
 import CoursesPage from './pages/CoursesPage.jsx'
 import FacultyMarksUploadPage from './pages/FacultyMarksUploadPage.jsx'
 import HomePage from './pages/HomePage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
+import { ROLES } from './utils/roles.js'
 
 const App = () => {
   return (
@@ -15,7 +17,14 @@ const App = () => {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/courses" element={<CoursesPage />} />
-          <Route path="/faculty-marks-upload" element={<FacultyMarksUploadPage />} />
+          <Route
+            path="/faculty-marks-upload"
+            element={
+              <ProtectedRoute allowedRoles={[ROLES.FACULTY]}>
+                <FacultyMarksUploadPage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/login" element={<LoginPage />} />
           <Route path="*" element={<HomePage />} />
         </Routes>
