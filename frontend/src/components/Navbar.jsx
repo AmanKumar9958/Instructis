@@ -7,6 +7,8 @@ import LoginModal from './LoginModal'
 const navLinks = [
   { to: '/', label: 'Home' },
   { to: '/courses', label: 'Courses' },
+  { to: '/jee', label: 'JEE' },
+  { to: '/neet', label: 'NEET' },
   { to: '/faculty-marks-upload', label: 'Faculty Marks Upload' },
 ]
 
