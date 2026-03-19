@@ -33,16 +33,16 @@ const LoginModal = ({ isOpen, onClose, onLogin, loading }) => {
         role="dialog"
         aria-modal="true"
         >
-        <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl shadow-black/20 md:p-8">
+        <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl shadow-black/20 md:p-8 dark:bg-gray-800 dark:shadow-none">
             <div className="flex items-start justify-between gap-4">
             <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-sky-600">Instructis</p>
-                <h2 className="mt-2 text-2xl font-semibold text-neutral-900">Sign in</h2>
+                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-sky-600 dark:text-sky-400">Instructis</p>
+                <h2 className="mt-2 text-2xl font-semibold text-neutral-900 dark:text-white">Sign in</h2>
             </div>
             <button
                 type="button"
                 onClick={onClose}
-                className="rounded-lg p-2 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-700 hover:cursor-pointer"
+                className="rounded-lg p-2 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-700 hover:cursor-pointer dark:text-neutral-400 dark:hover:bg-gray-700 dark:hover:text-neutral-200"
                 aria-label="Close login modal"
             >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5">
@@ -51,14 +51,14 @@ const LoginModal = ({ isOpen, onClose, onLogin, loading }) => {
             </button>
             </div>
 
-            <p className="mt-3 text-sm text-neutral-600">Choose your role and continue with Google.</p>
+            <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-300">Choose your role and continue with Google.</p>
 
             <label className="mt-6 block">
-            <span className="mb-2 block text-sm font-medium text-neutral-700">Role</span>
+            <span className="mb-2 block text-sm font-medium text-neutral-700 dark:text-neutral-300">Role</span>
             <select
                 value={selectedRole}
                 onChange={(event) => setSelectedRole(event.target.value)}
-                className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-sky-400 hover:cursor-pointer"
+                className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-sky-400 hover:cursor-pointer dark:border-neutral-600 dark:bg-gray-700 dark:text-white"
             >
                 <option value="">Select role</option>
                 {ROLE_OPTIONS.map((roleOption) => (
@@ -69,13 +69,13 @@ const LoginModal = ({ isOpen, onClose, onLogin, loading }) => {
             </select>
             </label>
 
-            {error && <p className="mt-3 text-sm font-medium text-rose-600">{error}</p>}
+            {error && <p className="mt-3 text-sm font-medium text-rose-600 dark:text-rose-400">{error}</p>}
 
             <button
             type="button"
             onClick={handleSubmit}
             disabled={loading}
-            className="mt-6 flex w-full items-center justify-center gap-3 rounded-xl border border-neutral-300 bg-white px-4 py-3 text-sm font-semibold text-neutral-900 transition hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-70"
+            className="mt-6 flex w-full items-center justify-center gap-3 rounded-xl border border-neutral-300 bg-white px-4 py-3 text-sm font-semibold text-neutral-900 transition hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-70 dark:border-neutral-600 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
             >
             <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5">
                 <path

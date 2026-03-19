@@ -8,15 +8,15 @@ const footerLinks = [
 
 const Footer = () => {
   return (
-    <footer className="mt-8 border-t border-neutral-200 bg-white">
+    <footer className="mt-8 border-t border-neutral-200 bg-white dark:border-neutral-700 dark:bg-gray-900">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-6 md:flex-row md:items-center md:justify-between md:px-6">
-        <p className="text-sm text-neutral-600">© {new Date().getFullYear()} Instructis. All rights reserved.</p>
+        <p className="text-sm text-neutral-600 dark:text-neutral-400">© {new Date().getFullYear()} Instructis. All rights reserved.</p>
         <nav className="flex flex-wrap items-center gap-3" aria-label="Footer">
           {footerLinks.map((link) => (
             <Link
               key={link.to}
               to={link.to}
-              className="rounded-md px-2 py-1 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100"
+              className="rounded-md px-2 py-1 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
             >
               {link.label}
             </Link>

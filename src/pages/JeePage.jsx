@@ -35,9 +35,9 @@ const subjectGuides = [
   {
     subject: 'Physics',
     icon: '⚛️',
-    color: 'bg-blue-50 border-blue-100',
-    accent: 'text-blue-700',
-    badge: 'bg-blue-100 text-blue-700',
+    color: 'bg-blue-50 border-blue-100 dark:bg-blue-900/20 dark:border-blue-800',
+    accent: 'text-blue-700 dark:text-blue-300',
+    badge: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',
     keyTopics: [
       'Mechanics (Kinematics, Laws of Motion, Work–Energy)',
       'Electrostatics & Current Electricity',
@@ -52,9 +52,9 @@ const subjectGuides = [
   {
     subject: 'Chemistry',
     icon: '🧪',
-    color: 'bg-green-50 border-green-100',
-    accent: 'text-green-700',
-    badge: 'bg-green-100 text-green-700',
+    color: 'bg-green-50 border-green-100 dark:bg-green-900/20 dark:border-green-800',
+    accent: 'text-green-700 dark:text-green-300',
+    badge: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
     keyTopics: [
       'Physical Chemistry: Mole Concept, Thermodynamics, Electrochemistry',
       'Organic Chemistry: GOC, Reactions, Named Reactions',
@@ -69,9 +69,9 @@ const subjectGuides = [
   {
     subject: 'Mathematics',
     icon: '📐',
-    color: 'bg-purple-50 border-purple-100',
-    accent: 'text-purple-700',
-    badge: 'bg-purple-100 text-purple-700',
+    color: 'bg-purple-50 border-purple-100 dark:bg-purple-900/20 dark:border-purple-800',
+    accent: 'text-purple-700 dark:text-purple-300',
+    badge: 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300',
     keyTopics: [
       'Algebra: Complex Numbers, Matrices, Permutations & Combinations',
       'Calculus: Limits, Continuity, Differentiation, Integration',
@@ -90,8 +90,8 @@ const preparationTimeline = [
     phase: 'Phase 1',
     period: 'June – September',
     label: 'Foundation Building',
-    color: 'border-emerald-400 bg-emerald-50',
-    accent: 'text-emerald-700',
+    color: 'border-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 dark:border-emerald-700',
+    accent: 'text-emerald-700 dark:text-emerald-300',
     tasks: [
       'Complete NCERT textbooks for all 3 subjects',
       'Build concept clarity with reference books',
@@ -103,8 +103,8 @@ const preparationTimeline = [
     phase: 'Phase 2',
     period: 'October – December',
     label: 'Advanced Problem Solving',
-    color: 'border-amber-400 bg-amber-50',
-    accent: 'text-amber-700',
+    color: 'border-amber-400 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-700',
+    accent: 'text-amber-700 dark:text-amber-300',
     tasks: [
       'Move to JEE-level problem solving (HC Verma, DC Pandey)',
       'Practice previous year JEE Main questions',
@@ -116,8 +116,8 @@ const preparationTimeline = [
     phase: 'Phase 3',
     period: 'January – March',
     label: 'Revision & Mocks',
-    color: 'border-cyan-400 bg-cyan-50',
-    accent: 'text-cyan-700',
+    color: 'border-cyan-400 bg-cyan-50 dark:bg-cyan-900/20 dark:border-cyan-700',
+    accent: 'text-cyan-700 dark:text-cyan-300',
     tasks: [
       'Attempt full JEE Main mock tests 3×/week',
       'Complete all JEE Advanced previous year papers',
@@ -129,8 +129,8 @@ const preparationTimeline = [
     phase: 'Phase 4',
     period: 'April – June',
     label: 'Final Sprint',
-    color: 'border-rose-400 bg-rose-50',
-    accent: 'text-rose-700',
+    color: 'border-rose-400 bg-rose-50 dark:bg-rose-900/20 dark:border-rose-700',
+    accent: 'text-rose-700 dark:text-rose-300',
     tasks: [
       'Daily revision of high-weightage chapters',
       'Solve Grand Test Series under exam conditions',
@@ -220,12 +220,12 @@ const JeePage = () => {
       </div>
 
       {/* Exam Pattern */}
-      <div className="w-full rounded-3xl bg-white px-4 py-8 shadow-xl shadow-stone-200 md:px-8">
+      <div className="w-full rounded-3xl bg-white dark:bg-zinc-900 px-4 py-8 shadow-xl shadow-stone-200 dark:shadow-none md:px-8">
         <Reveal>
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">Exam Structure</p>
-            <h2 className="mt-2 text-3xl font-bold text-slate-900 md:text-4xl">JEE Exam Pattern</h2>
-            <p className="mx-auto mt-3 max-w-2xl text-base text-slate-600">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">Exam Structure</p>
+            <h2 className="mt-2 text-3xl font-bold text-slate-900 dark:text-gray-100 md:text-4xl">JEE Exam Pattern</h2>
+            <p className="mx-auto mt-3 max-w-2xl text-base text-slate-600 dark:text-gray-300">
               Understanding the paper structure helps you allocate preparation time more strategically.
             </p>
           </div>
@@ -234,16 +234,16 @@ const JeePage = () => {
         <div className="mt-8 grid gap-6 md:grid-cols-2">
           {examPattern.map((exam, i) => (
             <Reveal key={exam.exam} direction="up" delay={i * 100}>
-              <div className="rounded-2xl border border-blue-100 bg-blue-50/40 p-6">
-                <h3 className="text-xl font-bold text-slate-900">{exam.exam}</h3>
+              <div className="rounded-2xl border border-blue-100 dark:border-blue-900/30 bg-blue-50/40 dark:bg-blue-900/10 p-6">
+                <h3 className="text-xl font-bold text-slate-900 dark:text-gray-100">{exam.exam}</h3>
                 <div className="mt-3 flex flex-wrap gap-2 text-xs font-medium">
-                  <span className="rounded-full bg-blue-100 px-3 py-1 text-blue-700">{exam.mode}</span>
-                  <span className="rounded-full bg-cyan-100 px-3 py-1 text-cyan-700">{exam.duration}</span>
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-700">{exam.sessions}</span>
+                  <span className="rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 px-3 py-1">{exam.mode}</span>
+                  <span className="rounded-full bg-cyan-100 text-cyan-700 dark:bg-cyan-900 dark:text-cyan-300 px-3 py-1">{exam.duration}</span>
+                  <span className="rounded-full bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 px-3 py-1">{exam.sessions}</span>
                 </div>
                 <table className="mt-5 w-full text-sm">
                   <thead>
-                    <tr className="border-b border-blue-100 text-left text-xs uppercase tracking-wide text-slate-500">
+                    <tr className="border-b border-blue-100 dark:border-blue-900 text-left text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
                       <th className="pb-2">Subject</th>
                       <th className="pb-2 text-center">Questions</th>
                       <th className="pb-2 text-right">Marks</th>
@@ -251,22 +251,22 @@ const JeePage = () => {
                   </thead>
                   <tbody>
                     {exam.sections.map((s) => (
-                      <tr key={s.subject} className="border-b border-slate-100">
-                        <td className="py-2 font-medium text-slate-800">{s.subject}</td>
-                        <td className="py-2 text-center text-slate-600">{s.questions}</td>
-                        <td className="py-2 text-right text-slate-600">{s.marks}</td>
+                      <tr key={s.subject} className="border-b border-slate-100 dark:border-slate-800">
+                        <td className="py-2 font-medium text-slate-800 dark:text-slate-200">{s.subject}</td>
+                        <td className="py-2 text-center text-slate-600 dark:text-slate-400">{s.questions}</td>
+                        <td className="py-2 text-right text-slate-600 dark:text-slate-400">{s.marks}</td>
                       </tr>
                     ))}
                   </tbody>
                   <tfoot>
-                    <tr className="font-semibold text-slate-900">
+                    <tr className="font-semibold text-slate-900 dark:text-slate-100">
                       <td className="pt-3">Total</td>
                       <td />
                       <td className="pt-3 text-right">{exam.totalMarks}</td>
                     </tr>
                   </tfoot>
                 </table>
-                <p className="mt-4 text-xs text-rose-600">Negative marking: {exam.negative}</p>
+                <p className="mt-4 text-xs text-rose-600 dark:text-rose-400">Negative marking: {exam.negative}</p>
               </div>
             </Reveal>
           ))}
@@ -274,11 +274,11 @@ const JeePage = () => {
       </div>
 
       {/* Subject Guides */}
-      <div className="w-full rounded-3xl bg-gradient-to-br from-slate-50 to-blue-50 px-4 py-8 shadow-xl shadow-stone-200 md:px-8">
+      <div className="w-full rounded-3xl bg-gradient-to-br from-slate-50 to-blue-50 dark:from-zinc-900 dark:to-zinc-800 px-4 py-8 shadow-xl shadow-stone-200 dark:shadow-none md:px-8">
         <Reveal>
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">Subject-wise Breakdown</p>
-            <h2 className="mt-2 text-3xl font-bold text-slate-900 md:text-4xl">Preparation Guide by Subject</h2>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">Subject-wise Breakdown</p>
+            <h2 className="mt-2 text-3xl font-bold text-slate-900 dark:text-gray-100 md:text-4xl">Preparation Guide by Subject</h2>
           </div>
         </Reveal>
 
@@ -297,13 +297,13 @@ const JeePage = () => {
                 </div>
                 <ul className="mt-5 space-y-2">
                   {sub.keyTopics.map((topic) => (
-                    <li key={topic} className="flex items-start gap-2 text-sm text-slate-700">
+                    <li key={topic} className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
                       <span className="mt-0.5 shrink-0 text-slate-400">›</span>
                       {topic}
                     </li>
                   ))}
                 </ul>
-                <p className={`mt-5 rounded-xl bg-white/70 p-3 text-sm italic ${sub.accent}`}>{sub.tips}</p>
+                <p className={`mt-5 rounded-xl bg-white/70 dark:bg-black/40 p-3 text-sm italic ${sub.accent}`}>{sub.tips}</p>
               </article>
             </Reveal>
           ))}
@@ -311,12 +311,12 @@ const JeePage = () => {
       </div>
 
       {/* Preparation Timeline */}
-      <div className="w-full rounded-3xl bg-white px-4 py-8 shadow-xl shadow-stone-200 md:px-8">
+      <div className="w-full rounded-3xl bg-white dark:bg-zinc-900 px-4 py-8 shadow-xl shadow-stone-200 dark:shadow-none md:px-8">
         <Reveal>
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">Study Roadmap</p>
-            <h2 className="mt-2 text-3xl font-bold text-slate-900 md:text-4xl">12-Month Preparation Timeline</h2>
-            <p className="mx-auto mt-3 max-w-2xl text-base text-slate-600">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">Study Roadmap</p>
+            <h2 className="mt-2 text-3xl font-bold text-slate-900 dark:text-gray-100 md:text-4xl">12-Month Preparation Timeline</h2>
+            <p className="mx-auto mt-3 max-w-2xl text-base text-slate-600 dark:text-gray-300">
               A structured roadmap helps you balance depth and breadth across the entire JEE syllabus.
             </p>
           </div>
@@ -327,11 +327,11 @@ const JeePage = () => {
             <Reveal key={phase.phase} direction="up" delay={i * 100}>
               <div className={`rounded-2xl border-l-4 p-6 ${phase.color}`}>
                 <span className={`text-xs font-bold uppercase tracking-[0.15em] ${phase.accent}`}>{phase.phase}</span>
-                <h3 className="mt-1 text-base font-bold text-slate-900">{phase.label}</h3>
-                <p className="mt-0.5 text-xs text-slate-500">{phase.period}</p>
+                <h3 className="mt-1 text-base font-bold text-slate-900 dark:text-slate-100">{phase.label}</h3>
+                <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{phase.period}</p>
                 <ul className="mt-4 space-y-2">
                   {phase.tasks.map((task) => (
-                    <li key={task} className="flex items-start gap-2 text-sm text-slate-700">
+                    <li key={task} className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
                       <span className={`mt-0.5 shrink-0 font-bold ${phase.accent}`}>✓</span>
                       {task}
                     </li>
@@ -376,20 +376,20 @@ const JeePage = () => {
       </div>
 
       {/* FAQs */}
-      <div className="w-full rounded-3xl bg-white px-4 py-8 shadow-xl shadow-stone-200 md:px-8">
+      <div className="w-full rounded-3xl bg-white dark:bg-zinc-900 px-4 py-8 shadow-xl shadow-stone-200 dark:shadow-none md:px-8">
         <Reveal>
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">Common Questions</p>
-            <h2 className="mt-2 text-3xl font-bold text-slate-900 md:text-4xl">JEE FAQs</h2>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">Common Questions</p>
+            <h2 className="mt-2 text-3xl font-bold text-slate-900 dark:text-gray-100 md:text-4xl">JEE FAQs</h2>
           </div>
         </Reveal>
 
         <div className="mt-8 grid gap-4 md:grid-cols-2">
           {faqs.map((faq, i) => (
             <Reveal key={faq.q} direction="up" delay={i * 80}>
-              <div className="rounded-2xl border border-blue-100 bg-blue-50/40 p-5">
-                <h3 className="font-semibold text-slate-900">{faq.q}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-600">{faq.a}</p>
+              <div className="rounded-2xl border border-blue-100 dark:border-blue-900/30 bg-blue-50/40 dark:bg-blue-900/10 p-5">
+                <h3 className="font-semibold text-slate-900 dark:text-gray-100">{faq.q}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-gray-300">{faq.a}</p>
               </div>
             </Reveal>
           ))}

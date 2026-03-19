@@ -21,28 +21,28 @@ const examSections = [
     sectionA: '35 MCQs (all compulsory)',
     sectionB: '15 MCQs (attempt any 10)',
     totalMarks: 180,
-    color: 'bg-sky-50 border-sky-100 text-sky-700',
+    color: 'bg-sky-50 border-sky-100 text-sky-700 dark:bg-sky-900/20 dark:bg-sky-700 dark:text-sky-300',
   },
   {
     subject: 'Chemistry',
     sectionA: '35 MCQs (all compulsory)',
     sectionB: '15 MCQs (attempt any 10)',
     totalMarks: 180,
-    color: 'bg-green-50 border-green-100 text-green-700',
+    color: 'bg-green-50 border-green-100 text-green-700 dark:bg-green-900/20 dark:bg-green-700 dark:text-green-300',
   },
   {
     subject: 'Botany',
     sectionA: '35 MCQs (all compulsory)',
     sectionB: '15 MCQs (attempt any 10)',
     totalMarks: 180,
-    color: 'bg-emerald-50 border-emerald-100 text-emerald-700',
+    color: 'bg-emerald-50 border-emerald-100 text-emerald-700 dark:bg-emerald-900/20 dark:bg-emerald-700 dark:text-emerald-300',
   },
   {
     subject: 'Zoology',
     sectionA: '35 MCQs (all compulsory)',
     sectionB: '15 MCQs (attempt any 10)',
     totalMarks: 180,
-    color: 'bg-teal-50 border-teal-100 text-teal-700',
+    color: 'bg-teal-50 border-teal-100 text-teal-700 dark:bg-teal-900/20 dark:bg-teal-700 dark:text-teal-300',
   },
 ]
 
@@ -50,9 +50,9 @@ const subjectGuides = [
   {
     subject: 'Biology (Botany + Zoology)',
     icon: '🌿',
-    color: 'bg-emerald-50 border-emerald-100',
-    accent: 'text-emerald-700',
-    badge: 'bg-emerald-100 text-emerald-700',
+    color: 'bg-emerald-50 border-emerald-100 dark:bg-emerald-900/20 dark:border-emerald-700',
+    accent: 'text-emerald-700 dark:text-emerald-300',
+    badge: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300',
     weightage: '50% (360 marks)',
     keyTopics: [
       'Cell Structure, Cell Division (Mitosis & Meiosis)',
@@ -67,9 +67,9 @@ const subjectGuides = [
   {
     subject: 'Physics',
     icon: '⚛️',
-    color: 'bg-sky-50 border-sky-100',
-    accent: 'text-sky-700',
-    badge: 'bg-sky-100 text-sky-700',
+    color: 'bg-sky-50 border-sky-100 dark:bg-sky-900/20 dark:border-sky-700',
+    accent: 'text-sky-700 dark:text-sky-300',
+    badge: 'bg-sky-100 text-sky-700 dark:bg-sky-900 dark:text-sky-300',
     weightage: '25% (180 marks)',
     keyTopics: [
       'Mechanics (Laws of Motion, Work–Energy, Rotational Motion)',
@@ -84,9 +84,9 @@ const subjectGuides = [
   {
     subject: 'Chemistry',
     icon: '🧪',
-    color: 'bg-amber-50 border-amber-100',
-    accent: 'text-amber-700',
-    badge: 'bg-amber-100 text-amber-700',
+    color: 'bg-amber-50 border-amber-100 dark:bg-amber-900/20 dark:border-amber-700',
+    accent: 'text-amber-700 dark:text-amber-300',
+    badge: 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300',
     weightage: '25% (180 marks)',
     keyTopics: [
       'Physical Chemistry: Mole Concept, Chemical Equilibrium, Electrochemistry',
@@ -106,48 +106,48 @@ const preparationStrategy = [
     title: 'NCERT Mastery',
     description:
       'Read every NCERT Biology, Physics, and Chemistry textbook from Class 11 and 12 with highlighter notes. Most NEET questions are directly from NCERT.',
-    color: 'border-emerald-400 text-emerald-700',
-    bg: 'bg-emerald-50',
+    color: 'border-emerald-400 text-emerald-700 dark:text-emerald-300 dark:border-emerald-600',
+    bg: 'bg-emerald-50 dark:bg-emerald-900/20',
   },
   {
     step: '02',
     title: 'Concept-Wise Practice',
     description:
       'After completing each chapter, solve 50–100 NEET-style MCQs from that chapter. Use quality question banks and previous year NEET papers.',
-    color: 'border-amber-400 text-amber-700',
-    bg: 'bg-amber-50',
+    color: 'border-amber-400 text-amber-700 dark:text-amber-300 dark:border-amber-600',
+    bg: 'bg-amber-50 dark:bg-amber-900/20',
   },
   {
     step: '03',
     title: 'Weekly Mock Tests',
     description:
       'Simulate real exam conditions with timed full-syllabus mocks every week. Analyse each result to find weak areas and prioritize them.',
-    color: 'border-sky-400 text-sky-700',
-    bg: 'bg-sky-50',
+    color: 'border-sky-400 text-sky-700 dark:text-sky-300 dark:border-sky-600',
+    bg: 'bg-sky-50 dark:bg-sky-900/20',
   },
   {
     step: '04',
     title: 'Rapid Revision Cycles',
     description:
       'Every 3 weeks, revise completed chapters using short notes, diagrams, and flashcards. Spaced repetition prevents forgetting critical facts.',
-    color: 'border-rose-400 text-rose-700',
-    bg: 'bg-rose-50',
+    color: 'border-rose-400 text-rose-700 dark:text-rose-300 dark:border-rose-600',
+    bg: 'bg-rose-50 dark:bg-rose-900/20',
   },
   {
     step: '05',
     title: 'Biology Deep Dive',
     description:
       'Biology is 50% of NEET marks. Dedicate at least 55% of your daily study time to Biology. Focus on diagrams, life cycles, and technical terms.',
-    color: 'border-teal-400 text-teal-700',
-    bg: 'bg-teal-50',
+    color: 'border-teal-400 text-teal-700 dark:text-teal-300 dark:border-teal-600',
+    bg: 'bg-teal-50 dark:bg-teal-900/20',
   },
   {
     step: '06',
     title: 'Error Analysis',
     description:
       'Maintain an error log. Note every wrong answer with the reason for the mistake. Revisit this log before every mock test to avoid repeating errors.',
-    color: 'border-violet-400 text-violet-700',
-    bg: 'bg-violet-50',
+    color: 'border-violet-400 text-violet-700 dark:text-violet-300 dark:border-violet-600',
+    bg: 'bg-violet-50 dark:bg-violet-900/20',
   },
 ]
 
@@ -276,11 +276,11 @@ const NeetPage = () => {
       </div>
 
       {/* Exam Overview */}
-      <div className="w-full rounded-3xl bg-white px-4 py-8 shadow-xl shadow-stone-200 md:px-8">
+      <div className="w-full rounded-3xl bg-white dark:bg-zinc-900 px-4 py-8 shadow-xl shadow-stone-200 dark:shadow-none md:px-8">
         <Reveal>
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600">Exam at a Glance</p>
-            <h2 className="mt-2 text-3xl font-bold text-slate-900 md:text-4xl">NEET UG Overview</h2>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">Exam at a Glance</p>
+            <h2 className="mt-2 text-3xl font-bold text-slate-900 dark:text-gray-100 md:text-4xl">NEET UG Overview</h2>
           </div>
         </Reveal>
 
@@ -294,9 +294,9 @@ const NeetPage = () => {
             { label: 'Marking Scheme', value: examOverview.marking },
           ].map((item, i) => (
             <Reveal key={item.label} direction="up" delay={i * 60}>
-              <div className="rounded-2xl border border-emerald-100 bg-emerald-50/40 p-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.15em] text-emerald-600">{item.label}</p>
-                <p className="mt-2 text-base font-semibold text-slate-900">{item.value}</p>
+              <div className="rounded-2xl border border-emerald-100 dark:border-emerald-900/30 bg-emerald-50/40 dark:bg-emerald-900/10 p-5">
+                <p className="text-xs font-semibold uppercase tracking-[0.15em] text-emerald-600 dark:text-emerald-400">{item.label}</p>
+                <p className="mt-2 text-base font-semibold text-slate-900 dark:text-gray-100">{item.value}</p>
               </div>
             </Reveal>
           ))}
@@ -304,10 +304,10 @@ const NeetPage = () => {
 
         {/* Section-wise breakdown */}
         <Reveal delay={200}>
-          <div className="mt-8 overflow-x-auto rounded-2xl border border-emerald-100">
+          <div className="mt-8 overflow-x-auto rounded-2xl border border-emerald-100 dark:border-emerald-900/30">
             <table className="w-full min-w-[500px] text-sm">
-              <thead className="bg-emerald-50">
-                <tr className="text-left text-xs uppercase tracking-wide text-slate-500">
+              <thead className="bg-emerald-50 dark:bg-emerald-900/20">
+                <tr className="text-left text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
                   <th className="px-4 py-3">Subject</th>
                   <th className="px-4 py-3">Section A</th>
                   <th className="px-4 py-3">Section B</th>
@@ -316,17 +316,17 @@ const NeetPage = () => {
               </thead>
               <tbody>
                 {examSections.map((sec, i) => (
-                  <tr key={sec.subject} className={`border-t border-slate-100 ${i % 2 === 0 ? 'bg-white' : 'bg-slate-50'}`}>
-                    <td className={`px-4 py-3 font-semibold ${sec.color.split(' ').pop()}`}>{sec.subject}</td>
-                    <td className="px-4 py-3 text-slate-600">{sec.sectionA}</td>
-                    <td className="px-4 py-3 text-slate-600">{sec.sectionB}</td>
-                    <td className="px-4 py-3 text-right font-semibold text-slate-900">{sec.totalMarks}</td>
+                  <tr key={sec.subject} className={`border-t border-slate-100 dark:border-slate-800 ${i % 2 === 0 ? 'bg-white dark:bg-zinc-900' : 'bg-slate-50 dark:bg-zinc-800'}`}>
+                    <td className={`px-4 py-3 font-semibold ${sec.color.match(/text-\S+/g).join(' ')}`}>{sec.subject}</td>
+                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{sec.sectionA}</td>
+                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{sec.sectionB}</td>
+                    <td className="px-4 py-3 text-right font-semibold text-slate-900 dark:text-slate-100">{sec.totalMarks}</td>
                   </tr>
                 ))}
-                <tr className="border-t-2 border-emerald-200 bg-emerald-50 font-bold text-slate-900">
+                <tr className="border-t-2 border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20 font-bold text-slate-900 dark:text-slate-100">
                   <td className="px-4 py-3">Total</td>
-                  <td className="px-4 py-3 text-slate-600" />
-                  <td className="px-4 py-3 text-slate-600" />
+                  <td className="px-4 py-3 text-slate-600 dark:text-slate-400" />
+                  <td className="px-4 py-3 text-slate-600 dark:text-slate-400" />
                   <td className="px-4 py-3 text-right">720</td>
                 </tr>
               </tbody>
@@ -336,11 +336,11 @@ const NeetPage = () => {
       </div>
 
       {/* Subject Guides */}
-      <div className="w-full rounded-3xl bg-gradient-to-br from-emerald-50 to-teal-50 px-4 py-8 shadow-xl shadow-stone-200 md:px-8">
+      <div className="w-full rounded-3xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-zinc-900 dark:to-zinc-800 px-4 py-8 shadow-xl shadow-stone-200 dark:shadow-none md:px-8">
         <Reveal>
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600">Subject Breakdown</p>
-            <h2 className="mt-2 text-3xl font-bold text-slate-900 md:text-4xl">How to Prepare Each Subject</h2>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">Subject Breakdown</p>
+            <h2 className="mt-2 text-3xl font-bold text-slate-900 dark:text-gray-100 md:text-4xl">How to Prepare Each Subject</h2>
           </div>
         </Reveal>
 
@@ -359,13 +359,13 @@ const NeetPage = () => {
                 </div>
                 <ul className="mt-5 space-y-2">
                   {sub.keyTopics.map((topic) => (
-                    <li key={topic} className="flex items-start gap-2 text-sm text-slate-700">
+                    <li key={topic} className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
                       <span className="mt-0.5 shrink-0 text-slate-400">›</span>
                       {topic}
                     </li>
                   ))}
                 </ul>
-                <p className={`mt-5 rounded-xl bg-white/70 p-3 text-sm italic ${sub.accent}`}>{sub.tips}</p>
+                <p className={`mt-5 rounded-xl bg-white/70 dark:bg-black/40 p-3 text-sm italic ${sub.accent}`}>{sub.tips}</p>
               </article>
             </Reveal>
           ))}
@@ -373,12 +373,12 @@ const NeetPage = () => {
       </div>
 
       {/* Preparation Strategy */}
-      <div className="w-full rounded-3xl bg-white px-4 py-8 shadow-xl shadow-stone-200 md:px-8">
+      <div className="w-full rounded-3xl bg-white dark:bg-zinc-900 px-4 py-8 shadow-xl shadow-stone-200 dark:shadow-none md:px-8">
         <Reveal>
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600">Winning Strategy</p>
-            <h2 className="mt-2 text-3xl font-bold text-slate-900 md:text-4xl">6-Step NEET Preparation Strategy</h2>
-            <p className="mx-auto mt-3 max-w-2xl text-base text-slate-600">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">Winning Strategy</p>
+            <h2 className="mt-2 text-3xl font-bold text-slate-900 dark:text-gray-100 md:text-4xl">6-Step NEET Preparation Strategy</h2>
+            <p className="mx-auto mt-3 max-w-2xl text-base text-slate-600 dark:text-gray-300">
               A proven six-step approach followed by Instructis top scorers to consistently achieve 650+.
             </p>
           </div>
@@ -387,10 +387,10 @@ const NeetPage = () => {
         <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {preparationStrategy.map((step, i) => (
             <Reveal key={step.step} direction="up" delay={i * 80}>
-              <div className={`rounded-2xl border-l-4 p-6 ${step.bg} ${step.color.split(' ')[0]}`}>
+              <div className={`rounded-2xl border-l-4 p-6 ${step.bg} ${step.color.split(' ')[0]} dark:${step.color.split(' ').pop()}`}>
                 <span className={`text-3xl font-black ${step.color.split(' ')[1]}`}>{step.step}</span>
-                <h3 className="mt-2 text-lg font-bold text-slate-900">{step.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-600">{step.description}</p>
+                <h3 className="mt-2 text-lg font-bold text-slate-900 dark:text-slate-100">{step.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{step.description}</p>
               </div>
             </Reveal>
           ))}
@@ -429,29 +429,29 @@ const NeetPage = () => {
       </div>
 
       {/* Success Stories */}
-      <div className="w-full rounded-3xl bg-white px-4 py-8 shadow-xl shadow-stone-200 md:px-8">
+      <div className="w-full rounded-3xl bg-white dark:bg-zinc-900 px-4 py-8 shadow-xl shadow-stone-200 dark:shadow-none md:px-8">
         <Reveal>
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600">Student Achievements</p>
-            <h2 className="mt-2 text-3xl font-bold text-slate-900 md:text-4xl">NEET Success Stories from Instructis</h2>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">Student Achievements</p>
+            <h2 className="mt-2 text-3xl font-bold text-slate-900 dark:text-gray-100 md:text-4xl">NEET Success Stories from Instructis</h2>
           </div>
         </Reveal>
 
         <div className="mt-8 grid gap-5 md:grid-cols-3">
           {successStories.map((story, i) => (
             <Reveal key={story.name} direction="scale" delay={i * 100}>
-              <article className="flex h-full flex-col rounded-2xl border border-emerald-100 bg-emerald-50/40 p-6">
+              <article className="flex h-full flex-col rounded-2xl border border-emerald-100 dark:border-emerald-900/30 bg-emerald-50/40 dark:bg-emerald-900/10 p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-lg font-bold text-slate-900">{story.name}</h3>
-                    <p className="text-sm text-emerald-600">{story.exam}</p>
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-gray-100">{story.name}</h3>
+                    <p className="text-sm text-emerald-600 dark:text-emerald-400">{story.exam}</p>
                   </div>
-                  <span className="rounded-full bg-emerald-100 px-3 py-1 text-sm font-bold text-emerald-700">
+                  <span className="rounded-full bg-emerald-100 dark:bg-emerald-900 px-3 py-1 text-sm font-bold text-emerald-700 dark:text-emerald-300">
                     {story.result}
                   </span>
                 </div>
-                <p className="mt-4 flex-1 text-sm italic text-slate-600">"{story.quote}"</p>
-                <p className="mt-4 rounded-xl bg-emerald-100 px-3 py-2 text-xs font-semibold text-emerald-700">
+                <p className="mt-4 flex-1 text-sm italic text-slate-600 dark:text-slate-300">"{story.quote}"</p>
+                <p className="mt-4 rounded-xl bg-emerald-100 dark:bg-emerald-900 px-3 py-2 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
                   📈 {story.improvement}
                 </p>
               </article>
@@ -461,20 +461,20 @@ const NeetPage = () => {
       </div>
 
       {/* FAQs */}
-      <div className="w-full rounded-3xl bg-gradient-to-br from-emerald-50 to-teal-50 px-4 py-8 shadow-xl shadow-stone-200 md:px-8">
+      <div className="w-full rounded-3xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-zinc-900 dark:to-zinc-800 px-4 py-8 shadow-xl shadow-stone-200 dark:shadow-none md:px-8">
         <Reveal>
           <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600">Common Questions</p>
-            <h2 className="mt-2 text-3xl font-bold text-slate-900 md:text-4xl">NEET FAQs</h2>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">Common Questions</p>
+            <h2 className="mt-2 text-3xl font-bold text-slate-900 dark:text-gray-100 md:text-4xl">NEET FAQs</h2>
           </div>
         </Reveal>
 
         <div className="mt-8 grid gap-4 md:grid-cols-2">
           {faqs.map((faq, i) => (
             <Reveal key={faq.q} direction="up" delay={i * 80}>
-              <div className="rounded-2xl border border-emerald-200 bg-white p-5">
-                <h3 className="font-semibold text-slate-900">{faq.q}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-600">{faq.a}</p>
+              <div className="rounded-2xl border border-emerald-200 dark:border-emerald-900 bg-white dark:bg-zinc-900 p-5">
+                <h3 className="font-semibold text-slate-900 dark:text-gray-100">{faq.q}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-gray-300">{faq.a}</p>
               </div>
             </Reveal>
           ))}

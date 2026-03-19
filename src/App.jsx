@@ -13,7 +13,7 @@ import { ROLES } from './utils/roles.js'
 
 const App = () => {
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex min-h-screen flex-col bg-white dark:bg-black">
       <ScrollToTop />
       <Navbar />
 
