@@ -5,7 +5,9 @@ import ProtectedRoute from './components/ProtectedRoute.jsx'
 import CoursesPage from './pages/CoursesPage.jsx'
 import FacultyMarksUploadPage from './pages/FacultyMarksUploadPage.jsx'
 import HomePage from './pages/HomePage.jsx'
+import JeePage from './pages/JeePage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
+import NeetPage from './pages/NeetPage.jsx'
 import { ROLES } from './utils/roles.js'
 
 const App = () => {
@@ -17,6 +19,8 @@ const App = () => {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/courses" element={<CoursesPage />} />
+          <Route path="/jee" element={<JeePage />} />
+          <Route path="/neet" element={<NeetPage />} />
           <Route
             path="/faculty-marks-upload"
             element={
