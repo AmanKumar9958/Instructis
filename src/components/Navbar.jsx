@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth'
 import { useTheme } from '../context/ThemeContext'
 import { ROLES } from '../utils/roles'
 import LoginModal from './LoginModal'
+import logo from '../assets/logo.webp'
 
 const navLinks = [
   { to: '/', label: 'Home' },
@@ -48,7 +49,8 @@ const Navbar = () => {
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-neutral-200 bg-white/95 backdrop-blur dark:border-neutral-700 dark:bg-gray-900/95">
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 md:px-6">
-        <NavLink to="/" className="text-2xl font-semibold tracking-wide text-black dark:text-white">
+        <NavLink to="/" className="flex items-center gap-2 text-2xl font-semibold tracking-wide text-black dark:text-white">
+          <img src={logo} alt="Instructis Logo" className="h-8 w-8 object-contain" />
           Instructis
         </NavLink>
 

@@ -5,6 +5,7 @@ import slider1 from '../assets/slider_1.webp'
 import slider2 from '../assets/slider_2.webp'
 import slider3 from '../assets/slider_3.webp'
 import Reveal from '../components/Reveal'
+import { Link } from 'react-router-dom'
 
 const sliderImages = [slider1, slider2, slider3]
 
@@ -167,12 +168,9 @@ const HomePage = () => {
                             >
                                 Get Started
                             </button>
-                            <button
-                                type="button"
-                                className="rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-800 transition hover:border-emerald-300 hover:bg-emerald-50 dark:border-slate-600 dark:bg-gray-800 dark:text-slate-200 dark:hover:bg-emerald-900/30"
-                            >
+                            <Link to ="/courses" className="rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-800 transition hover:border-emerald-300 hover:bg-emerald-50 dark:border-slate-600 dark:bg-gray-800 dark:text-slate-200 dark:hover:bg-emerald-900/30">
                                 Explore Courses
-                            </button>
+                            </Link>
                         </div>
                         <div className="mt-6 flex flex-wrap gap-5 text-sm text-slate-600 dark:text-slate-400">
                             <p>
