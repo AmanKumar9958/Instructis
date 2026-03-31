@@ -18,7 +18,7 @@ const App = () => {
       <ScrollToTop />
       <Navbar />
 
-      <main className="mx-auto flex w-full max-w-7xl flex-1 justify-center px-4 pb-10 pt-24 md:px-6 md:pt-28">
+      <main className="plain-pages mx-auto flex w-full max-w-7xl flex-1 justify-center px-4 pb-10 pt-24 md:px-6 md:pt-28">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/courses" element={<CoursesPage />} />

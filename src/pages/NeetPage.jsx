@@ -249,9 +249,9 @@ const NeetPage = () => {
   return (
     <section className="w-full space-y-8">
       {/* Hero */}
-      <div className="-mx-4 w-[calc(100%+2rem)] rounded-none bg-gradient-to-br from-emerald-600 via-teal-500 to-cyan-500 px-4 py-10 shadow-xl md:-mx-6 md:w-[calc(100%+3rem)] md:rounded-3xl md:px-10 md:py-14">
+      <div className="-mx-4 w-[calc(100%+2rem)] bg-gradient-to-br from-emerald-600 via-teal-500 to-cyan-500 px-4 py-10 md:-mx-6 md:w-[calc(100%+3rem)] md:px-10 md:py-14">
         <Reveal>
-          <p className="inline-flex rounded-full border border-white/30 bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-white">
+          <p className="inline-flex bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-white">
             Instructis NEET Programme
           </p>
           <h1 className="mt-4 max-w-3xl text-3xl font-bold leading-tight text-white md:text-5xl">
@@ -276,7 +276,7 @@ const NeetPage = () => {
       </div>
 
       {/* Exam Overview */}
-      <div className="w-full rounded-3xl bg-white dark:bg-zinc-900 px-4 py-8 shadow-xl shadow-stone-200 dark:shadow-none md:px-8">
+      <div className="w-full bg-white dark:bg-zinc-900 px-4 py-8 md:px-8">
         <Reveal>
           <div className="text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">Exam at a Glance</p>
@@ -294,7 +294,7 @@ const NeetPage = () => {
             { label: 'Marking Scheme', value: examOverview.marking },
           ].map((item, i) => (
             <Reveal key={item.label} direction="up" delay={i * 60}>
-              <div className="rounded-2xl border border-emerald-100 dark:border-emerald-900/30 bg-emerald-50/40 dark:bg-emerald-900/10 p-5">
+              <div className="rounded-2xl bg-emerald-50/40 dark:bg-emerald-900/10 p-5">
                 <p className="text-xs font-semibold uppercase tracking-[0.15em] text-emerald-600 dark:text-emerald-400">{item.label}</p>
                 <p className="mt-2 text-base font-semibold text-slate-900 dark:text-gray-100">{item.value}</p>
               </div>
@@ -304,7 +304,7 @@ const NeetPage = () => {
 
         {/* Section-wise breakdown */}
         <Reveal delay={200}>
-          <div className="mt-8 overflow-x-auto rounded-2xl border border-emerald-100 dark:border-emerald-900/30">
+          <div className="mt-8 overflow-x-auto">
             <table className="w-full min-w-[500px] text-sm">
               <thead className="bg-emerald-50 dark:bg-emerald-900/20">
                 <tr className="text-left text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
@@ -323,7 +323,7 @@ const NeetPage = () => {
                     <td className="px-4 py-3 text-right font-semibold text-slate-900 dark:text-slate-100">{sec.totalMarks}</td>
                   </tr>
                 ))}
-                <tr className="border-t-2 border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20 font-bold text-slate-900 dark:text-slate-100">
+                <tr className="border-t-2 bg-emerald-50 dark:bg-emerald-900/20 font-bold text-slate-900 dark:text-slate-100">
                   <td className="px-4 py-3">Total</td>
                   <td className="px-4 py-3 text-slate-600 dark:text-slate-400" />
                   <td className="px-4 py-3 text-slate-600 dark:text-slate-400" />
@@ -336,7 +336,7 @@ const NeetPage = () => {
       </div>
 
       {/* Subject Guides */}
-      <div className="w-full rounded-3xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-zinc-900 dark:to-zinc-800 px-4 py-8 shadow-xl shadow-stone-200 dark:shadow-none md:px-8">
+      <div className="w-full bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-zinc-900 dark:to-zinc-800 px-4 py-8 md:px-8">
         <Reveal>
           <div className="text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">Subject Breakdown</p>
@@ -373,7 +373,7 @@ const NeetPage = () => {
       </div>
 
       {/* Preparation Strategy */}
-      <div className="w-full rounded-3xl bg-white dark:bg-zinc-900 px-4 py-8 shadow-xl shadow-stone-200 dark:shadow-none md:px-8">
+      <div className="w-full bg-white dark:bg-zinc-900 px-4 py-8 md:px-8">
         <Reveal>
           <div className="text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">Winning Strategy</p>
@@ -398,7 +398,7 @@ const NeetPage = () => {
       </div>
 
       {/* Important Chapters */}
-      <div className="w-full rounded-3xl bg-gradient-to-br from-slate-900 to-slate-800 px-4 py-8 shadow-xl md:px-8">
+      <div className="w-full bg-gradient-to-br from-slate-900 to-slate-800 px-4 py-8 md:px-8">
         <Reveal>
           <div className="text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">High-Yield Topics</p>
@@ -429,7 +429,7 @@ const NeetPage = () => {
       </div>
 
       {/* Success Stories */}
-      <div className="w-full rounded-3xl bg-white dark:bg-zinc-900 px-4 py-8 shadow-xl shadow-stone-200 dark:shadow-none md:px-8">
+      <div className="w-full bg-white dark:bg-zinc-900 px-4 py-8 md:px-8">
         <Reveal>
           <div className="text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">Student Achievements</p>
@@ -440,7 +440,7 @@ const NeetPage = () => {
         <div className="mt-8 grid gap-5 md:grid-cols-3">
           {successStories.map((story, i) => (
             <Reveal key={story.name} direction="scale" delay={i * 100}>
-              <article className="flex h-full flex-col rounded-2xl border border-emerald-100 dark:border-emerald-900/30 bg-emerald-50/40 dark:bg-emerald-900/10 p-6">
+              <article className="flex h-full flex-col bg-emerald-50/40 dark:bg-emerald-900/10 p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-lg font-bold text-slate-900 dark:text-gray-100">{story.name}</h3>
@@ -451,7 +451,7 @@ const NeetPage = () => {
                   </span>
                 </div>
                 <p className="mt-4 flex-1 text-sm italic text-slate-600 dark:text-slate-300">"{story.quote}"</p>
-                <p className="mt-4 rounded-xl bg-emerald-100 dark:bg-emerald-900 px-3 py-2 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
+                <p className="mt-4 bg-emerald-100 dark:bg-emerald-900 px-3 py-2 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
                   📈 {story.improvement}
                 </p>
               </article>
@@ -461,7 +461,7 @@ const NeetPage = () => {
       </div>
 
       {/* FAQs */}
-      <div className="w-full rounded-3xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-zinc-900 dark:to-zinc-800 px-4 py-8 shadow-xl shadow-stone-200 dark:shadow-none md:px-8">
+      <div className="w-full bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-zinc-900 dark:to-zinc-800 px-4 py-8 md:px-8">
         <Reveal>
           <div className="text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">Common Questions</p>
@@ -472,7 +472,7 @@ const NeetPage = () => {
         <div className="mt-8 grid gap-4 md:grid-cols-2">
           {faqs.map((faq, i) => (
             <Reveal key={faq.q} direction="up" delay={i * 80}>
-              <div className="rounded-2xl border border-emerald-200 dark:border-emerald-900 bg-white dark:bg-zinc-900 p-5">
+              <div className="rounded-2xl bg-white dark:bg-zinc-900 p-5">
                 <h3 className="font-semibold text-slate-900 dark:text-gray-100">{faq.q}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-gray-300">{faq.a}</p>
               </div>
@@ -483,7 +483,7 @@ const NeetPage = () => {
 
       {/* CTA */}
       <Reveal direction="scale">
-        <div className="w-full rounded-3xl bg-gradient-to-r from-emerald-600 to-teal-500 px-4 py-10 text-center shadow-xl md:px-8">
+        <div className="w-full bg-gradient-to-r from-emerald-600 to-teal-500 px-4 py-10 text-center md:px-8">
           <h2 className="text-2xl font-bold text-white md:text-3xl">Start Your NEET Preparation with Instructis</h2>
           <p className="mx-auto mt-3 max-w-xl text-sm text-emerald-100 md:text-base">
             Join thousands of successful NEET aspirants. Get access to expert biology faculty, structured batches, and comprehensive mock tests.
@@ -497,7 +497,7 @@ const NeetPage = () => {
             </button>
             <button
               type="button"
-              className="rounded-full border border-white/70 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+              className="rounded-full px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
             >
               View NEET Batches
             </button>

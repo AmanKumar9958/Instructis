@@ -193,9 +193,9 @@ const JeePage = () => {
   return (
     <section className="w-full space-y-8">
       {/* Hero */}
-      <div className="-mx-4 w-[calc(100%+2rem)] rounded-none bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-500 px-4 py-10 shadow-xl md:-mx-6 md:w-[calc(100%+3rem)] md:rounded-3xl md:px-10 md:py-14">
+      <div className="-mx-4 w-[calc(100%+2rem)] bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-500 px-4 py-10 md:-mx-6 md:w-[calc(100%+3rem)] md:px-10 md:py-14">
         <Reveal>
-          <p className="inline-flex rounded-full border border-white/30 bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-white">
+          <p className="inline-flex bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-white">
             Instructis JEE Programme
           </p>
           <h1 className="mt-4 max-w-3xl text-3xl font-bold leading-tight text-white md:text-5xl">
@@ -220,7 +220,7 @@ const JeePage = () => {
       </div>
 
       {/* Exam Pattern */}
-      <div className="w-full rounded-3xl bg-white dark:bg-zinc-900 px-4 py-8 shadow-xl shadow-stone-200 dark:shadow-none md:px-8">
+      <div className="w-full bg-white dark:bg-zinc-900 px-4 py-8 md:px-8">
         <Reveal>
           <div className="text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">Exam Structure</p>
@@ -234,7 +234,7 @@ const JeePage = () => {
         <div className="mt-8 grid gap-6 md:grid-cols-2">
           {examPattern.map((exam, i) => (
             <Reveal key={exam.exam} direction="up" delay={i * 100}>
-              <div className="rounded-2xl border border-blue-100 dark:border-blue-900/30 bg-blue-50/40 dark:bg-blue-900/10 p-6">
+              <div className="rounded-2xl bg-blue-50/40 dark:bg-blue-900/10 p-6">
                 <h3 className="text-xl font-bold text-slate-900 dark:text-gray-100">{exam.exam}</h3>
                 <div className="mt-3 flex flex-wrap gap-2 text-xs font-medium">
                   <span className="rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 px-3 py-1">{exam.mode}</span>
@@ -243,7 +243,7 @@ const JeePage = () => {
                 </div>
                 <table className="mt-5 w-full text-sm">
                   <thead>
-                    <tr className="border-b border-blue-100 dark:border-blue-900 text-left text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                    <tr className="border-b text-left text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
                       <th className="pb-2">Subject</th>
                       <th className="pb-2 text-center">Questions</th>
                       <th className="pb-2 text-right">Marks</th>
@@ -251,7 +251,7 @@ const JeePage = () => {
                   </thead>
                   <tbody>
                     {exam.sections.map((s) => (
-                      <tr key={s.subject} className="border-b border-slate-100 dark:border-slate-800">
+                      <tr key={s.subject} className="border-b">
                         <td className="py-2 font-medium text-slate-800 dark:text-slate-200">{s.subject}</td>
                         <td className="py-2 text-center text-slate-600 dark:text-slate-400">{s.questions}</td>
                         <td className="py-2 text-right text-slate-600 dark:text-slate-400">{s.marks}</td>
@@ -274,7 +274,7 @@ const JeePage = () => {
       </div>
 
       {/* Subject Guides */}
-      <div className="w-full rounded-3xl bg-gradient-to-br from-slate-50 to-blue-50 dark:from-zinc-900 dark:to-zinc-800 px-4 py-8 shadow-xl shadow-stone-200 dark:shadow-none md:px-8">
+      <div className="w-full bg-gradient-to-br from-slate-50 to-blue-50 dark:from-zinc-900 dark:to-zinc-800 px-4 py-8 md:px-8">
         <Reveal>
           <div className="text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">Subject-wise Breakdown</p>
@@ -311,7 +311,7 @@ const JeePage = () => {
       </div>
 
       {/* Preparation Timeline */}
-      <div className="w-full rounded-3xl bg-white dark:bg-zinc-900 px-4 py-8 shadow-xl shadow-stone-200 dark:shadow-none md:px-8">
+      <div className="w-full bg-white dark:bg-zinc-900 px-4 py-8 md:px-8">
         <Reveal>
           <div className="text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">Study Roadmap</p>
@@ -344,7 +344,7 @@ const JeePage = () => {
       </div>
 
       {/* Success Stories */}
-      <div className="w-full rounded-3xl bg-gradient-to-br from-blue-900 to-cyan-900 px-4 py-8 shadow-xl md:px-8">
+      <div className="w-full bg-gradient-to-br from-blue-900 to-cyan-900 px-4 py-8 md:px-8">
         <Reveal>
           <div className="text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300">Student Achievements</p>
@@ -355,7 +355,7 @@ const JeePage = () => {
         <div className="mt-8 grid gap-5 md:grid-cols-3">
           {successStories.map((story, i) => (
             <Reveal key={story.name} direction="scale" delay={i * 100}>
-              <article className="flex h-full flex-col rounded-2xl bg-white/10 p-6 backdrop-blur-sm">
+              <article className="flex h-full flex-col bg-white/10 p-6 backdrop-blur-sm">
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-lg font-bold text-white">{story.name}</h3>
@@ -366,7 +366,7 @@ const JeePage = () => {
                   </span>
                 </div>
                 <p className="mt-4 flex-1 text-sm italic text-blue-100">"{story.quote}"</p>
-                <p className="mt-4 rounded-xl bg-white/10 px-3 py-2 text-xs font-semibold text-cyan-300">
+                <p className="mt-4 bg-white/10 px-3 py-2 text-xs font-semibold text-cyan-300">
                   📈 {story.improvement}
                 </p>
               </article>
@@ -376,7 +376,7 @@ const JeePage = () => {
       </div>
 
       {/* FAQs */}
-      <div className="w-full rounded-3xl bg-white dark:bg-zinc-900 px-4 py-8 shadow-xl shadow-stone-200 dark:shadow-none md:px-8">
+      <div className="w-full bg-white dark:bg-zinc-900 px-4 py-8 md:px-8">
         <Reveal>
           <div className="text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">Common Questions</p>
@@ -387,7 +387,7 @@ const JeePage = () => {
         <div className="mt-8 grid gap-4 md:grid-cols-2">
           {faqs.map((faq, i) => (
             <Reveal key={faq.q} direction="up" delay={i * 80}>
-              <div className="rounded-2xl border border-blue-100 dark:border-blue-900/30 bg-blue-50/40 dark:bg-blue-900/10 p-5">
+              <div className="rounded-2xl bg-blue-50/40 dark:bg-blue-900/10 p-5">
                 <h3 className="font-semibold text-slate-900 dark:text-gray-100">{faq.q}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-gray-300">{faq.a}</p>
               </div>
@@ -398,7 +398,7 @@ const JeePage = () => {
 
       {/* CTA */}
       <Reveal direction="scale">
-        <div className="w-full rounded-3xl bg-gradient-to-r from-blue-600 to-cyan-500 px-4 py-10 text-center shadow-xl md:px-8">
+        <div className="w-full bg-gradient-to-r from-blue-600 to-cyan-500 px-4 py-10 text-center md:px-8">
           <h2 className="text-2xl font-bold text-white md:text-3xl">Ready to Begin Your JEE Journey?</h2>
           <p className="mx-auto mt-3 max-w-xl text-sm text-blue-100 md:text-base">
             Join Instructis today and get access to expert faculty, structured batches, and proven rank-boosting strategies.
@@ -412,7 +412,7 @@ const JeePage = () => {
             </button>
             <button
               type="button"
-              className="rounded-full border border-white/70 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+              className="rounded-full px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
             >
               View JEE Batches
             </button>

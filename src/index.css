@@ -10,3 +10,11 @@
     @apply bg-black text-slate-100;
   }
 }
+
+@layer components {
+  .plain-pages section :is(div, article, blockquote) {
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    border-width: 0 !important;
+  }
+}
