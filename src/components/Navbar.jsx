@@ -11,6 +11,7 @@ const navLinks = [
   { to: '/courses', label: 'Courses' },
   { to: '/jee', label: 'JEE' },
   { to: '/neet', label: 'NEET' },
+  { to: '/contact', label: 'Contact' },
   { to: '/faculty-marks-upload', label: 'Faculty Marks Upload' },
 ]
 

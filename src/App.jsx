@@ -3,6 +3,7 @@ import Footer from './components/Footer.jsx'
 import Navbar from './components/Navbar.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import ScrollToTop from './components/ScrollToTop.jsx'
+import ContactPage from './pages/ContactPage.jsx'
 import CoursesPage from './pages/CoursesPage.jsx'
 import FacultyMarksUploadPage from './pages/FacultyMarksUploadPage.jsx'
 import HomePage from './pages/HomePage.jsx'
@@ -23,6 +24,7 @@ const App = () => {
           <Route path="/courses" element={<CoursesPage />} />
           <Route path="/jee" element={<JeePage />} />
           <Route path="/neet" element={<NeetPage />} />
+          <Route path="/contact" element={<ContactPage />} />
           <Route
             path="/faculty-marks-upload"
             element={
