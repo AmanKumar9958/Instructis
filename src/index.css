@@ -12,7 +12,7 @@
 }
 
 @layer components {
-  .plain-pages section :is(div, article, blockquote) {
+  .plain-pages :is(section, div, article, blockquote) {
     border-radius: 0 !important;
     box-shadow: none !important;
     border-width: 0 !important;
