@@ -1,412 +1,300 @@
-import { useEffect, useState } from 'react'
-import doctor from '../assets/doctor.svg'
-import engineer from '../assets/engineer.svg'
-import slider1 from '../assets/slider_1.webp'
-import slider2 from '../assets/slider_2.webp'
-import slider3 from '../assets/slider_3.webp'
 import Reveal from '../components/Reveal'
 import { Link } from 'react-router-dom'
 
-const sliderImages = [slider1, slider2, slider3]
+const heroImage =
+  'https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1200&q=80&sat=-10'
 
-const goals = [
-    { title: 'NEET Aspirant', image: doctor },
-    { title: 'JEE Aspirant', image: engineer },
+const pathways = [
+  {
+    title: 'JEE (Main + Advanced)',
+    copy: 'Structured Physics, Chemistry, and Mathematics prep with rank-focused mocks and analytics.',
+    points: ['Paper pattern, marking scheme, and previous year trends', 'Speed + accuracy drills to maximise percentile', 'Doubt rooms and late-night mentor support'],
+    color: 'from-sky-500/15 to-indigo-500/15 border-sky-200 dark:border-sky-800',
+    link: '/jee',
+  },
+  {
+    title: 'NEET (UG)',
+    copy: 'NCERT-first Biology, Physics, and Chemistry mastery with daily practice and rapid revision.',
+    points: ['Weightage-first study plan with NCERT checkpoints', 'Grand tests with OMR-style evaluation', 'Crash revision playlists before exam'],
+    color: 'from-purple-500/15 to-fuchsia-500/15 border-purple-200 dark:border-purple-800',
+    link: '/neet',
+  },
 ]
 
 const highlights = [
-    {
-        title: 'Learning Experience',
-        description: 'Concept-first teaching for Physics, Chemistry, Biology, and Mathematics with daily support.',
-        tone: 'bg-emerald-50 border-emerald-100 text-emerald-700 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-300',
-    },
-    {
-        title: 'Expert Instructors',
-        description: 'Mentors with proven JEE and NEET track records, focused on rank-oriented strategy.',
-        tone: 'bg-amber-50 border-amber-100 text-amber-700 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-300',
-    },
-    {
-        title: 'Score Improvement System',
-        description: 'Test analytics, revision plans, and doubt-solving workflows that improve exam performance.',
-        tone: 'bg-cyan-50 border-cyan-100 text-cyan-700 dark:bg-cyan-900/20 dark:border-cyan-800 dark:text-cyan-300',
-    },
+  { title: 'Rank-minded mentors', text: 'Faculty with JEE/NEET track records and outcome-driven sessions.' },
+  { title: 'Live + recorded support', text: 'Attend live, revisit recordings, and chat with mentors for doubts.' },
+  { title: 'Analytics that guide you', text: 'Topic heatmaps, time-spent reports, and error patterns highlighted.' },
 ]
 
-const courseCategories = [
-    { id: 'class-11', label: 'Class 11' },
-    { id: 'class-12', label: 'Class 12' },
-    { id: 'dropper', label: 'Dropper' },
+const microSections = [
+  {
+    title: 'Exam deep-dives',
+    desc: 'Know the paper pattern, marking scheme, and sectional strategy before you start.',
+    pill: 'Patterns & schemes',
+  },
+  {
+    title: 'Adaptive practice',
+    desc: 'Practice sheets adjust to your accuracy so you spend time where it matters most.',
+    pill: 'Smart practice',
+  },
+  {
+    title: 'Mentor sessions',
+    desc: 'Weekly 1:1 check-ins keep you accountable and remove blockers quickly.',
+    pill: '1:1 guidance',
+  },
 ]
-
-const coursesByCategory = {
-    'class-11': [
-        {
-            title: 'JEE Foundation PCM (Class 11)',
-            mode: 'Live + Recorded',
-            duration: '9 Months',
-            description: 'Strong concept building for Physics, Chemistry, and Mathematics with weekly rank tests.',
-        },
-        {
-            title: 'NEET Foundation PCB (Class 11)',
-            mode: 'Live Interactive',
-            duration: '8 Months',
-            description: 'NCERT-aligned Physics, Chemistry, and Biology schedule with chapter-level assessments.',
-        },
-        {
-            title: 'JEE + Olympiad Problem Solving',
-            mode: 'Self Paced + Live Mentoring',
-            duration: '10 Months',
-            description: 'High-quality worksheets and challenge sessions for advanced problem solving practice.',
-        },
-    ],
-    'class-12': [
-        {
-            title: 'NEET Target Batch 12',
-            mode: 'Live + Test Series',
-            duration: '12 Months',
-            description: 'Complete biology-focused track with NCERT intensive preparation and mocks.',
-        },
-        {
-            title: 'JEE Main Focus 12',
-            mode: 'Live + Recorded',
-            duration: '11 Months',
-            description: 'Accelerated PCM track with daily practice problems and performance analytics.',
-        },
-        {
-            title: 'JEE + NEET Boards Integrated Program',
-            mode: 'Hybrid Learning',
-            duration: '10 Months',
-            description: 'Balanced schedule for board exams and competitive entrance preparation.',
-        },
-    ],
-    dropper: [
-        {
-            title: 'NEET Dropper Pro',
-            mode: 'Full Day Mentored',
-            duration: '12 Months',
-            description: 'Structured repeater plan with adaptive tests and personalized mentor calls.',
-        },
-        {
-            title: 'JEE Advanced Repeaters',
-            mode: 'Live Classroom',
-            duration: '12 Months',
-            description: 'Advanced-level problem solving bootcamp for top-rank engineering aspirants.',
-        },
-        {
-            title: 'Rapid Revision + Grand Test Series',
-            mode: 'Intensive Hybrid',
-            duration: '5 Months',
-            description: 'Final attempt acceleration with full syllabus tests, ranking insights, and paper strategy.',
-        },
-    ],
-}
-
-const testimonials = [
-    {
-        name: 'Ananya Verma',
-        role: 'NEET Aspirant',
-        rating: '5.0',
-        feedback:
-            'The structured classes and daily practice sheets helped me improve my Biology score significantly and stay consistent.',
-    },
-    {
-        name: 'Rohit Sharma',
-        role: 'JEE Student, Class 12',
-        rating: '4.9',
-        feedback:
-            'Doubt sessions are super effective, and the mock tests feel very close to real exam patterns.',
-    },
-    {
-        name: 'Priya Mehta',
-        role: 'Parent',
-        rating: '4.8',
-        feedback:
-            'Mentors keep us updated on progress regularly. The dashboard and test reports are clear and motivating.',
-    },
-]
-
 
 const HomePage = () => {
-    const [activeSlide, setActiveSlide] = useState(0)
-    const [selectedCategory, setSelectedCategory] = useState('class-12')
-
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setActiveSlide((prev) => (prev + 1) % sliderImages.length)
-        }, 3500)
-
-        return () => clearInterval(timer)
-    }, [])
-
-    const goToPrevious = () => {
-        setActiveSlide((prev) => (prev - 1 + sliderImages.length) % sliderImages.length)
-    }
-
-    const goToNext = () => {
-        setActiveSlide((prev) => (prev + 1) % sliderImages.length)
-    }
-
-    return (
-        <section className="w-full space-y-8">
-            {/* Hero */}
-            <div className="-mx-4 w-[calc(100%+2rem)] rounded-none bg-linear-to-br from-emerald-50 via-white to-cyan-50 px-4 py-8 shadow-xl shadow-stone-200 md:-mx-6 md:w-[calc(100%+3rem)] md:rounded-3xl md:px-8 md:py-10 dark:from-emerald-950 dark:via-gray-900 dark:to-cyan-950 dark:shadow-none">
-                <div className="grid items-center gap-8 lg:grid-cols-2">
-                    <Reveal direction="left">
-                        <p className="inline-flex rounded-full border border-emerald-200 bg-white px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700 dark:border-emerald-800 dark:bg-gray-800 dark:text-emerald-300">
-                            Instructis JEE | NEET Academy
-                        </p>
-                        <h1 className="mt-4 text-3xl font-bold leading-tight text-slate-900 md:text-5xl dark:text-white">
-                            Grow Your Exam Performance with Smart JEE and NEET Preparation
-                        </h1>
-                        <p className="mt-4 max-w-xl text-base text-slate-600 md:text-lg dark:text-slate-300">
-                            Learn with structured batches, expert mentors, and data-backed test analysis for top engineering and medical entrance results.
-                        </p>
-                        <div className="mt-6 flex flex-wrap gap-3">
-                            <button
-                                type="button"
-                                className="rounded-full bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700"
-                            >
-                                Get Started
-                            </button>
-                            <Link to ="/courses" className="rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-800 transition hover:border-emerald-300 hover:bg-emerald-50 dark:border-slate-600 dark:bg-gray-800 dark:text-slate-200 dark:hover:bg-emerald-900/30">
-                                Explore Courses
-                            </Link>
-                        </div>
-                        <div className="mt-6 flex flex-wrap gap-5 text-sm text-slate-600 dark:text-slate-400">
-                            <p>
-                                <span className="font-bold text-slate-900 dark:text-white">15k+</span> Students Trained
-                            </p>
-                            <p>
-                                <span className="font-bold text-slate-900 dark:text-white">300+</span> Weekly Practice Sets
-                            </p>
-                        </div>
-                    </Reveal>
-
-                    <Reveal direction="right">
-                        <div className="relative">
-                            <div className="relative overflow-hidden rounded-4xl border border-emerald-100 bg-white p-3 shadow-lg shadow-emerald-100/60 dark:border-emerald-900 dark:bg-gray-800 dark:shadow-none">
-                                <div className="relative h-64 overflow-hidden rounded-3xl md:h-80">
-                                    {sliderImages.map((image, index) => (
-                                        <img
-                                            key={image}
-                                            src={image}
-                                            alt={`Instructis highlight ${index + 1}`}
-                                            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${
-                                                activeSlide === index ? 'opacity-100' : 'opacity-0'
-                                            }`}
-                                        />
-                                    ))}
-                                </div>
-
-                                <button
-                                    type="button"
-                                    onClick={goToPrevious}
-                                    aria-label="Previous slide"
-                                    className="absolute left-5 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-neutral-900 shadow transition hover:bg-white dark:bg-gray-700/90 dark:text-white dark:hover:bg-gray-600"
-                                >
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5">
-                                        <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg>
-                                </button>
-
-                                <button
-                                    type="button"
-                                    onClick={goToNext}
-                                    aria-label="Next slide"
-                                    className="absolute right-5 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-neutral-900 shadow transition hover:bg-white dark:bg-gray-700/90 dark:text-white dark:hover:bg-gray-600"
-                                >
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5">
-                                        <path d="M9 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg>
-                                </button>
-                            </div>
-
-                            <div className="absolute -bottom-4 left-1/2 flex -translate-x-1/2 gap-2 rounded-full border border-emerald-100 bg-white px-3 py-2 shadow-sm dark:border-emerald-900 dark:bg-gray-800">
-                                {sliderImages.map((_, index) => (
-                                    <button
-                                        key={`dot-${index}`}
-                                        type="button"
-                                        onClick={() => setActiveSlide(index)}
-                                        aria-label={`Go to slide ${index + 1}`}
-                                        className={`h-2.5 w-2.5 rounded-full transition ${
-                                            activeSlide === index ? 'bg-emerald-500' : 'bg-neutral-300 dark:bg-neutral-600'
-                                        }`}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-                    </Reveal>
+  return (
+    <section className="w-full space-y-12">
+      <div className="-mx-4 w-[calc(100%+2rem)] overflow-hidden rounded-none bg-gradient-to-br from-sky-50 via-white to-purple-50 px-4 pb-12 pt-10 shadow-xl shadow-slate-200/60 md:-mx-6 md:w-[calc(100%+3rem)] md:rounded-3xl md:px-10 md:pb-14 md:pt-14 dark:from-slate-900 dark:via-slate-950 dark:to-indigo-950 dark:shadow-black/30">
+        <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
+          <Reveal direction="left">
+            <div className="space-y-5">
+              <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-sky-700 shadow-sm ring-1 ring-sky-100 dark:bg-slate-900 dark:text-sky-300 dark:ring-slate-800">
+                Book Your Session
+                <span className="h-2 w-2 rounded-full bg-emerald-500" />
+              </span>
+              <h1 className="text-3xl font-bold leading-tight text-slate-900 md:text-5xl dark:text-white">
+                Personal mentoring for <span className="bg-gradient-to-r from-sky-500 to-indigo-600 bg-clip-text text-transparent">JEE &amp; NEET</span>{' '}
+                preparation
+              </h1>
+              <p className="max-w-2xl text-base text-slate-600 md:text-lg dark:text-slate-200">
+                A modern, student-first space with calm gradients and focused layouts—built to keep you on track for ranks without clutter.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <a
+                  href="#session-form"
+                  className="rounded-full bg-gradient-to-r from-sky-600 to-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-sky-200/60 transition hover:-translate-y-[1px] hover:shadow-xl dark:shadow-indigo-900/40"
+                >
+                  Book Session
+                </a>
+                <Link
+                  to="/courses"
+                  className="rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-800 transition hover:-translate-y-[1px] hover:border-sky-200 hover:bg-sky-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:border-sky-700 dark:hover:bg-slate-800"
+                >
+                  View Courses
+                </Link>
+              </div>
+              <div className="grid w-full max-w-xl grid-cols-2 gap-4 text-left text-sm text-slate-600 dark:text-slate-300">
+                <div className="rounded-2xl bg-white/80 p-4 shadow-sm ring-1 ring-slate-200 backdrop-blur dark:bg-white/5 dark:ring-slate-800">
+                  <p className="text-2xl font-bold text-slate-900 dark:text-white">15k+</p>
+                  <p className="text-xs uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">Students mentored</p>
                 </div>
+                <div className="rounded-2xl bg-white/80 p-4 shadow-sm ring-1 ring-slate-200 backdrop-blur dark:bg-white/5 dark:ring-slate-800">
+                  <p className="text-2xl font-bold text-slate-900 dark:text-white">320+</p>
+                  <p className="text-xs uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">Weekly practice sets</p>
+                </div>
+              </div>
             </div>
+          </Reveal>
 
-            {/* Core Features */}
-            <Reveal>
-                <div className="w-full rounded-3xl bg-white px-4 py-8 shadow-xl shadow-stone-200 md:px-8 dark:bg-gray-900 dark:shadow-none">
-                    <div className="text-center">
-                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">Core Features</p>
-                        <h2 className="mt-2 text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">Interactive Learning for JEE and NEET</h2>
-                    </div>
+          <Reveal direction="right">
+            <div className="relative flex justify-end">
+              <div className="absolute -left-8 -top-10 h-32 w-32 rounded-full bg-sky-200/60 blur-3xl dark:bg-indigo-900/40" aria-hidden="true" />
+              <div className="absolute bottom-6 right-2 h-24 w-24 rounded-full bg-purple-200/60 blur-3xl dark:bg-purple-900/40" aria-hidden="true" />
 
-                    <div className="mt-8 grid gap-4 md:grid-cols-3">
-                        {highlights.map((item, i) => (
-                            <Reveal key={item.title} direction="up" delay={i * 100}>
-                                <article className={`rounded-2xl border p-6 ${item.tone}`}>
-                                    <h3 className="text-lg font-semibold">{item.title}</h3>
-                                    <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{item.description}</p>
-                                </article>
-                            </Reveal>
-                        ))}
-                    </div>
+              <form
+                id="session-form"
+                className="relative z-[1] w-full max-w-md rounded-3xl bg-white/90 p-6 shadow-2xl shadow-sky-200/60 ring-1 ring-slate-200 backdrop-blur dark:bg-slate-900/90 dark:shadow-black/40 dark:ring-slate-800"
+                onSubmit={(event) => event.preventDefault()}
+              >
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Book your session</p>
+                <h2 className="mt-2 text-xl font-semibold text-slate-900 dark:text-white">Get a personalised call in 24 hours</h2>
+
+                <div className="mt-4 space-y-3">
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200">
+                    Full name
+                    <input
+                      type="text"
+                      name="fullName"
+                      placeholder="Enter your name"
+                      className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-sky-600 dark:focus:ring-sky-900/50"
+                    />
+                  </label>
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200">
+                    Email
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder="you@example.com"
+                      className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-sky-600 dark:focus:ring-sky-900/50"
+                    />
+                  </label>
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200">
+                    Goal
+                    <select
+                      name="goal"
+                      className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-sky-600 dark:focus:ring-sky-900/50"
+                    >
+                      <option>JEE</option>
+                      <option>NEET</option>
+                    </select>
+                  </label>
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200">
+                    Preferred slot
+                    <input
+                      type="text"
+                      name="slot"
+                      placeholder="E.g., Weekday evening"
+                      className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-400 focus:ring-2 focus:ring-sky-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-sky-600 dark:focus:ring-sky-900/50"
+                    />
+                  </label>
+                  <button
+                    type="submit"
+                    className="mt-4 w-full rounded-2xl bg-gradient-to-r from-sky-600 to-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-sky-200/60 transition hover:-translate-y-[1px] hover:shadow-xl dark:shadow-indigo-900/40"
+                  >
+                    Book Session
+                  </button>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    A mentor will contact you with batch options and a free diagnostic test link.
+                  </p>
                 </div>
-            </Reveal>
+              </form>
 
-            {/* About */}
-            <div className="w-full rounded-3xl bg-linear-to-r from-emerald-50 to-cyan-50 px-4 py-8 shadow-xl shadow-stone-200 md:px-8 dark:from-emerald-950 dark:to-cyan-950 dark:shadow-none">
-                <div className="grid items-center gap-8 lg:grid-cols-2">
-                    <Reveal direction="left">
-                        <div className="relative mx-auto w-full max-w-md">
-                            <img
-                                src={slider2}
-                                alt="Instructis JEE NEET coaching"
-                                className="h-full w-full rounded-4xl object-cover shadow-lg"
-                            />
-                            <div className="absolute -right-3 bottom-4 rounded-2xl bg-white px-4 py-3 shadow-md dark:bg-gray-800">
-                                <p className="text-sm font-semibold text-slate-900 dark:text-white">Top Rank Mentorship</p>
-                                <p className="text-xs text-slate-500 dark:text-slate-400">Daily doubt-solving and performance tracking</p>
-                            </div>
-                        </div>
-                    </Reveal>
-
-                    <Reveal direction="right">
-                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-400">About Instructis</p>
-                        <h2 className="mt-2 text-3xl font-bold leading-tight text-slate-900 md:text-4xl dark:text-white">
-                            Focused Preparation for Medical and Engineering Entrances
-                        </h2>
-                        <p className="mt-4 text-base text-slate-600 dark:text-slate-300">
-                            Instructis combines top faculty guidance, competitive practice, and strategic revision planning to help students excel in JEE and NEET examinations.
-                        </p>
-                        <div className="mt-5 grid gap-3 text-sm text-slate-700 sm:grid-cols-2 dark:text-slate-300">
-                            <p className="rounded-xl bg-white px-4 py-3 dark:bg-gray-800">Comprehensive PCM and PCB roadmaps</p>
-                            <p className="rounded-xl bg-white px-4 py-3 dark:bg-gray-800">Weekly test series with rank insights</p>
-                            <p className="rounded-xl bg-white px-4 py-3 dark:bg-gray-800">Personalized study and revision plans</p>
-                            <p className="rounded-xl bg-white px-4 py-3 dark:bg-gray-800">Parent progress updates and mentoring</p>
-                        </div>
-
-                        <div className="mt-6 flex flex-wrap gap-6 text-emerald-700 dark:text-emerald-400">
-                            <div>
-                                <p className="text-3xl font-bold">30+</p>
-                                <p className="text-sm text-slate-600 dark:text-slate-400">Expert Faculty</p>
-                            </div>
-                            <div>
-                                <p className="text-3xl font-bold">6k+</p>
-                                <p className="text-sm text-slate-600 dark:text-slate-400">Selections &amp; Top Ranks</p>
-                            </div>
-                        </div>
-                    </Reveal>
-                </div>
+              <div className="relative -ml-16 hidden h-full max-h-[420px] w-full max-w-md overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl shadow-sky-200/50 md:block dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/40">
+                <img src={heroImage} alt="Students studying" className="h-full w-full object-cover" loading="lazy" />
+                <div className="absolute inset-0 bg-gradient-to-tr from-sky-500/30 via-transparent to-indigo-600/30" />
+              </div>
             </div>
+          </Reveal>
+        </div>
+      </div>
 
-            {/* Choose Your Goal */}
-            <Reveal>
-                <div className="w-full rounded-3xl bg-white px-4 py-8 text-center shadow-xl shadow-stone-200 md:px-8 dark:bg-gray-900 dark:shadow-none">
-                    <h2 className="text-3xl font-bold leading-tight text-slate-900 md:text-4xl dark:text-white">Choose Your Goal</h2>
-                    <p className="mt-2 text-base font-medium text-emerald-600 md:text-xl dark:text-emerald-400">
-                        Start your JEE or NEET journey with the right batch.
-                    </p>
-
-                    <div className="mx-auto mt-8 grid w-full max-w-4xl grid-cols-1 gap-4 sm:grid-cols-2">
-                        {goals.map((goal, i) => (
-                            <Reveal key={goal.title} direction="scale" delay={i * 100}>
-                                <div className="rounded-3xl border border-emerald-100 bg-emerald-50/60 p-4 dark:border-emerald-800 dark:bg-emerald-900/20">
-                                    <img src={goal.image} alt={goal.title} className="mx-auto h-28 w-28 rounded-2xl object-contain md:h-32 md:w-32" />
-                                    <p className="mt-3 text-xl font-semibold text-slate-900 md:text-2xl dark:text-white">{goal.title}</p>
-                                </div>
-                            </Reveal>
-                        ))}
-                    </div>
+      <div className="grid gap-6 md:grid-cols-2">
+        {pathways.map((item, idx) => (
+          <Reveal key={item.title} direction="up" delay={idx * 120}>
+            <article className={`h-full rounded-3xl border bg-gradient-to-br ${item.color} p-6 shadow-lg shadow-slate-200/60 dark:shadow-black/30`}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Exam track</p>
+                  <h3 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{item.title}</h3>
                 </div>
-            </Reveal>
+                <span className="rounded-full bg-white/70 px-3 py-1 text-xs font-semibold text-slate-600 shadow-sm backdrop-blur dark:bg-white/10 dark:text-slate-200">
+                  2025-26
+                </span>
+              </div>
+              <p className="mt-3 text-base text-slate-600 dark:text-slate-200">{item.copy}</p>
+              <ul className="mt-4 space-y-2 text-sm text-slate-600 dark:text-slate-300">
+                {item.points.map((point) => (
+                  <li key={point} className="flex items-start gap-2">
+                    <span className="mt-[3px] h-2 w-2 rounded-full bg-gradient-to-br from-sky-500 to-indigo-500" />
+                    {point}
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-6 flex items-center justify-between">
+                <Link
+                  to={item.link}
+                  className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900 ring-1 ring-slate-200 transition hover:-translate-y-[1px] hover:ring-sky-300 dark:bg-slate-900 dark:text-white dark:ring-slate-800 dark:hover:ring-sky-700"
+                >
+                  Explore
+                  <span aria-hidden className="text-lg">→</span>
+                </Link>
+                <p className="text-xs uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400">Tap for detailed pattern</p>
+              </div>
+            </article>
+          </Reveal>
+        ))}
+      </div>
 
-            {/* Our Courses */}
-            <Reveal>
-                <div className="w-full rounded-3xl bg-white px-4 py-8 text-center shadow-xl shadow-stone-200 md:px-8 dark:bg-gray-900 dark:shadow-none">
-                    <h2 className="text-3xl font-bold leading-tight text-slate-900 md:text-4xl dark:text-white">Our Courses</h2>
-                    <p className="mx-auto mt-3 max-w-4xl text-base text-emerald-600 md:text-xl dark:text-emerald-400">
-                        Program tracks built for Class 11, Class 12, and droppers targeting JEE and NEET.
-                    </p>
+      <Reveal>
+        <div className="rounded-3xl bg-white px-4 py-8 shadow-xl shadow-slate-200/60 md:px-8 dark:bg-slate-900 dark:shadow-black/30">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-600 dark:text-sky-400">Designed for students</p>
+              <h2 className="text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">A calm, modern study space</h2>
+              <p className="mt-2 max-w-2xl text-base text-slate-600 dark:text-slate-300">
+                Smooth hover states, soft gradients, and generous spacing make it easy to focus on what matters—your next milestone.
+              </p>
+            </div>
+            <div className="flex gap-3 text-sm text-slate-600 dark:text-slate-300">
+              <span className="rounded-full bg-sky-100 px-4 py-2 font-semibold text-sky-700 dark:bg-sky-900/40 dark:text-sky-200">
+                Responsive
+              </span>
+              <span className="rounded-full bg-indigo-100 px-4 py-2 font-semibold text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-200">
+                Dark / Light
+              </span>
+            </div>
+          </div>
 
-                    <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-                        {courseCategories.map((category) => {
-                            const isActive = selectedCategory === category.id
+          <div className="mt-6 grid gap-4 md:grid-cols-3">
+            {highlights.map((item) => (
+              <div
+                key={item.title}
+                className="group rounded-2xl border border-slate-200 bg-slate-50/80 p-5 shadow-sm transition hover:-translate-y-[3px] hover:shadow-md dark:border-slate-800 dark:bg-slate-800/60"
+              >
+                <p className="text-sm font-semibold uppercase tracking-[0.16em] text-sky-600 group-hover:text-indigo-600 dark:text-sky-300">
+                  {item.title}
+                </p>
+                <p className="mt-3 text-sm text-slate-700 dark:text-slate-200">{item.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Reveal>
 
-                            return (
-                                <button
-                                    key={category.id}
-                                    type="button"
-                                    onClick={() => setSelectedCategory(category.id)}
-                                    className={`rounded-xl border px-5 py-2 text-sm font-semibold transition md:text-base ${
-                                        isActive
-                                            ? 'border-emerald-600 bg-emerald-600 text-white'
-                                            : 'border-slate-300 bg-white text-slate-900 hover:border-emerald-300 hover:bg-emerald-50 dark:border-slate-600 dark:bg-gray-800 dark:text-slate-200 dark:hover:bg-emerald-900/30'
-                                    }`}
-                                >
-                                    {category.label}
-                                </button>
-                            )
-                        })}
-                    </div>
+      <Reveal>
+        <div className="rounded-3xl bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-900 px-4 py-10 text-white shadow-xl shadow-slate-300/30 md:px-10 dark:shadow-black/40">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="space-y-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-200">On-scroll delight</p>
+              <h3 className="text-3xl font-bold leading-tight md:text-4xl">
+                Slide-up sections, hover glows, and smooth focus states keep the experience lively.
+              </h3>
+              <p className="max-w-2xl text-base text-indigo-100">
+                Cards lift on hover, CTAs glow softly, and sections fade up as you scroll—delivering a modern feel without distractions.
+              </p>
+              <div className="flex flex-wrap gap-3 text-sm">
+                <span className="rounded-full bg-white/10 px-4 py-2 font-semibold text-indigo-50">CSS animations</span>
+                <span className="rounded-full bg-white/10 px-4 py-2 font-semibold text-indigo-50">Smooth hover</span>
+                <span className="rounded-full bg-white/10 px-4 py-2 font-semibold text-indigo-50">Performance friendly</span>
+              </div>
+            </div>
+            <div className="rounded-3xl bg-white/10 p-6 shadow-lg shadow-black/30 backdrop-blur">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-100">Navigation shortcuts</p>
+              <p className="mt-3 text-lg font-semibold">JEE &amp; NEET detail pages</p>
+              <p className="mt-2 max-w-md text-sm text-indigo-100">
+                Click the Explore buttons above to open dedicated pages that already cover exam pattern, marking scheme, timelines, and FAQs.
+              </p>
+              <div className="mt-4 flex gap-3">
+                <Link
+                  to="/jee"
+                  className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:-translate-y-[1px]"
+                >
+                  Go to JEE
+                </Link>
+                <Link
+                  to="/neet"
+                  className="rounded-full bg-white/80 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:-translate-y-[1px]"
+                >
+                  Go to NEET
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Reveal>
 
-                    <div className="mt-8 grid grid-cols-1 gap-5 text-left md:grid-cols-2 xl:grid-cols-3">
-                        {coursesByCategory[selectedCategory].map((course, i) => (
-                            <Reveal key={course.title} direction="up" delay={i * 80}>
-                                <article className="rounded-2xl border border-slate-200 bg-slate-50 p-6 shadow-sm dark:border-slate-700 dark:bg-gray-800">
-                                    <h3 className="text-xl font-semibold text-slate-900 dark:text-white">{course.title}</h3>
-                                    <p className="mt-3 text-sm font-medium uppercase tracking-wide text-emerald-700 dark:text-emerald-400">{course.mode}</p>
-                                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Duration: {course.duration}</p>
-                                    <p className="mt-4 text-base text-slate-600 dark:text-slate-300">{course.description}</p>
-                                    <button
-                                        type="button"
-                                        className="mt-6 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700 dark:bg-gray-700 dark:hover:bg-gray-600"
-                                    >
-                                        View Details
-                                    </button>
-                                </article>
-                            </Reveal>
-                        ))}
-                    </div>
-                </div>
-            </Reveal>
-
-            {/* Success Voices */}
-            <Reveal>
-                <div className="w-full rounded-3xl bg-white px-4 py-8 text-center shadow-xl shadow-stone-200 md:px-8 dark:bg-gray-900 dark:shadow-none">
-                    <h2 className="text-3xl font-bold leading-tight text-slate-900 md:text-4xl dark:text-white">Success Voices</h2>
-                    <p className="mx-auto mt-3 max-w-3xl text-base text-emerald-600 md:text-lg dark:text-emerald-400">
-                        Learners and parents sharing their Instructis JEE and NEET preparation experience.
-                    </p>
-
-                    <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
-                        {testimonials.map((item, i) => (
-                            <Reveal key={item.name} direction="up" delay={i * 100}>
-                                <article className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-left shadow-sm dark:border-slate-700 dark:bg-gray-800">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{item.name}</h3>
-                                            <p className="text-sm text-slate-500 dark:text-slate-400">{item.role}</p>
-                                        </div>
-                                        <span className="rounded-full bg-amber-100 px-3 py-1 text-sm font-semibold text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
-                                            {item.rating} ★
-                                        </span>
-                                    </div>
-                                    <p className="mt-4 text-base text-slate-600 dark:text-slate-300">"{item.feedback}"</p>
-                                </article>
-                            </Reveal>
-                        ))}
-                    </div>
-                </div>
-            </Reveal>
-        </section>
-    )
+      <Reveal>
+        <div className="grid gap-4 md:grid-cols-3">
+          {microSections.map((item) => (
+            <div
+              key={item.title}
+              className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md shadow-slate-200/50 transition hover:-translate-y-[3px] hover:shadow-lg dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/40"
+            >
+              <span className="rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-sky-700 dark:bg-sky-900/40 dark:text-sky-200">
+                {item.pill}
+              </span>
+              <h4 className="mt-3 text-lg font-semibold text-slate-900 dark:text-white">{item.title}</h4>
+              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </Reveal>
+    </section>
+  )
 }
 
 export default HomePage
