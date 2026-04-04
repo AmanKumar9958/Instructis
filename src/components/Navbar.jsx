@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, UploadCloud } from 'lucide-react';
 
 export default function Navbar() {
   const { user, role, logout, loginWithGoogle, loginSuperAdmin } = useAuth();
@@ -68,6 +68,19 @@ export default function Navbar() {
     return (
       <div className={`flex ${isMobile ? 'flex-col space-y-4' : 'items-center space-x-6'}`}>
         <div className="flex items-center space-x-3">
+          {/* Marks Upload Icon beside username */}
+          {['Faculty', 'SuperAdmin'].includes(role) && (
+            <Link 
+              to="/faculty/marks-upload" 
+              className={`group relative text-gray-500 hover:text-brand-purple transition-colors p-2 flex items-center justify-center rounded-full hover:bg-purple-50 ${isMobile ? 'self-start mb-2 bg-gray-100' : ''}`}
+            >
+              <UploadCloud className="w-5 h-5" />
+              <span className={`absolute ${isMobile ? 'left-10' : '-bottom-10 left-1/2 -translate-x-1/2'} opacity-0 group-hover:opacity-100 transition-opacity bg-gray-800 text-white text-xs py-1 px-2 rounded whitespace-nowrap pointer-events-none z-50`}>
+                Marks Upload
+              </span>
+            </Link>
+          )}
+
           {user.profile_url ? (
             <img src={user.profile_url} alt="Profile" className="w-10 h-10 rounded-full object-cover border border-gray-200" />
           ) : (
@@ -99,8 +112,8 @@ export default function Navbar() {
       <nav className="sticky top-0 z-50 bg-white shadow-sm w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            {/* Left: Logo */}
-            <div className="flex-shrink-0 flex items-center">
+            {/* Left: Logo and Nav Links */}
+            <div className="flex-shrink-0 flex items-center gap-8">
               <Link to="/" className="text-3xl font-black text-brand-purple tracking-tight">
                 INSTRUCTIS<span className="text-brand-orange">.</span>
               </Link>
@@ -127,7 +140,7 @@ export default function Navbar() {
         {/* Mobile Dropdown Menu */}
         {isMobileMenuOpen && (
           <div className="md:hidden bg-gray-50 border-t border-gray-200 px-4 pt-4 pb-6 absolute w-full shadow-lg z-40">
-            <div className="flex flex-col">
+            <div className="flex flex-col gap-4">
                <AuthStatusUI isMobile={true} />
             </div>
           </div>
