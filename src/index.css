@@ -1,20 +1,19 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:where(.dark, .dark *));
+@theme {
+  --color-brand-purple: #8134AF;
+  --color-brand-purple-dark: #6B2A91;
+  --color-brand-orange: #FF6C37;
+  --color-brand-orange-dark: #E55823;
+  --color-brand-light-purple: #F8F0FA;
+  --font-sans: 'Inter', system-ui, sans-serif;
+}
 
 @layer base {
   body {
-    @apply bg-white text-slate-900 transition-colors duration-300;
+    @apply text-gray-800 antialiased bg-white;
   }
-  .dark body {
-    @apply bg-black text-slate-100;
-  }
-}
-
-@layer components {
-  .plain-pages :is(section, div, article, blockquote) {
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    border-width: 0 !important;
+  button {
+    @apply cursor-pointer;
   }
 }

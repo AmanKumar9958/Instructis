@@ -1,0 +1,490 @@
+.instructis-home {
+  width: 100%;
+  background: #f2f2f2;
+  color: #323338;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow-x: hidden;
+}
+
+.hero-section {
+  position: relative;
+  background: linear-gradient(180deg, #7f3598 0%, #7d3497 65%, #8e42a7 100%);
+  padding: 20px 18px 20px;
+  overflow: hidden;
+}
+
+.hero-section::after {
+  content: '';
+  position: absolute;
+  left: -8%;
+  right: -8%;
+  bottom: -96px;
+  height: 190px;
+  background: #f3f3f3;
+  border-radius: 50% 50% 0 0;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 14% 75%, rgba(255, 255, 255, 0.1) 0, rgba(255, 255, 255, 0) 32%),
+    radial-gradient(circle at 86% 89%, rgba(255, 255, 255, 0.08) 0, rgba(255, 255, 255, 0) 35%);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 1240px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.25fr 0.95fr;
+  gap: 18px;
+  align-items: center;
+}
+
+.hero-left img {
+  width: 100%;
+  max-height: 520px;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  border-radius: 8px;
+}
+
+.hero-form {
+  background: #f0f0f0;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 18px 45px rgba(54, 29, 64, 0.25);
+}
+
+.hero-form h2 {
+  margin: 0;
+  text-align: center;
+  font-size: clamp(1.45rem, 2.2vw, 2rem);
+  font-weight: 700;
+  color: #262930;
+  line-height: 1.2;
+}
+
+.hero-form > p {
+  margin: 4px 0 12px;
+  text-align: center;
+  color: #686d78;
+  font-size: clamp(0.88rem, 1.4vw, 1.05rem);
+}
+
+.section-title {
+  margin: 12px 0 8px;
+  text-align: center;
+  font-size: clamp(1.02rem, 1.8vw, 1.28rem);
+  font-weight: 700;
+  color: #262930;
+  border-top: 1px solid #ddd;
+  padding-top: 10px;
+}
+
+.mode-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.mode-switch button {
+  border: 1px solid #d4d4d4;
+  background: #f0f0f0;
+  padding: 9px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #343840;
+  border-radius: 4px;
+}
+
+.mode-switch button.active {
+  border-color: #9920a9;
+  position: relative;
+}
+
+.hero-form input,
+.hero-form select {
+  width: 100%;
+  border: 1px solid #d5d5d5;
+  border-radius: 8px;
+  padding: 11px 14px;
+  font-size: 0.95rem;
+  margin-top: 7px;
+  outline: none;
+  background: #f4f4f4;
+}
+
+.hero-form input::placeholder {
+  color: #9ba0a8;
+}
+
+.mobile-row {
+  position: relative;
+}
+
+.mobile-row button {
+  position: absolute;
+  right: 0;
+  top: 7px;
+  border: 0;
+  background: #5a5df4;
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border-radius: 0 8px 8px 0;
+  height: 42px;
+  padding: 0 14px;
+}
+
+.cta-button {
+  margin-top: 12px;
+  width: 100%;
+  border: 0;
+  border-radius: 6px;
+  padding: 12px;
+  font-size: clamp(1rem, 1.6vw, 1.2rem);
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(90deg, #ff9331 0%, #ff4d6f 100%);
+}
+
+.program-intro {
+  text-align: center;
+  padding: 26px 16px 20px;
+  background: #ececec;
+}
+
+.program-intro h3 {
+  margin: 0;
+  line-height: 1.1;
+  font-size: clamp(1.4rem, 2.3vw, 2rem);
+}
+
+.program-intro p {
+  margin: 6px 0 0;
+  font-size: clamp(0.93rem, 1.6vw, 1.08rem);
+  color: #3f4045;
+}
+
+.tracks-section {
+  background: #f3f3f3;
+  padding: 24px 16px 30px;
+}
+
+.tracks-wrap {
+  max-width: 1320px;
+  margin: 0 auto;
+  background: #dfdfdf;
+  border-radius: 12px;
+  padding: 36px 20px 22px;
+  position: relative;
+}
+
+.tracks-pill {
+  position: absolute;
+  left: 50%;
+  top: -1px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, #5a68f4 0%, #8839ef 100%);
+  color: #fff;
+  font-weight: 700;
+  font-size: clamp(0.95rem, 1.8vw, 1.25rem);
+  padding: 7px 24px;
+  border-radius: 0 0 14px 14px;
+}
+
+.track-grid {
+  display: grid;
+  grid-template-columns: 1fr 0.35fr 1fr;
+  align-items: center;
+  gap: 18px;
+}
+
+.track-card {
+  text-align: center;
+}
+
+.track-card img {
+  width: 100%;
+  border-radius: 12px;
+  height: 190px;
+  object-fit: cover;
+  box-shadow: 0 10px 24px rgba(61, 61, 61, 0.16);
+}
+
+.track-card p {
+  margin: 14px auto;
+  font-size: clamp(1rem, 1.8vw, 1.45rem);
+  max-width: 560px;
+}
+
+.track-card a {
+  display: inline-block;
+  min-width: 154px;
+  text-decoration: none;
+  border-radius: 12px;
+  padding: 10px 24px;
+  color: #fff;
+  font-size: clamp(0.95rem, 1.7vw, 1.3rem);
+  font-weight: 700;
+  background: linear-gradient(90deg, #ff922f 0%, #ff5a72 100%);
+}
+
+.center-logo {
+  text-align: center;
+  font-size: clamp(1.6rem, 3.6vw, 3.2rem);
+  font-weight: 700;
+  color: #0f92cf;
+  position: relative;
+  padding: 0 8px;
+}
+
+.center-logo::after {
+  content: '';
+  position: absolute;
+  right: -2px;
+  top: 10px;
+  width: 2px;
+  height: 150px;
+  background: #c6c6c6;
+}
+
+.advantage-section {
+  background: #ececec;
+  padding: 28px 16px 18px;
+}
+
+.advantage-section h2,
+.testimonials-section h2 {
+  text-align: center;
+  margin: 0 0 22px;
+  font-size: clamp(1.5rem, 2.9vw, 2.45rem);
+  color: #34363d;
+}
+
+.advantage-grid {
+  max-width: 1360px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 26px;
+}
+
+.advantage-grid article {
+  text-align: center;
+}
+
+.advantage-grid img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 50% / 40%;
+}
+
+.advantage-grid h4 {
+  margin: 18px auto 0;
+  font-size: clamp(1rem, 1.8vw, 1.4rem);
+  line-height: 1.18;
+  max-width: 280px;
+  font-weight: 500;
+}
+
+.testimonials-section {
+  background: #ececec;
+  padding: 116px 16px 32px;
+}
+
+.stats-row {
+  max-width: 1360px;
+  margin: 24px auto 30px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  text-align: center;
+}
+
+.stat-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  margin-bottom: 8px;
+  border-radius: 999px;
+  font-size: 1.75rem;
+  color: #b36ce9;
+  background: linear-gradient(180deg, #ffc18c 0%, #c274ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.stats-row .big {
+  margin: 0;
+  color: #7f3797;
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  font-weight: 700;
+}
+
+.stats-row p {
+  margin: 0;
+  font-size: clamp(0.82rem, 1.4vw, 1rem);
+}
+
+.quotes-row {
+  max-width: 1360px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  text-align: center;
+}
+
+.quotes-row img {
+  width: 95px;
+  height: 95px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 8px;
+}
+
+.quotes-row .quote {
+  margin: 4px auto 10px;
+  font-size: clamp(0.92rem, 1.5vw, 1.1rem);
+  line-height: 1.25;
+  max-width: 320px;
+}
+
+.quotes-row .person {
+  margin: 0;
+  font-size: clamp(0.95rem, 1.7vw, 1.15rem);
+  font-weight: 700;
+}
+
+.quotes-row .meta {
+  margin: 8px 0 0;
+  font-size: clamp(0.8rem, 1.3vw, 0.98rem);
+  color: #676971;
+}
+
+@media (max-width: 1024px) {
+  .hero-content {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-left img {
+    max-height: 360px;
+  }
+
+  .track-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .center-logo::after {
+    display: none;
+  }
+
+  .advantage-grid,
+  .quotes-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stats-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .testimonials-section {
+    padding-top: 58px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 14px 12px 14px;
+  }
+
+  .hero-form {
+    padding: 14px;
+  }
+
+  .mobile-row button {
+    position: static;
+    width: 100%;
+    margin-top: 8px;
+    border-radius: 8px;
+  }
+
+  .tracks-wrap {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .advantage-grid,
+  .quotes-row,
+  .stats-row {
+    grid-template-columns: 1fr;
+  }
+
+  .testimonials-section {
+    padding-top: 36px;
+  }
+
+  .advantage-grid img {
+    height: 190px;
+  }
+
+  .hero-section::after {
+    bottom: -62px;
+    height: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .program-intro,
+  .tracks-section,
+  .advantage-section,
+  .testimonials-section {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .tracks-pill {
+    padding: 7px 16px;
+  }
+
+  .track-card img {
+    height: 165px;
+  }
+
+  .stat-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.45rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .advantage-section h2,
+  .testimonials-section h2 {
+    font-size: 3.1rem;
+  }
+
+  .advantage-grid h4 {
+    font-size: 2.85rem;
+    max-width: 430px;
+  }
+
+  .stats-row .big {
+    font-size: 3.35rem;
+  }
+
+  .stats-row p {
+    font-size: 2.15rem;
+  }
+}
