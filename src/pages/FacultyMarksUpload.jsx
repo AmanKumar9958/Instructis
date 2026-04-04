@@ -130,13 +130,13 @@ export default function FacultyMarksUpload() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-[#fdfbfb] via-[#ebedee] to-[#f4f4f9] py-10 px-4 sm:px-6 lg:px-8 font-sans transition-all">
+      <div className="max-w-7xl mx-auto space-y-8 animate-in slide-in-from-bottom-4 fade-in duration-500">
         
         {/* Header / Filters Section */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div className="bg-white/70 backdrop-blur-xl p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/50 flex flex-col lg:flex-row lg:items-center justify-between gap-6 transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
           <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4 w-full">
-            <h1 className="font-bold text-gray-800 text-lg mr-4">Class Filters</h1>
+            <h1 className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-brand-purple to-brand-orange text-2xl mr-4 tracking-tight drop-shadow-sm">Class Filters</h1>
             
             <div className="flex items-center gap-2 text-sm">
               <span className="font-medium text-gray-600">Exam:</span>
@@ -183,12 +183,12 @@ export default function FacultyMarksUpload() {
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 title="Upload Excel or CSV"
               />
-              <button className="flex items-center justify-center gap-2 px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg transition-colors border border-gray-200 w-full lg:w-auto">
+              <button className="flex items-center justify-center gap-2 px-6 py-3 bg-white hover:bg-gray-50 text-gray-700 font-bold rounded-xl transition-all border border-gray-200 w-full lg:w-auto shadow-sm hover:shadow-md transform hover:-translate-y-0.5">
                 <Upload className="w-5 h-5" />
                 Upload Sheet
               </button>
             </div>
-            <button className="flex items-center justify-center gap-2 px-5 py-2.5 bg-brand-light-purple text-brand-purple hover:bg-purple-100 font-semibold rounded-lg transition-colors w-full lg:w-auto border border-purple-200">
+            <button className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-purple to-purple-600 text-white font-bold rounded-xl transition-all shadow-md hover:shadow-lg w-full lg:w-auto border border-purple-500 transform hover:-translate-y-0.5">
               <Plus className="w-5 h-5" />
               Add Student
             </button>
@@ -196,10 +196,10 @@ export default function FacultyMarksUpload() {
         </div>
 
         {/* Data Table */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/50 overflow-hidden transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
-              <thead className="bg-gray-50 text-gray-700 uppercase font-semibold text-xs border-b border-gray-100">
+              <thead className="bg-gradient-to-r from-gray-50/80 to-gray-100/80 text-gray-700 uppercase font-extrabold tracking-wider text-xs border-b border-gray-200 backdrop-blur-md">
                 <tr>
                   <th scope="col" className="p-4 w-12 text-center">
                     <input type="checkbox" className="w-4 h-4 text-brand-purple bg-gray-100 border-gray-300 rounded focus:ring-brand-purple" />
@@ -279,23 +279,25 @@ export default function FacultyMarksUpload() {
                         </div>
                       </td>
                       <td className="px-4 py-4 text-center">
-                         <div className="flex items-center justify-center gap-2">
+                         <div className="flex items-center justify-center gap-3">
                            <button 
                               onClick={() => handleSave(student)}
-                              className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-xs font-bold transition-colors"
+                              className="flex items-center justify-center hover:scale-110 w-9 h-9 bg-blue-100 hover:bg-blue-600 text-blue-600 hover:text-white rounded-full text-xs font-bold transition-all shadow-sm"
+                              title="Save Marks"
                             >
-                             <Save className="w-4 h-4" /> Save
+                             <Save className="w-4 h-4" />
                            </button>
-                           <button className="p-2 text-red-500 hover:bg-red-50 rounded-lg border border-gray-100 transition-colors">
+                           <button className="flex items-center justify-center hover:scale-110 w-9 h-9 text-red-500 bg-red-50 hover:bg-red-500 hover:text-white rounded-full transition-all shadow-sm" title="View Report">
                              <FileText className="w-4 h-4" />
                            </button>
                            <button 
                              onClick={() => handleWhatsApp(student)}
-                             className="p-2 text-green-500 hover:bg-green-50 rounded-lg border border-gray-100 transition-colors"
+                             className="flex items-center justify-center hover:scale-110 w-9 h-9 text-green-600 bg-green-50 hover:bg-green-500 hover:text-white rounded-full transition-all shadow-sm"
+                             title="Notify Parent"
                            >
                              <MessageCircle className="w-4 h-4" />
                            </button>
-                           <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
+                           <button className="flex items-center justify-center hover:scale-110 w-9 h-9 text-gray-500 hover:text-white hover:bg-gray-800 rounded-full transition-all">
                              <MoreVertical className="w-4 h-4" />
                            </button>
                          </div>
@@ -322,44 +324,44 @@ export default function FacultyMarksUpload() {
         </div>
 
         {/* Summary Footer */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white rounded-2xl p-4 flex items-center gap-4 shadow-sm border border-gray-100">
-            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
-              <Users className="w-6 h-6" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bg-gradient-to-br from-indigo-500 to-blue-600 rounded-3xl p-6 flex items-center gap-5 shadow-lg border border-white/20 text-white transform hover:-translate-y-1 transition-all duration-300">
+            <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center">
+              <Users className="w-7 h-7 text-white" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 font-medium">Students</p>
-              <p className="text-2xl font-black text-gray-800">{totalStudents}</p>
+              <p className="text-sm text-blue-100 font-semibold tracking-wide uppercase drop-shadow-sm">Students</p>
+              <p className="text-3xl font-black drop-shadow-sm">{totalStudents}</p>
             </div>
           </div>
           
-          <div className="bg-white rounded-2xl p-4 flex items-center gap-4 shadow-sm border border-gray-100">
-            <div className="w-12 h-12 bg-green-50 text-green-600 rounded-xl flex items-center justify-center">
-              <BarChart className="w-6 h-6" />
+          <div className="bg-gradient-to-br from-emerald-400 to-teal-500 rounded-3xl p-6 flex items-center gap-5 shadow-lg border border-white/20 text-white transform hover:-translate-y-1 transition-all duration-300">
+            <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center">
+              <BarChart className="w-7 h-7 text-white" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 font-medium">Avg. Marks</p>
-              <p className="text-2xl font-black text-green-600">{avgMarks} <span className="text-sm text-gray-400 font-medium ml-1">/ 900</span></p>
+              <p className="text-sm text-emerald-100 font-semibold tracking-wide uppercase drop-shadow-sm">Avg. Marks</p>
+              <p className="text-3xl font-black drop-shadow-sm">{avgMarks} <span className="text-sm text-emerald-100 font-medium ml-1">/ 900</span></p>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-4 flex items-center gap-4 shadow-sm border border-gray-100">
-            <div className="w-12 h-12 bg-yellow-50 text-yellow-500 rounded-xl flex items-center justify-center">
-              <Award className="w-6 h-6" />
+          <div className="bg-gradient-to-br from-orange-400 to-amber-500 rounded-3xl p-6 flex items-center gap-5 shadow-lg border border-white/20 text-white transform hover:-translate-y-1 transition-all duration-300">
+            <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center">
+              <Award className="w-7 h-7 text-white" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 font-medium">Highest Percentile</p>
-              <p className="text-2xl font-black text-orange-500">{highestPercentile}%</p>
+              <p className="text-sm text-orange-100 font-semibold tracking-wide uppercase drop-shadow-sm">Highest %ile</p>
+              <p className="text-3xl font-black drop-shadow-sm">{highestPercentile}%</p>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-4 flex items-center gap-4 shadow-sm border border-gray-100">
-            <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
-              <MessageCircle className="w-6 h-6" />
+          <div className="bg-gradient-to-br from-pink-500 to-rose-600 rounded-3xl p-6 flex items-center gap-5 shadow-lg border border-white/20 text-white transform hover:-translate-y-1 transition-all duration-300">
+            <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center">
+              <MessageCircle className="w-7 h-7 text-white" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 font-medium">Parents Notified</p>
-              <p className="text-2xl font-black text-emerald-600">{parentsNotified}</p>
+              <p className="text-sm text-pink-100 font-semibold tracking-wide uppercase drop-shadow-sm">Parents Notified</p>
+              <p className="text-3xl font-black drop-shadow-sm">{parentsNotified}</p>
             </div>
           </div>
         </div>
