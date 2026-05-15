@@ -1,5 +1,6 @@
 import Hero from '../components/landing/Hero';
 import Programs from '../components/landing/Programs';
+import Centers from '../components/landing/Centers';
 import Advantage from '../components/landing/Advantage';
 import Testimonials from '../components/landing/Testimonials';
 import About from '../components/landing/About';
@@ -9,6 +10,7 @@ export default function LandingPage() {
     <>
       <Hero />
       <Programs />
+      <Centers />
       <Advantage />
       <Testimonials />
       <About />
