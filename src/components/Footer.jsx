@@ -53,13 +53,13 @@ export default function Footer() {
             <h4 className="text-lg font-bold mb-6">Contact Us</h4>
             <ul className="space-y-3 text-sm text-gray-400">
               <li className="flex items-start">
-                <span className="font-bold text-white mr-2">Call:</span> +91 98765 43210
+                <span className="font-bold text-white mr-2">Call:</span> +91 7093858372
               </li>
               <li className="flex items-start">
-                <span className="font-bold text-white mr-2">Email:</span> support@instructis.com
+                <span className="font-bold text-white mr-2">Email:</span> contact@instructis.co.in
               </li>
               <li className="flex items-start mt-4">
-                <span className="font-bold text-white mr-2">Address:</span> 123 Education Lane, Tech Park, Bangalore 560001
+                <span className="font-bold text-white mr-2">Address:</span> Zebrold Tech Park, Plot no.13, Software units layout, Madhapur, Hyderabad- 500081
               </li>
             </ul>
           </div>

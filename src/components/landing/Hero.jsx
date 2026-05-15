@@ -59,9 +59,9 @@ export default function Hero() {
   return (
     <section className="bg-brand-light-purple min-h-[calc(100vh-4rem)] pt-4 pb-8 overflow-hidden relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           {/* Left Side: Headline and Graphic */}
-          <div>
+          <div className="lg:pt-12">
             <h1 className="text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-black text-gray-900 leading-tight mb-2">
               Learn from <br />
               <span className="text-brand-purple">India's best teachers</span>
@@ -85,7 +85,7 @@ export default function Hero() {
           </div>
 
           {/* Right Side: Lead Form */}
-          <div className="bg-white rounded-3xl shadow-xl p-8 max-w-md mx-auto lg:mx-0 w-full relative z-20">
+          <div className="bg-white rounded-3xl shadow-xl p-8 max-w-md mx-auto lg:ml-auto w-full relative z-20 lg:mt-12">
             <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">Book Doubt Session</h3>
 
             {status === 'success' ? (

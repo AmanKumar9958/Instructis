@@ -1,4 +1,4 @@
-import { CheckCircle2 } from 'lucide-react';
+
 
 export default function Advantage() {
   const points = [
@@ -13,6 +13,14 @@ export default function Advantage() {
     {
       title: "Unmatched individual attention",
       description: "Dedicated mentors to ensure every doubt is resolved."
+    },
+    {
+      title: "Comprehensive study material",
+      description: "Curated resources designed by experts for thorough preparation."
+    },
+    {
+      title: "Regular mock tests",
+      description: "Assess performance with real exam-like test series and detailed analysis."
     }
   ];
 
@@ -28,7 +36,7 @@ export default function Advantage() {
               {points.map((point, idx) => (
                 <div key={idx} className="flex">
                   <div className="flex-shrink-0 mt-1">
-                    <CheckCircle2 className="w-8 h-8 text-brand-orange" />
+                    <span className="text-2xl font-bold text-brand-orange">{idx + 1}.</span>
                   </div>
                   <div className="ml-4">
                     <h4 className="text-xl font-bold text-gray-900">{point.title}</h4>
@@ -42,8 +50,8 @@ export default function Advantage() {
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-r from-brand-purple to-brand-orange rounded-3xl transform rotate-3 opacity-20"></div>
             <img 
-              src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-              alt="Students learning together" 
+              src="https://images.unsplash.com/photo-1509062522246-3755977927d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+              alt="Classroom teaching on board" 
               className="rounded-3xl shadow-2xl relative z-10 w-full object-cover h-[500px]"
             />
           </div>
