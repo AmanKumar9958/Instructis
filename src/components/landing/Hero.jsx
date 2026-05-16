@@ -59,17 +59,17 @@ export default function Hero() {
   return (
     <section className="bg-brand-light-purple min-h-[calc(100vh-4rem)] pt-4 pb-8 overflow-hidden relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center lg:gap-16">
           {/* Left Side: Headline and Graphic */}
-          <div className="lg:pt-12">
-            <h1 className="text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-black text-gray-900 leading-tight mb-2">
+          <div>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-gray-900 leading-tight mb-4">
               Learn from <br />
               <span className="text-brand-purple">India's best teachers</span>
             </h1>
-            <p className="text-base md:text-lg text-gray-700 mb-6 max-w-lg">
+            <p className="text-base md:text-lg lg:text-xl text-gray-700 mb-8 max-w-lg">
               Comprehensive learning programs & classes for all students. Become lifelong learners with Instructis' engaging video lessons and personalised learning journeys.
             </p>
-            <div className="mt-1 relative mx-auto lg:mx-0 max-w-sm w-full">
+            <div className="mt-4 relative mx-auto lg:mx-0 max-w-md lg:max-w-lg w-full">
               {/* Soft geometric blobs behind the character */}
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[130%] h-[130%] rounded-full bg-pink-50 -z-10"></div>
               <div className="absolute top-[10%] right-[10%] w-[80%] h-[80%] rounded-full bg-brand-light-purple/40 -z-10 mix-blend-multiply"></div>
@@ -85,8 +85,8 @@ export default function Hero() {
           </div>
 
           {/* Right Side: Lead Form */}
-          <div className="bg-white rounded-3xl shadow-xl p-8 max-w-md mx-auto lg:ml-auto w-full relative z-20 lg:mt-12">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">Book Doubt Session</h3>
+          <div className="bg-white rounded-3xl shadow-2xl p-8 lg:p-10 max-w-md lg:max-w-lg mx-auto w-full relative z-20">
+            <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-8 text-center">Book Doubt Session</h3>
 
             {status === 'success' ? (
               <div className="text-center py-8">

@@ -6,11 +6,12 @@ export default function Footer() {
     <footer className="bg-[#1C1D1F] text-white pt-16 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-          
+
           <div>
-            <div className="text-3xl font-black text-white tracking-tight mb-6">
+            <Link to="/" className="text-2xl font-black text-brand-purple tracking-tight">
               INSTRUCTIS<span className="text-brand-orange">.</span>
-            </div>
+            </Link>
+
             <p className="text-gray-400 text-sm mb-6">
               Instructis offers you multiple payment methods. Payment gateway partners use secure encryption technology to keep your transaction details confidential at all times.
             </p>
@@ -21,7 +22,7 @@ export default function Footer() {
               <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-brand-purple transition-colors">
                 <MessageCircle className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-brand-purple transition-colors">
+              <a href="mailto:[contact@instructis.co.in]" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-brand-purple transition-colors">
                 <Mail className="w-5 h-5" />
               </a>
             </div>

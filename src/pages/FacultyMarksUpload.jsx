@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 
 export default function FacultyMarksUpload() {
-  const { user, role } = useAuth();
+  const { user, role, loading } = useAuth();
   const navigate = useNavigate();
   const [students, setStudents] = useState([]);
   const [exam, setExam] = useState('JEE');
@@ -38,10 +38,12 @@ export default function FacultyMarksUpload() {
 
   // Protect route
   useEffect(() => {
-    if (role && role !== 'Faculty' && role !== 'SuperAdmin') {
-      navigate('/');
+    if (!loading) {
+      if (!user || (role !== 'Faculty' && role !== 'SuperAdmin')) {
+        navigate('/');
+      }
     }
-  }, [role, navigate]);
+  }, [user, role, loading, navigate]);
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];

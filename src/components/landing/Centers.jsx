@@ -5,14 +5,19 @@ import 'leaflet/dist/leaflet.css';
 import { centerLocations } from '../../data/centers';
 import L from 'leaflet';
 
-// FIX: Leaflet marker icons often don't show up in React/Vite builds
-import icon from 'leaflet/dist/images/marker-icon.png';
-import iconShadow from 'leaflet/dist/images/marker-shadow.png';
-let DefaultIcon = L.icon({
-    iconUrl: icon,
-    shadowUrl: iconShadow,
-    iconSize: [20, 30],
-    iconAnchor: [10, 30]
+const customIconSvg = `
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8 drop-shadow-md">
+    <path class="text-brand-purple" fill-rule="evenodd" d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742z" clip-rule="evenodd" />
+    <circle cx="12" cy="10.5" r="3" class="text-brand-orange" fill="currentColor" />
+  </svg>
+`;
+
+let DefaultIcon = L.divIcon({
+    className: 'bg-transparent',
+    html: customIconSvg,
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -32]
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 
@@ -60,7 +65,7 @@ const Centers = () => {
                     </select>
                 </div>
 
-                <div className="h-[600px] rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
+                <div className="h-[600px] rounded-2xl overflow-hidden shadow-2xl border-4 border-white relative z-0">
                     <MapContainer center={mapCenter} zoom={zoom} className="h-full w-full">
                         <ChangeView center={mapCenter} zoom={zoom} />
                         <TileLayer
@@ -72,7 +77,7 @@ const Centers = () => {
                                 <Marker key={city.id} position={[city.lat, city.lng]}>
                                     <Popup>
                                         <div className="font-sans">
-                                            <p className="font-bold text-sky-700">{city.city}</p>
+                                            <p className="font-bold text-brand-purple">{city.city}</p>
                                             <p className="text-gray-500 text-xs">{city.state}</p>
                                         </div>
                                     </Popup>
