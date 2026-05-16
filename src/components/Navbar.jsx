@@ -281,6 +281,35 @@ export default function Navbar() {
           </div>
         </div>
       )}
+      {/* Full Screen Loading Overlay */}
+      {loading && (
+        <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-white/90 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="relative mb-8">
+            {/* Main Outer Spinner */}
+            <div className="w-24 h-24 border-4 border-brand-purple/10 border-t-brand-purple rounded-full animate-spin" />
+            
+            {/* Inner Pulsing Core */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-12 h-12 bg-gradient-to-tr from-brand-purple to-brand-purple-dark rounded-2xl rotate-45 animate-pulse shadow-lg shadow-brand-purple/20" />
+            </div>
+
+            {/* Orbiting Dot */}
+            <div className="absolute inset-0 animate-spin duration-700">
+              <div className="w-3 h-3 bg-brand-orange rounded-full absolute -top-1 left-1/2 -translate-x-1/2 shadow-sm" />
+            </div>
+          </div>
+
+          <div className="text-center space-y-2">
+            <h3 className="text-2xl font-black text-brand-purple tracking-tighter">
+              INSTRUCTIS<span className="text-brand-orange">.</span>
+            </h3>
+            <div className="flex items-center justify-center gap-1">
+              <span className="text-gray-400 font-bold text-xs uppercase tracking-widest">Securely</span>
+              <span className="text-brand-purple font-bold text-xs uppercase tracking-widest animate-pulse">Processing</span>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
