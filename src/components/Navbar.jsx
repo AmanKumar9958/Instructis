@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { Menu, X, UploadCloud, GraduationCap, Users, BookOpen, ShieldCheck, Mail, Lock, Loader2 } from 'lucide-react';
+import { getFriendlyErrorMessage } from '../utils/errors';
 
 export default function Navbar() {
   const { user, role, logout, loginWithGoogle, loginSuperAdmin } = useAuth();
@@ -39,7 +40,7 @@ export default function Navbar() {
         await loginWithGoogle(r);
         handleCloseModal();
       } catch (err) {
-        setErrorText(err.message || "Failed to log in via Google");
+        setErrorText(getFriendlyErrorMessage(err));
       } finally {
         setLoading(false);
       }
@@ -53,7 +54,7 @@ export default function Navbar() {
       await loginSuperAdmin(adminEmail, adminPass);
       handleCloseModal();
     } catch (err) {
-      setErrorText("Invalid SuperAdmin Credentials");
+      setErrorText(getFriendlyErrorMessage(err));
     } finally {
       setLoading(false);
     }

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { db } from '../../firebase/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { getFriendlyErrorMessage } from '../../utils/errors';
 import heroImage from '../../assets/hero_image.webp';
 
 export default function Hero() {
@@ -11,6 +12,7 @@ export default function Hero() {
     targetExam: ''
   });
   const [status, setStatus] = useState('idle'); // idle, loading, success, error
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -52,6 +54,7 @@ export default function Hero() {
       setFormData({ fullName: '', mobile: '', grade: '', targetExam: '' });
     } catch (error) {
       console.error(error);
+      setErrorMessage(getFriendlyErrorMessage(error));
       setStatus('error');
     }
   };
@@ -105,8 +108,8 @@ export default function Hero() {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
                 {status === 'error' && (
-                  <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm text-center border border-red-100">
-                    Something went wrong. Please try again later.
+                  <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm text-center border border-red-100 font-medium">
+                    {errorMessage}
                   </div>
                 )}
                 <div>
