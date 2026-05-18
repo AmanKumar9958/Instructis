@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { Menu, X, UploadCloud, GraduationCap, Users, BookOpen, ShieldCheck, Mail, Lock, Loader2 } from 'lucide-react';
 import { getFriendlyErrorMessage } from '../utils/errors';
+import LoadingOverlay from './LoadingOverlay';
 
 export default function Navbar() {
   const { user, role, logout, loginWithGoogle, loginSuperAdmin } = useAuth();
@@ -15,6 +16,46 @@ export default function Navbar() {
   const [adminPass, setAdminPass] = useState('');
   const [errorText, setErrorText] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isCompact, setIsCompact] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const navItems = [
+    { label: 'JEE', to: '/jee' },
+    { label: 'NEET', to: '/neet' },
+    { label: 'Centers', to: '/centers' },
+    { label: 'About', to: '/about' }
+  ];
+
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
+    let ticking = false;
+
+    const update = () => {
+      const current = window.scrollY;
+      const scrollingDown = current > lastScrollY;
+
+      if (scrollingDown && current > 80) {
+        setIsCompact(true);
+      } else if (!scrollingDown) {
+        setIsCompact(false);
+      } else if (current < 40) {
+        setIsCompact(false);
+      }
+
+      lastScrollY = current;
+      ticking = false;
+    };
+
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(update);
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleOpenModal = () => {
     setShowModal(true);
@@ -89,8 +130,12 @@ export default function Navbar() {
             </Link>
           )}
 
-          {user.profile_url ? (
-            <img src={user.profile_url} alt="Profile" className="w-10 h-10 rounded-full object-cover border border-gray-200" />
+          {user.profile_url || user.photoURL || user.photoUrl ? (
+            <img
+              src={user.profile_url || user.photoURL || user.photoUrl}
+              alt="Profile"
+              className="w-10 h-10 rounded-full object-cover border border-gray-200"
+            />
           ) : (
             <div className="w-10 h-10 rounded-full bg-brand-light-purple flex items-center justify-center text-brand-purple font-bold">
               {user.displayName?.charAt(0) || user.name?.charAt(0) || user.email?.charAt(0)}
@@ -105,11 +150,13 @@ export default function Navbar() {
         <button
           onClick={async () => {
             setLoading(true);
+            setIsLoggingOut(true);
             try {
               await logout();
               setIsMobileMenuOpen(false);
             } finally {
               setLoading(false);
+              setIsLoggingOut(false);
             }
           }}
           disabled={loading}
@@ -124,18 +171,31 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="sticky top-0 z-50 bg-white shadow-sm w-full">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+      <LoadingOverlay isOpen={isLoggingOut} label="Signing out..." />
+      <nav className={`sticky top-0 z-50 w-full transition-all duration-300 ${isCompact ? 'bg-white/90 shadow-md backdrop-blur-md' : 'bg-white shadow-sm'}`}>
+        <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-300 ${isCompact ? 'py-1' : 'py-2'}`}>
+          <div className={`flex justify-between items-center transition-all duration-300 ${isCompact ? 'h-12' : 'h-16'}`}>
             {/* Left: Logo and Nav Links */}
             <div className="flex-shrink-0 flex items-center gap-8">
-              <Link to="/" className="text-2xl font-black text-brand-purple tracking-tight">
+              <Link to="/" className={`font-black text-brand-purple tracking-tight transition-all duration-300 ${isCompact ? 'text-xl' : 'text-2xl'}`}>
                 INSTRUCTIS<span className="text-brand-orange">.</span>
               </Link>
             </div>
 
+            <div className={`hidden md:flex items-center gap-6 transition-all duration-300 ${isCompact ? 'opacity-0 max-w-0 pointer-events-none overflow-hidden' : 'opacity-100 max-w-xl'}`}>
+              {navItems.map((item) => (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className="text-sm font-semibold text-gray-600 hover:text-brand-purple transition-colors"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+
             {/* Desktop Right: Auth / Profile */}
-            <div className="hidden md:flex items-center space-x-4">
+            <div className={`hidden md:flex items-center space-x-4 transition-all duration-300 ${isCompact ? 'scale-95' : 'scale-100'}`}>
               <AuthStatusUI isMobile={false} />
             </div>
 
@@ -156,6 +216,18 @@ export default function Navbar() {
         {isMobileMenuOpen && (
           <div className="md:hidden bg-gray-50 border-t border-gray-200 px-4 pt-4 pb-6 absolute w-full shadow-lg z-40">
             <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-3">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="text-base font-semibold text-gray-700 hover:text-brand-purple"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
               <AuthStatusUI isMobile={true} />
             </div>
           </div>

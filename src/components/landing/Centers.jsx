@@ -53,10 +53,16 @@ const Centers = () => {
     };
 
     return (
-        <section className="py-12 bg-gray-50">
+        <section id="centers" className="py-12 bg-gray-50">
             <div className="max-w-7xl mx-auto px-4">
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-                    <h2 className="text-3xl font-bold text-gray-900">Our Pan-India Presence</h2>
+                    <div>
+                        <h2 className="text-3xl font-bold text-gray-900">Our Pan-India Presence</h2>
+                        <p className="text-gray-600 mt-2 max-w-2xl">
+                            Find Instructis coaching centers near you for JEE, NEET, and Class 11-12 programs.
+                            Choose your state to see offline hubs, doubt sessions, and local mentor support.
+                        </p>
+                    </div>
                     <select
                         onChange={handleStateChange}
                         className="p-2 border rounded-lg bg-white shadow-sm focus:ring-2 focus:ring-sky-500 outline-none"

@@ -52,6 +52,10 @@ export default function Advantage() {
             <img 
               src="https://images.unsplash.com/photo-1509062522246-3755977927d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
               alt="Classroom teaching on board" 
+              width="800"
+              height="500"
+              loading="lazy"
+              decoding="async"
               className="rounded-3xl shadow-2xl relative z-10 w-full object-cover h-[500px]"
             />
           </div>

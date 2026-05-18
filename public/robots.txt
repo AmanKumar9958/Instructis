@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://instructis.co.in/sitemap.xml

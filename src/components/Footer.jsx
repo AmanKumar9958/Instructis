@@ -22,7 +22,7 @@ export default function Footer() {
               <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-brand-purple transition-colors">
                 <MessageCircle className="w-5 h-5" />
               </a>
-              <a href="mailto:[contact@instructis.co.in]" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-brand-purple transition-colors">
+              <a href="mailto:contact@instructis.co.in" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-brand-purple transition-colors">
                 <Mail className="w-5 h-5" />
               </a>
             </div>
@@ -31,22 +31,22 @@ export default function Footer() {
           <div>
             <h4 className="text-lg font-bold mb-6">Exam Preparation</h4>
             <ul className="space-y-3 text-sm text-gray-400">
-              <li><Link to="#" className="hover:text-brand-orange transition-colors">JEE Main</Link></li>
-              <li><Link to="#" className="hover:text-brand-orange transition-colors">JEE Advanced</Link></li>
-              <li><Link to="#" className="hover:text-brand-orange transition-colors">NEET (UG)</Link></li>
-              <li><Link to="#" className="hover:text-brand-orange transition-colors">Class 12 Boards</Link></li>
-              <li><Link to="#" className="hover:text-brand-orange transition-colors">Class 11 Boards</Link></li>
+              <li><Link to="/jee" className="hover:text-brand-orange transition-colors">JEE Main</Link></li>
+              <li><Link to="/jee" className="hover:text-brand-orange transition-colors">JEE Advanced</Link></li>
+              <li><Link to="/neet" className="hover:text-brand-orange transition-colors">NEET (UG)</Link></li>
+              <li><a href="/#boards" className="hover:text-brand-orange transition-colors">Class 12 Boards</a></li>
+              <li><a href="/#boards" className="hover:text-brand-orange transition-colors">Class 11 Boards</a></li>
             </ul>
           </div>
 
           <div>
             <h4 className="text-lg font-bold mb-6">Quick Links</h4>
             <ul className="space-y-3 text-sm text-gray-400">
-              <li><Link to="#" className="hover:text-brand-orange transition-colors">About Us</Link></li>
-              <li><Link to="#" className="hover:text-brand-orange transition-colors">Contact Us</Link></li>
-              <li><Link to="#" className="hover:text-brand-orange transition-colors">Student Reviews</Link></li>
-              <li><Link to="#" className="hover:text-brand-orange transition-colors">Careers</Link></li>
-              <li><Link to="#" className="hover:text-brand-orange transition-colors">Instructis Answer</Link></li>
+              <li><Link to="/about" className="hover:text-brand-orange transition-colors">About Us</Link></li>
+              <li><a href="/#book-session" className="hover:text-brand-orange transition-colors">Contact Us</a></li>
+              <li><a href="/#testimonials" className="hover:text-brand-orange transition-colors">Student Reviews</a></li>
+              <li><a href="/#book-session" className="hover:text-brand-orange transition-colors">Careers</a></li>
+              <li><Link to="/centers" className="hover:text-brand-orange transition-colors">Instructis Centers</Link></li>
             </ul>
           </div>
 
@@ -69,10 +69,10 @@ export default function Footer() {
         <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
           <p>&copy; {new Date().getFullYear()} Instructis. All rights reserved.</p>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link to="#" className="hover:text-white transition-colors">Disclaimer</Link>
-            <Link to="#" className="hover:text-white transition-colors">Privacy Policy</Link>
-            <Link to="#" className="hover:text-white transition-colors">Terms of Services</Link>
-            <Link to="#" className="hover:text-white transition-colors">Sitemap</Link>
+            <a href="/#about" className="hover:text-white transition-colors">Disclaimer</a>
+            <a href="/#about" className="hover:text-white transition-colors">Privacy Policy</a>
+            <a href="/#about" className="hover:text-white transition-colors">Terms of Services</a>
+            <a href="/sitemap.xml" className="hover:text-white transition-colors">Sitemap</a>
           </div>
         </div>
       </div>

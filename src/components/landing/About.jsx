@@ -1,6 +1,8 @@
+import { Link } from 'react-router-dom';
+
 export default function About() {
   return (
-    <section className="py-20 bg-gray-50">
+    <section id="about" className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
           
@@ -15,6 +17,12 @@ export default function About() {
             <p className="text-gray-600">
               We are a team of passionate educators, technologists, and creators dedicated to making quality education accessible and engaging. Our mission is to empower students with the tools and confidence they need to succeed in their academic journeys and beyond.
             </p>
+            <p className="text-gray-600 mt-4">
+              Explore our focused programs for{' '}
+              <Link className="text-brand-purple font-semibold hover:underline" to="/jee">JEE coaching</Link>,{' '}
+              <Link className="text-brand-purple font-semibold hover:underline" to="/neet">NEET coaching</Link>, and{' '}
+              <Link className="text-brand-purple font-semibold hover:underline" to="/centers">offline centers across India</Link>.
+            </p>
           </div>
 
           <div>
@@ -27,6 +35,9 @@ export default function About() {
             </p>
             <p className="text-gray-600">
               We combine cutting-edge technology with proven pedagogical methods to deliver exceptional results. Our students benefit from interactive sessions, comprehensive study materials, and continuous mentorship to ensure they never lose track.
+            </p>
+            <p className="text-gray-600 mt-4">
+              Whether you are targeting JEE Main, JEE Advanced, or NEET UG, our mentors help you build strong fundamentals, exam temperament, and consistent practice routines.
             </p>
           </div>
 

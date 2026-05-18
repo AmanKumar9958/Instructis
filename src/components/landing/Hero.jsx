@@ -60,7 +60,7 @@ export default function Hero() {
   };
 
   return (
-    <section className="bg-brand-light-purple min-h-[calc(100vh-4rem)] pt-4 pb-8 overflow-hidden relative">
+    <section id="home" className="bg-brand-light-purple min-h-[calc(100vh-4rem)] pt-4 pb-8 overflow-hidden relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center lg:gap-16">
           {/* Left Side: Headline and Graphic */}
@@ -82,13 +82,18 @@ export default function Hero() {
               <img
                 src={heroImage}
                 alt="Instructis Learning Graphic"
+                width="900"
+                height="900"
+                loading="eager"
+                decoding="async"
+                fetchpriority="high"
                 className="w-full relative z-10"
               />
             </div>
           </div>
 
           {/* Right Side: Lead Form */}
-          <div className="bg-white rounded-3xl shadow-2xl p-8 lg:p-10 max-w-md lg:max-w-lg mx-auto w-full relative z-20">
+          <div id="book-session" className="bg-white rounded-3xl shadow-2xl p-8 lg:p-10 max-w-md lg:max-w-lg mx-auto w-full relative z-20">
             <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-8 text-center">Book Doubt Session</h3>
 
             {status === 'success' ? (

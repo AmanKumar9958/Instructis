@@ -19,8 +19,9 @@ export const AuthProvider = ({ children }) => {
         
         if (userDoc.exists()) {
           const userData = userDoc.data();
+          const resolvedProfileUrl = userData.profile_url || currentUser.photoURL || '';
           setRole(userData.role);
-          setUser({ ...currentUser, ...userData });
+          setUser({ ...currentUser, ...userData, profile_url: resolvedProfileUrl });
           
           // Update lastLogin
           await updateDoc(userDocRef, {
@@ -64,8 +65,9 @@ export const AuthProvider = ({ children }) => {
         setUser({ ...loggedInUser, ...newUser });
       } else {
         const userData = userDoc.data();
+        const resolvedProfileUrl = userData.profile_url || loggedInUser.photoURL || '';
         setRole(userData.role);
-        setUser({ ...loggedInUser, ...userData });
+        setUser({ ...loggedInUser, ...userData, profile_url: resolvedProfileUrl });
       }
     } catch (error) {
       console.error("Google Auth Error", error);

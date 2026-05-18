@@ -94,7 +94,7 @@ export default function Testimonials() {
   const prevSlide = () => setCurrentIndex((prev) => (prev - 1 + numSlides) % numSlides);
 
   return (
-    <section className="py-20 bg-white overflow-hidden">
+    <section id="testimonials" className="py-20 bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
         <h2 className="text-3xl md:text-5xl font-black text-gray-900 mb-16">
           Our students and parents <span className="text-brand-orange">love us</span>

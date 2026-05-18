@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import { db } from '../firebase/firebase';
 import { collection, addDoc, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import * as XLSX from 'xlsx';
+import Seo from '../components/Seo';
 import {
   Save,
   FileText,
@@ -133,6 +134,11 @@ export default function FacultyMarksUpload() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#fdfbfb] via-[#ebedee] to-[#f4f4f9] py-10 px-4 sm:px-6 lg:px-8 font-sans transition-all">
+      <Seo
+        title="Faculty marks upload"
+        description="Secure internal portal for faculty to upload and manage student marks."
+        noIndex
+      />
       <div className="max-w-7xl mx-auto space-y-8 animate-in slide-in-from-bottom-4 fade-in duration-500">
         
         {/* Header / Filters Section */}
