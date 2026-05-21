@@ -26,6 +26,8 @@ export default function Seo({
   jsonLd
 }) {
   const { pathname } = useLocation();
+  const organizationId = `${siteOrigin}#organization`;
+  const websiteId = `${siteOrigin}#website`;
   const canonicalUrl = `${siteOrigin}${pathname}`;
   const pageTitle = title ? `${title} | ${siteName}` : siteName;
   const metaDescription = description || defaultDescription;
@@ -33,23 +35,39 @@ export default function Seo({
   const robots = noIndex ? 'noindex,nofollow' : 'index,follow';
 
   const schemaItems = useMemo(() => {
+    const items = [];
     if (Array.isArray(jsonLd)) {
-      return jsonLd;
+      items.push(...jsonLd);
+    } else if (jsonLd) {
+      items.push(jsonLd);
     }
-    if (jsonLd) {
-      return [jsonLd];
-    }
-    return [
-      {
+
+    const hasId = (id) => items.some((item) => item && item['@id'] === id);
+
+    if (!hasId(organizationId)) {
+      items.unshift({
         '@context': 'https://schema.org',
         '@type': 'EducationalOrganization',
-        '@id': `${siteOrigin}#organization`,
+        '@id': organizationId,
         name: siteName,
         url: siteOrigin,
         description: metaDescription
-      }
-    ];
-  }, [jsonLd, metaDescription]);
+      });
+    }
+
+    if (!hasId(websiteId)) {
+      items.unshift({
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        '@id': websiteId,
+        url: siteOrigin,
+        name: siteName,
+        publisher: { '@id': organizationId }
+      });
+    }
+
+    return items;
+  }, [jsonLd, metaDescription, organizationId, websiteId]);
 
   useHead({
     title: pageTitle,
