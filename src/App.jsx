@@ -9,6 +9,12 @@ const JeePage = lazy(() => import('./pages/JeePage'));
 const NeetPage = lazy(() => import('./pages/NeetPage'));
 const CentersPage = lazy(() => import('./pages/CentersPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
+const CompetitiveExamsPage = lazy(() => import('./pages/CompetitiveExamsPage'));
+const ExamDetailPage = lazy(() => import('./pages/ExamDetailPage'));
+const AiMlPage = lazy(() => import('./pages/AiMlPage'));
+const CodingPage = lazy(() => import('./pages/CodingPage'));
+const CareersPage = lazy(() => import('./pages/CareersPage'));
+const PartnerPage = lazy(() => import('./pages/PartnerPage'));
 
 const RouteFallback = () => <PageSpinner />;
 
@@ -19,11 +25,21 @@ function App() {
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<LandingPage />} />
-            <Route path="jee" element={<JeePage />} />
-            <Route path="neet" element={<NeetPage />} />
+            {/* Category pages */}
+            <Route path="competitive-exams" element={<CompetitiveExamsPage />} />
+            <Route path="competitive-exams/:slug" element={<ExamDetailPage />} />
+            <Route path="ai-ml" element={<AiMlPage />} />
+            <Route path="coding" element={<CodingPage />} />
+            <Route path="careers" element={<CareersPage />} />
+            {/* Partner */}
+            <Route path="partner" element={<PartnerPage />} />
+            {/* Existing pages */}
             <Route path="centers" element={<CentersPage />} />
             <Route path="about" element={<AboutPage />} />
             <Route path="faculty/marks-upload" element={<FacultyMarksUpload />} />
+            {/* Legacy redirects */}
+            <Route path="jee" element={<JeePage />} />
+            <Route path="neet" element={<NeetPage />} />
           </Route>
         </Routes>
       </Suspense>

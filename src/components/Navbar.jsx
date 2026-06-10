@@ -1,14 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { Menu, X, UploadCloud, GraduationCap, Users, BookOpen, ShieldCheck, Mail, Lock, Loader2 } from 'lucide-react';
+import { Menu, X, UploadCloud, GraduationCap, Users, BookOpen, ShieldCheck, Mail, Lock, Loader2, Search, ChevronDown } from 'lucide-react';
 import { getFriendlyErrorMessage } from '../utils/errors';
 import LoadingOverlay from './LoadingOverlay';
+import MegaMenu from './MegaMenu';
+
+const SearchOverlay = lazy(() => import('./SearchOverlay'));
 
 export default function Navbar() {
   const { user, role, logout, loginWithGoogle, loginSuperAdmin } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showMegaMenu, setShowMegaMenu] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
 
   // Custom auth states
   const [selectedRole, setSelectedRole] = useState(null);
@@ -19,12 +24,17 @@ export default function Navbar() {
   const [isCompact, setIsCompact] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  const navItems = [
-    { label: 'JEE', to: '/jee' },
-    { label: 'NEET', to: '/neet' },
-    { label: 'Centers', to: '/centers' },
-    { label: 'About', to: '/about' }
-  ];
+  // Cmd+K / Ctrl+K shortcut
+  useEffect(() => {
+    const handler = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setShowSearch(true);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
@@ -61,7 +71,7 @@ export default function Navbar() {
     setShowModal(true);
     setSelectedRole(null);
     setErrorText('');
-    setIsMobileMenuOpen(false); // Close mobile menu when opening login modal
+    setIsMobileMenuOpen(false);
   };
 
   const handleCloseModal = () => {
@@ -74,7 +84,6 @@ export default function Navbar() {
     setErrorText('');
     setSelectedRole(r);
 
-    // If not SuperAdmin, directly trigger Google Auth mapping to that role
     if (r !== 'SuperAdmin') {
       setLoading(true);
       try {
@@ -101,13 +110,14 @@ export default function Navbar() {
     }
   };
 
-  // Dedicated component for rendering auth status so we don't repeat it in mobile and desktop variants
+  const closeMobileMenu = useCallback(() => setIsMobileMenuOpen(false), []);
+
   const AuthStatusUI = ({ isMobile }) => {
     if (!user) {
       return (
         <button
           onClick={handleOpenModal}
-          className={`bg-brand-purple hover:bg-brand-purple-dark text-white font-bold rounded-lg transition-colors ${isMobile ? 'w-full py-3 text-lg' : 'py-2 px-6'}`}
+          className={`bg-brand-purple hover:bg-brand-purple-dark text-white font-bold rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-brand-purple/20 ${isMobile ? 'w-full py-3 text-lg' : 'py-2.5 px-6 text-sm'}`}
         >
           Log In
         </button>
@@ -115,12 +125,12 @@ export default function Navbar() {
     }
 
     return (
-      <div className={`flex ${isMobile ? 'flex-col space-y-4' : 'items-center space-x-6'}`}>
+      <div className={`flex ${isMobile ? 'flex-col space-y-4' : 'items-center space-x-4'}`}>
         <div className="flex items-center space-x-3">
-          {/* Marks Upload Icon beside username */}
           {['Faculty', 'SuperAdmin'].includes(role) && (
             <Link
               to="/faculty/marks-upload"
+              onClick={closeMobileMenu}
               className={`group relative text-gray-500 hover:text-brand-purple transition-colors p-2 flex items-center justify-center rounded-full hover:bg-purple-50 ${isMobile ? 'self-start mb-2 bg-gray-100' : ''}`}
             >
               <UploadCloud className="w-5 h-5" />
@@ -134,16 +144,16 @@ export default function Navbar() {
             <img
               src={user.profile_url || user.photoURL || user.photoUrl}
               alt="Profile"
-              className="w-10 h-10 rounded-full object-cover border border-gray-200"
+              className="w-9 h-9 rounded-full object-cover border-2 border-gray-100"
             />
           ) : (
-            <div className="w-10 h-10 rounded-full bg-brand-light-purple flex items-center justify-center text-brand-purple font-bold">
+            <div className="w-9 h-9 rounded-full bg-brand-light-purple flex items-center justify-center text-brand-purple font-bold text-sm">
               {user.displayName?.charAt(0) || user.name?.charAt(0) || user.email?.charAt(0)}
             </div>
           )}
-          <div className="flex flex-col text-sm">
-            <span className="font-bold text-gray-900">{user.displayName || user.name}</span>
-            <span className="text-brand-orange font-semibold text-xs tracking-wider uppercase">{role}</span>
+          <div className="flex flex-col">
+            <span className="font-bold text-gray-900 text-sm">{user.displayName || user.name}</span>
+            <span className="text-brand-orange font-semibold text-[10px] tracking-wider uppercase">{role}</span>
           </div>
         </div>
 
@@ -160,7 +170,7 @@ export default function Navbar() {
             }
           }}
           disabled={loading}
-          className={`text-gray-500 hover:text-red-500 font-medium transition-colors border border-gray-300 hover:border-red-500 rounded-lg flex items-center justify-center gap-2 ${isMobile ? 'py-3 text-center w-full' : 'py-1.5 px-4'}`}
+          className={`text-gray-500 hover:text-red-500 font-medium transition-colors border border-gray-200 hover:border-red-400 rounded-xl flex items-center justify-center gap-2 text-sm ${isMobile ? 'py-3 text-center w-full' : 'py-1.5 px-4'}`}
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
           {loading ? 'Logging out...' : 'Logout'}
@@ -172,74 +182,122 @@ export default function Navbar() {
   return (
     <>
       <LoadingOverlay isOpen={isLoggingOut} label="Signing out..." />
-      <nav className={`sticky top-0 z-50 w-full transition-all duration-300 ${isCompact ? 'bg-white/90 shadow-md backdrop-blur-md' : 'bg-white shadow-sm'}`}>
+      <nav className={`sticky top-0 z-50 w-full transition-all duration-300 ${isCompact ? 'bg-white/90 shadow-md backdrop-blur-xl' : 'bg-white/80 backdrop-blur-md shadow-sm'}`}>
         <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-300 ${isCompact ? 'py-1' : 'py-2'}`}>
           <div className={`flex justify-between items-center transition-all duration-300 ${isCompact ? 'h-12' : 'h-16'}`}>
-            {/* Left: Logo and Nav Links */}
-            <div className="flex-shrink-0 flex items-center gap-8">
-              <Link to="/" className={`font-black text-brand-purple tracking-tight transition-all duration-300 ${isCompact ? 'text-xl' : 'text-2xl'}`}>
-                INSTRUCTIS<span className="text-brand-orange">.</span>
+            {/* Logo */}
+            <Link to="/" className={`font-black text-brand-purple tracking-tight transition-all duration-300 flex-shrink-0 ${isCompact ? 'text-xl' : 'text-2xl'}`}>
+              INSTRUCTIS<span className="text-brand-orange">.</span>
+            </Link>
+
+            {/* Desktop Nav */}
+            <div className={`hidden lg:flex items-center gap-1 transition-all duration-300 ${isCompact ? 'opacity-0 max-w-0 pointer-events-none overflow-hidden' : 'opacity-100 max-w-2xl'}`}>
+              {/* Explore dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowMegaMenu(!showMegaMenu)}
+                  className="flex items-center gap-1 text-sm font-semibold text-gray-600 hover:text-brand-purple transition-colors px-3 py-2 rounded-lg hover:bg-gray-50"
+                >
+                  Explore
+                  <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${showMegaMenu ? 'rotate-180' : ''}`} />
+                </button>
+              </div>
+
+              <Link to="/competitive-exams" className="text-sm font-semibold text-gray-600 hover:text-brand-purple transition-colors px-3 py-2 rounded-lg hover:bg-gray-50">
+                Exams
+              </Link>
+              <Link to="/centers" className="text-sm font-semibold text-gray-600 hover:text-brand-purple transition-colors px-3 py-2 rounded-lg hover:bg-gray-50">
+                Centers
+              </Link>
+              <Link to="/about" className="text-sm font-semibold text-gray-600 hover:text-brand-purple transition-colors px-3 py-2 rounded-lg hover:bg-gray-50">
+                About
+              </Link>
+              <Link to="/partner" className="text-sm font-bold text-brand-purple hover:text-brand-purple-dark transition-colors px-3 py-2 rounded-lg hover:bg-brand-light-purple">
+                Partner With Us
               </Link>
             </div>
 
-            <div className={`hidden md:flex items-center gap-6 transition-all duration-300 ${isCompact ? 'opacity-0 max-w-0 pointer-events-none overflow-hidden' : 'opacity-100 max-w-xl'}`}>
-              {navItems.map((item) => (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  className="text-sm font-semibold text-gray-600 hover:text-brand-purple transition-colors"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
+            {/* Desktop right: search + auth */}
+            <div className={`hidden lg:flex items-center gap-3 transition-all duration-300 ${isCompact ? 'scale-95' : 'scale-100'}`}>
+              {/* Search */}
+              <button
+                onClick={() => setShowSearch(true)}
+                className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-600 bg-gray-50 hover:bg-gray-100 px-3 py-2 rounded-xl transition-colors border border-gray-100"
+              >
+                <Search className="w-4 h-4" />
+                <span className="hidden xl:inline">Search...</span>
+                <kbd className="hidden xl:inline text-[10px] font-mono bg-white border border-gray-200 px-1.5 py-0.5 rounded text-gray-400">⌘K</kbd>
+              </button>
 
-            {/* Desktop Right: Auth / Profile */}
-            <div className={`hidden md:flex items-center space-x-4 transition-all duration-300 ${isCompact ? 'scale-95' : 'scale-100'}`}>
               <AuthStatusUI isMobile={false} />
             </div>
 
-            {/* Mobile Right: Hamburger Toggle */}
-            <div className="flex md:hidden items-center">
+            {/* Mobile right: search + hamburger */}
+            <div className="flex lg:hidden items-center gap-2">
+              <button
+                onClick={() => setShowSearch(true)}
+                className="text-gray-500 hover:text-brand-purple p-2 rounded-lg hover:bg-gray-50 transition-colors"
+                aria-label="Search"
+              >
+                <Search className="w-5 h-5" />
+              </button>
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="text-gray-600 hover:text-brand-purple focus:outline-none p-2"
                 aria-label="Toggle mobile menu"
               >
-                {isMobileMenuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
+                {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
             </div>
           </div>
         </div>
 
+        {/* Mega Menu */}
+        <MegaMenu isOpen={showMegaMenu} onClose={() => setShowMegaMenu(false)} />
+
         {/* Mobile Dropdown Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden bg-gray-50 border-t border-gray-200 px-4 pt-4 pb-6 absolute w-full shadow-lg z-40">
+          <div className="lg:hidden bg-white border-t border-gray-100 px-4 pt-4 pb-6 absolute w-full shadow-lg z-40">
             <div className="flex flex-col gap-4">
-              <div className="flex flex-col gap-3">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.to}
-                    to={item.to}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="text-base font-semibold text-gray-700 hover:text-brand-purple"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
+              <div className="flex flex-col gap-1">
+                <Link to="/competitive-exams" onClick={closeMobileMenu} className="text-base font-semibold text-gray-700 hover:text-brand-purple py-2 px-3 rounded-lg hover:bg-gray-50">
+                  Competitive Exams
+                </Link>
+                <Link to="/ai-ml" onClick={closeMobileMenu} className="text-base font-semibold text-gray-700 hover:text-brand-purple py-2 px-3 rounded-lg hover:bg-gray-50">
+                  AI & Machine Learning
+                </Link>
+                <Link to="/coding" onClick={closeMobileMenu} className="text-base font-semibold text-gray-700 hover:text-brand-purple py-2 px-3 rounded-lg hover:bg-gray-50">
+                  Coding & Programming
+                </Link>
+                <Link to="/centers" onClick={closeMobileMenu} className="text-base font-semibold text-gray-700 hover:text-brand-purple py-2 px-3 rounded-lg hover:bg-gray-50">
+                  Centers
+                </Link>
+                <Link to="/about" onClick={closeMobileMenu} className="text-base font-semibold text-gray-700 hover:text-brand-purple py-2 px-3 rounded-lg hover:bg-gray-50">
+                  About
+                </Link>
+                <Link to="/partner" onClick={closeMobileMenu} className="text-base font-bold text-brand-purple py-2 px-3 rounded-lg hover:bg-brand-light-purple">
+                  Partner With Us
+                </Link>
               </div>
-              <AuthStatusUI isMobile={true} />
+              <div className="border-t border-gray-100 pt-4">
+                <AuthStatusUI isMobile={true} />
+              </div>
             </div>
           </div>
         )}
       </nav>
+
+      {/* Search Overlay — lazy loaded */}
+      <Suspense fallback={null}>
+        <SearchOverlay isOpen={showSearch} onClose={() => setShowSearch(false)} />
+      </Suspense>
 
       {/* Role Selection / Login Modal */}
       {showModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
           <div className="bg-white max-w-md w-full rounded-3xl shadow-2xl overflow-hidden relative animate-in zoom-in-95 duration-300">
             {/* Top Branding Bar */}
-            <div className="h-2 bg-gradient-to-r from-brand-purple to-brand-orange w-full" />
+            <div className="h-1.5 bg-gradient-to-r from-brand-purple to-brand-orange w-full" />
             
             <button
               onClick={handleCloseModal}
@@ -358,15 +416,10 @@ export default function Navbar() {
       {loading && (
         <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-white/90 backdrop-blur-sm animate-in fade-in duration-300">
           <div className="relative mb-8">
-            {/* Main Outer Spinner */}
             <div className="w-24 h-24 border-4 border-brand-purple/10 border-t-brand-purple rounded-full animate-spin" />
-            
-            {/* Inner Pulsing Core */}
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="w-12 h-12 bg-gradient-to-tr from-brand-purple to-brand-purple-dark rounded-2xl rotate-45 animate-pulse shadow-lg shadow-brand-purple/20" />
             </div>
-
-            {/* Orbiting Dot */}
             <div className="absolute inset-0 animate-spin duration-700">
               <div className="w-3 h-3 bg-brand-orange rounded-full absolute -top-1 left-1/2 -translate-x-1/2 shadow-sm" />
             </div>

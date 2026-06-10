@@ -1,18 +1,22 @@
 import { Suspense, lazy } from 'react';
 import Hero from '../components/landing/Hero';
+import TrustedBy from '../components/landing/TrustedBy';
 import Programs from '../components/landing/Programs';
+import PopularPaths from '../components/landing/PopularPaths';
+import CompetitiveExamsPreview from '../components/landing/CompetitiveExamsPreview';
 import Advantage from '../components/landing/Advantage';
+import PartnerCTA from '../components/landing/PartnerCTA';
 import About from '../components/landing/About';
+import FAQSection from '../components/landing/FAQSection';
 import Seo from '../components/Seo';
 
 const Centers = lazy(() => import('../components/landing/Centers'));
 const Testimonials = lazy(() => import('../components/landing/Testimonials'));
 
-const SectionFallback = ({ title, description }) => (
+const SectionFallback = ({ title }) => (
   <section className="py-16 bg-white">
     <div className="max-w-4xl mx-auto px-4 text-center">
-      <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{title}</h2>
-      <p className="text-gray-600 mt-3">{description}</p>
+      <div className="h-8 w-48 bg-gray-100 rounded-lg mx-auto animate-pulse" />
     </div>
   </section>
 );
@@ -27,7 +31,7 @@ export default function LandingPage() {
       '@id': organizationId,
       name: 'Instructis',
       url: 'https://instructis.co.in/',
-      description: 'Personalised learning programs for Class 11-12, JEE and NEET with expert teachers and doubt sessions.',
+      description: 'Comprehensive learning platform for competitive exams, AI & Machine Learning, coding, and career paths.',
       telephone: '+91 7093858372',
       email: 'contact@instructis.co.in',
       address: {
@@ -53,80 +57,35 @@ export default function LandingPage() {
       '@type': 'WebPage',
       '@id': 'https://instructis.co.in/#homepage',
       url: 'https://instructis.co.in/',
-      name: 'Instructis | JEE, NEET and board exam coaching',
-      description: 'JEE, NEET, and board exam coaching with expert teachers, structured programs, and test series for Class 11-12 students.',
+      name: 'Instructis | Learn, Compete, Excel',
+      description: 'Comprehensive learning platform for competitive exams, AI, coding, and career paths with expert mentors.',
       isPartOf: { '@id': websiteId },
       about: { '@id': organizationId }
-    },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'Course',
-      '@id': 'https://instructis.co.in/jee#course',
-      name: 'JEE Coaching (Main & Advanced)',
-      description: 'JEE coaching with mentor-led doubt sessions, mock tests, and structured preparation for JEE Main and Advanced.',
-      educationalLevel: 'Class 11, Class 12',
-      provider: { '@id': organizationId }
-    },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'Course',
-      '@id': 'https://instructis.co.in/neet#course',
-      name: 'NEET Coaching (UG)',
-      description: 'NEET UG coaching with NCERT-first learning, exam-grade mocks, and personal mentoring.',
-      educationalLevel: 'Class 11, Class 12',
-      provider: { '@id': organizationId }
-    },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'Course',
-      '@id': 'https://instructis.co.in/#boards-course',
-      name: 'Class 11 & 12 Board Exam Coaching',
-      description: 'Board exam coaching with chapter-wise tests, revision support, and concept clarity for Class 11 and 12.',
-      educationalLevel: 'Class 11, Class 12',
-      provider: { '@id': organizationId }
-    },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'Service',
-      '@id': 'https://instructis.co.in/#doubt-sessions',
-      name: 'Doubt Sessions',
-      description: 'Live doubt sessions with expert teachers for JEE, NEET, and board exam preparation.',
-      provider: { '@id': organizationId },
-      areaServed: 'IN'
     }
   ];
 
   return (
     <>
       <Seo
-        title="JEE, NEET and board exam coaching"
-        description="Personalised learning programs for Class 11-12 students with expert teachers, doubt sessions, and test series for JEE and NEET preparation."
+        title="Learn, Compete, Excel — Competitive Exams, AI, Coding & More"
+        description="Comprehensive learning platform for competitive exams (JEE, NEET, UPSC, CAT, GATE), AI & Machine Learning, Coding & Programming. Expert mentors and personalised learning paths."
         image="/og-image.svg"
         jsonLd={landingJsonLd}
       />
       <Hero />
+      <TrustedBy />
       <Programs />
-      <Suspense
-        fallback={
-          <SectionFallback
-            title="Find Instructis centers"
-            description="Discover our JEE and NEET coaching centers across India with local mentor support."
-          />
-        }
-      >
-        <Centers />
-      </Suspense>
+      <PopularPaths />
+      <CompetitiveExamsPreview />
       <Advantage />
-      <Suspense
-        fallback={
-          <SectionFallback
-            title="Loved by students and parents"
-            description="See why learners trust Instructis for JEE, NEET, and board exam coaching."
-          />
-        }
-      >
+      <Suspense fallback={<SectionFallback title="Student Success" />}>
         <Testimonials />
       </Suspense>
+      <PartnerCTA />
+      <Suspense fallback={<SectionFallback title="Centers" />}>
+        <Centers />
+      </Suspense>
+      <FAQSection />
       <About />
     </>
   );

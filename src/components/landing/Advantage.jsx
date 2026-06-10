@@ -1,64 +1,58 @@
+import { CheckCircle } from 'lucide-react';
+import SectionHeader from '../SectionHeader';
+import Reveal from '../Reveal';
 
+const points = [
+  { title: 'Personalised Learning Paths', description: 'Every student gets a study plan tailored to their pace, strengths, and target exam.' },
+  { title: 'Expert Mentors', description: 'Learn from educators and industry professionals with proven track records.' },
+  { title: 'Exam-Grade Mock Tests', description: 'Practice with tests that mirror real exam patterns, timing, and difficulty levels.' },
+  { title: 'One-on-One Doubt Resolution', description: 'Never stay stuck — get your doubts resolved by dedicated mentors.' },
+  { title: 'Comprehensive Study Material', description: 'Curated notes, practice sets, and video lessons designed by subject experts.' },
+  { title: 'Progress Analytics', description: 'Track your improvement with detailed performance reports and weak-area identification.' }
+];
 
 export default function Advantage() {
-  const points = [
-    {
-      title: "Conceptual clarity through visualisation",
-      description: "Visual learning helps students understand complex concepts easily."
-    },
-    {
-      title: "Personalised learning programs",
-      description: "Tailored to every student's unique learning pace and style."
-    },
-    {
-      title: "Unmatched individual attention",
-      description: "Dedicated mentors to ensure every doubt is resolved."
-    },
-    {
-      title: "Comprehensive study material",
-      description: "Curated resources designed by experts for thorough preparation."
-    },
-    {
-      title: "Regular mock tests",
-      description: "Assess performance with real exam-like test series and detailed analysis."
-    }
-  ];
-
   return (
-    <section className="py-20 bg-brand-light-purple/30">
+    <section className="py-20 bg-surface-secondary">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div>
-            <h2 className="text-3xl md:text-5xl font-black text-gray-900 mb-8">
-              Get the Instructis <br/><span className="text-brand-purple">advantage</span>
-            </h2>
-            <div className="space-y-8">
+            <SectionHeader
+              badge="Why Instructis"
+              title={<>Built for learners who <span className="gradient-text-purple">mean business</span></>}
+              subtitle="We don't just deliver content — we build learning systems that produce results."
+              align="left"
+            />
+
+            <div className="space-y-5">
               {points.map((point, idx) => (
-                <div key={idx} className="flex">
-                  <div className="flex-shrink-0 mt-1">
-                    <span className="text-2xl font-bold text-brand-orange">{idx + 1}.</span>
+                <Reveal key={idx} direction="left" delay={idx * 60}>
+                  <div className="flex gap-4">
+                    <CheckCircle className="w-6 h-6 text-brand-purple flex-shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="font-bold text-gray-900 mb-0.5">{point.title}</h4>
+                      <p className="text-sm text-gray-600">{point.description}</p>
+                    </div>
                   </div>
-                  <div className="ml-4">
-                    <h4 className="text-xl font-bold text-gray-900">{point.title}</h4>
-                    <p className="mt-2 text-gray-600">{point.description}</p>
-                  </div>
-                </div>
+                </Reveal>
               ))}
             </div>
           </div>
-          
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-brand-purple to-brand-orange rounded-3xl transform rotate-3 opacity-20"></div>
-            <img 
-              src="https://images.unsplash.com/photo-1509062522246-3755977927d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-              alt="Classroom teaching on board" 
-              width="800"
-              height="500"
-              loading="lazy"
-              decoding="async"
-              className="rounded-3xl shadow-2xl relative z-10 w-full object-cover h-[500px]"
-            />
-          </div>
+
+          <Reveal direction="scale">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-brand-purple to-brand-orange rounded-3xl transform rotate-2 opacity-15" />
+              <img
+                src="https://images.unsplash.com/photo-1509062522246-3755977927d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                alt="Students learning together in a modern classroom"
+                width="800"
+                height="500"
+                loading="lazy"
+                decoding="async"
+                className="rounded-3xl shadow-elevated relative z-10 w-full object-cover h-[460px]"
+              />
+            </div>
+          </Reveal>
         </div>
       </div>
     </section>

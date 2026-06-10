@@ -3,76 +3,95 @@ import { Link } from 'react-router-dom';
 
 export default function Footer() {
   return (
-    <footer className="bg-[#1C1D1F] text-white pt-16 pb-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+    <footer className="bg-surface-dark text-white relative overflow-hidden">
+      {/* Gradient accent line */}
+      <div className="h-px bg-gradient-to-r from-transparent via-brand-purple to-transparent" />
 
-          <div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-12">
+
+          {/* Brand */}
+          <div className="lg:col-span-1">
             <Link to="/" className="text-2xl font-black text-brand-purple tracking-tight">
               INSTRUCTIS<span className="text-brand-orange">.</span>
             </Link>
 
-            <p className="text-gray-400 text-sm mb-6">
-              Instructis offers you multiple payment methods. Payment gateway partners use secure encryption technology to keep your transaction details confidential at all times.
+            <p className="text-gray-400 text-sm mt-4 mb-6 leading-relaxed">
+              Comprehensive learning platform for competitive exams, AI & ML, coding, and career-oriented paths.
             </p>
-            <div className="flex space-x-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-brand-purple transition-colors">
-                <Share2 className="w-5 h-5" />
+            <div className="flex space-x-3">
+              <a href="#" className="w-9 h-9 rounded-xl bg-surface-dark-secondary flex items-center justify-center hover:bg-brand-purple transition-colors group">
+                <Share2 className="w-4 h-4 text-gray-400 group-hover:text-white" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-brand-purple transition-colors">
-                <MessageCircle className="w-5 h-5" />
+              <a href="#" className="w-9 h-9 rounded-xl bg-surface-dark-secondary flex items-center justify-center hover:bg-brand-purple transition-colors group">
+                <MessageCircle className="w-4 h-4 text-gray-400 group-hover:text-white" />
               </a>
-              <a href="mailto:contact@instructis.co.in" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-brand-purple transition-colors">
-                <Mail className="w-5 h-5" />
+              <a href="mailto:contact@instructis.co.in" className="w-9 h-9 rounded-xl bg-surface-dark-secondary flex items-center justify-center hover:bg-brand-purple transition-colors group">
+                <Mail className="w-4 h-4 text-gray-400 group-hover:text-white" />
               </a>
             </div>
           </div>
 
+          {/* Competitive Exams */}
           <div>
-            <h4 className="text-lg font-bold mb-6">Exam Preparation</h4>
-            <ul className="space-y-3 text-sm text-gray-400">
-              <li><Link to="/jee" className="hover:text-brand-orange transition-colors">JEE Main</Link></li>
-              <li><Link to="/jee" className="hover:text-brand-orange transition-colors">JEE Advanced</Link></li>
-              <li><Link to="/neet" className="hover:text-brand-orange transition-colors">NEET (UG)</Link></li>
-              <li><a href="/#boards" className="hover:text-brand-orange transition-colors">Class 12 Boards</a></li>
-              <li><a href="/#boards" className="hover:text-brand-orange transition-colors">Class 11 Boards</a></li>
+            <h4 className="text-sm font-bold uppercase tracking-wider text-gray-300 mb-5">Competitive Exams</h4>
+            <ul className="space-y-2.5 text-sm text-gray-400">
+              <li><Link to="/competitive-exams/jee" className="hover:text-brand-orange transition-colors">JEE Main & Advanced</Link></li>
+              <li><Link to="/competitive-exams/neet" className="hover:text-brand-orange transition-colors">NEET UG</Link></li>
+              <li><Link to="/competitive-exams/upsc" className="hover:text-brand-orange transition-colors">UPSC Civil Services</Link></li>
+              <li><Link to="/competitive-exams/cat" className="hover:text-brand-orange transition-colors">CAT</Link></li>
+              <li><Link to="/competitive-exams/gate" className="hover:text-brand-orange transition-colors">GATE</Link></li>
+              <li><Link to="/competitive-exams" className="hover:text-brand-orange transition-colors font-medium">View All →</Link></li>
             </ul>
           </div>
 
+          {/* Learning Paths */}
           <div>
-            <h4 className="text-lg font-bold mb-6">Quick Links</h4>
-            <ul className="space-y-3 text-sm text-gray-400">
+            <h4 className="text-sm font-bold uppercase tracking-wider text-gray-300 mb-5">Learning Paths</h4>
+            <ul className="space-y-2.5 text-sm text-gray-400">
+              <li><Link to="/ai-ml" className="hover:text-brand-orange transition-colors">AI & Machine Learning</Link></li>
+              <li><Link to="/coding" className="hover:text-brand-orange transition-colors">Coding & Programming</Link></li>
+              <li><Link to="/careers" className="hover:text-brand-orange transition-colors">Career Paths</Link></li>
+              <li><a href="/#book-session" className="hover:text-brand-orange transition-colors">Test Series</a></li>
+            </ul>
+          </div>
+
+          {/* Company */}
+          <div>
+            <h4 className="text-sm font-bold uppercase tracking-wider text-gray-300 mb-5">Company</h4>
+            <ul className="space-y-2.5 text-sm text-gray-400">
               <li><Link to="/about" className="hover:text-brand-orange transition-colors">About Us</Link></li>
-              <li><a href="/#book-session" className="hover:text-brand-orange transition-colors">Contact Us</a></li>
-              <li><a href="/#testimonials" className="hover:text-brand-orange transition-colors">Student Reviews</a></li>
-              <li><a href="/#book-session" className="hover:text-brand-orange transition-colors">Careers</a></li>
-              <li><Link to="/centers" className="hover:text-brand-orange transition-colors">Instructis Centers</Link></li>
+              <li><Link to="/partner" className="hover:text-brand-orange transition-colors">Partner With Us</Link></li>
+              <li><Link to="/centers" className="hover:text-brand-orange transition-colors">Centers</Link></li>
+              <li><a href="mailto:contact@instructis.co.in" className="hover:text-brand-orange transition-colors">Contact Us</a></li>
             </ul>
           </div>
 
+          {/* Contact */}
           <div>
-            <h4 className="text-lg font-bold mb-6">Contact Us</h4>
-            <ul className="space-y-3 text-sm text-gray-400">
-              <li className="flex items-start">
-                <span className="font-bold text-white mr-2">Call:</span> +91 7093858372
+            <h4 className="text-sm font-bold uppercase tracking-wider text-gray-300 mb-5">Get in Touch</h4>
+            <ul className="space-y-2.5 text-sm text-gray-400">
+              <li className="flex items-start gap-2">
+                <span className="font-semibold text-gray-300">Call:</span> +91 7093858372
               </li>
-              <li className="flex items-start">
-                <span className="font-bold text-white mr-2">Email:</span> contact@instructis.co.in
+              <li className="flex items-start gap-2">
+                <span className="font-semibold text-gray-300">Email:</span> contact@instructis.co.in
               </li>
-              <li className="flex items-start mt-4">
-                <span className="font-bold text-white mr-2">Address:</span> Zebrold Tech Park, Plot no.13, Software units layout, Madhapur, Hyderabad- 500081
+              <li className="flex items-start gap-2 mt-3">
+                <span className="font-semibold text-gray-300">Address:</span>
+                <span>Zebrold Tech Park, Plot no.13, Software units layout, Madhapur, Hyderabad - 500081</span>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
+        <div className="border-t border-gray-800/60 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500 gap-4">
           <p>&copy; {new Date().getFullYear()} Instructis. All rights reserved.</p>
-          <div className="flex space-x-6 mt-4 md:mt-0">
-            <a href="/#about" className="hover:text-white transition-colors">Disclaimer</a>
-            <a href="/#about" className="hover:text-white transition-colors">Privacy Policy</a>
-            <a href="/#about" className="hover:text-white transition-colors">Terms of Services</a>
-            <a href="/sitemap.xml" className="hover:text-white transition-colors">Sitemap</a>
+          <div className="flex flex-wrap gap-6">
+            <a href="/#about" className="hover:text-gray-300 transition-colors">Disclaimer</a>
+            <a href="/#about" className="hover:text-gray-300 transition-colors">Privacy Policy</a>
+            <a href="/#about" className="hover:text-gray-300 transition-colors">Terms of Services</a>
+            <a href="/sitemap.xml" className="hover:text-gray-300 transition-colors">Sitemap</a>
           </div>
         </div>
       </div>
