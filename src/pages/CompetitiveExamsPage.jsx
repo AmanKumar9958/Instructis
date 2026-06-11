@@ -11,12 +11,39 @@ export default function CompetitiveExamsPage() {
   const [activeCategory, setActiveCategory] = useState('All');
   const filteredExams = getExamsByCategory(activeCategory);
 
+  const jsonLd = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: 'Competitive Exams Preparation Programs',
+      description: "Explore comprehensive preparation programs for India's top competitive exams — JEE, NEET, UPSC, SSC, CAT, GATE, CUET, CLAT, NDA.",
+      itemListElement: examData.map((exam, idx) => ({
+        '@type': 'ListItem',
+        position: idx + 1,
+        item: {
+          '@type': 'Course',
+          '@id': `https://instructis.co.in/competitive-exams/${exam.slug}#course`,
+          name: exam.name,
+          description: exam.description,
+          url: `https://instructis.co.in/competitive-exams/${exam.slug}`,
+          provider: {
+            '@type': 'EducationalOrganization',
+            '@id': 'https://instructis.co.in/#organization',
+            name: 'Instructis',
+            url: 'https://instructis.co.in/'
+          }
+        }
+      }))
+    }
+  ];
+
   return (
     <main className="bg-white">
       <Seo
         title="Competitive Exams — JEE, NEET, UPSC, CAT, GATE & More"
         description="Explore comprehensive preparation programs for India's top competitive exams — JEE, NEET, UPSC, SSC, CAT, GATE, CUET, CLAT, NDA. Expert mentors and structured coaching."
         image="/og-image.svg"
+        jsonLd={jsonLd}
       />
 
       {/* Hero */}

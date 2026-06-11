@@ -10,12 +10,35 @@ import { aiMlRoadmap, aiMlCourses, aiMlBenefits, aiMlCareerStats } from '../data
 import faqData from '../data/faqData';
 
 export default function AiMlPage() {
+  const jsonLd = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      '@id': 'https://instructis.co.in/ai-ml#webpage',
+      url: 'https://instructis.co.in/ai-ml',
+      name: 'AI & Machine Learning Programs',
+      description: 'Master AI and Machine Learning from foundations to deployment. Project-based learning with expert mentors.',
+      isPartOf: { '@id': 'https://instructis.co.in/#website' },
+      about: { '@id': 'https://instructis.co.in/#organization' }
+    },
+    ...aiMlCourses.map((course, idx) => ({
+      '@context': 'https://schema.org',
+      '@type': 'Course',
+      '@id': `https://instructis.co.in/ai-ml#course-${idx}`,
+      name: course.title,
+      description: course.description,
+      provider: { '@id': 'https://instructis.co.in/#organization' },
+      educationalLevel: course.level
+    }))
+  ];
+
   return (
     <main className="bg-white">
       <Seo
         title="AI & Machine Learning Programs"
         description="Master AI and Machine Learning from foundations to deployment. Project-based learning with expert mentors, industry-aligned curriculum, and career support."
         image="/og-image.svg"
+        jsonLd={jsonLd}
       />
 
       {/* Hero */}

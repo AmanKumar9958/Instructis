@@ -15,9 +15,27 @@ const paths = [
 ];
 
 export default function CareersPage() {
+  const jsonLd = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      '@id': 'https://instructis.co.in/careers#webpage',
+      url: 'https://instructis.co.in/careers',
+      name: 'Career Paths | Instructis',
+      description: 'Explore guided career paths across technology, government services, management, and more. Mentorship, skill development, and placement support.',
+      isPartOf: { '@id': 'https://instructis.co.in/#website' },
+      about: { '@id': 'https://instructis.co.in/#organization' }
+    }
+  ];
+
   return (
     <main className="bg-white">
-      <Seo title="Career Paths" description="Explore guided career paths across technology, government services, management, and more. Mentorship, skill development, and placement support." image="/og-image.svg" />
+      <Seo
+        title="Career Paths"
+        description="Explore guided career paths across technology, government services, management, and more. Mentorship, skill development, and placement support."
+        image="/og-image.svg"
+        jsonLd={jsonLd}
+      />
 
       {/* Hero */}
       <section className="gradient-mesh py-16 md:py-20">

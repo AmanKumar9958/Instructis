@@ -10,12 +10,35 @@ import { codingRoadmap, codingCourses, codingBenefits, codingCareerStats } from 
 import faqData from '../data/faqData';
 
 export default function CodingPage() {
+  const jsonLd = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      '@id': 'https://instructis.co.in/coding#webpage',
+      url: 'https://instructis.co.in/coding',
+      name: 'Coding & Programming Programs',
+      description: 'Learn programming from scratch or level up with DSA, web development, system design, and competitive coding. Hands-on projects and placement support.',
+      isPartOf: { '@id': 'https://instructis.co.in/#website' },
+      about: { '@id': 'https://instructis.co.in/#organization' }
+    },
+    ...codingCourses.map((course, idx) => ({
+      '@context': 'https://schema.org',
+      '@type': 'Course',
+      '@id': `https://instructis.co.in/coding#course-${idx}`,
+      name: course.title,
+      description: course.description,
+      provider: { '@id': 'https://instructis.co.in/#organization' },
+      educationalLevel: course.level
+    }))
+  ];
+
   return (
     <main className="bg-white">
       <Seo
         title="Coding & Programming Programs"
         description="Learn programming from scratch or level up with DSA, web development, system design, and competitive coding. Hands-on projects and placement support."
         image="/og-image.svg"
+        jsonLd={jsonLd}
       />
 
       {/* Hero */}

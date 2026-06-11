@@ -57,10 +57,27 @@ export default function PartnerPage() {
       setStatus('error');
     }
   };
+  const jsonLd = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      '@id': 'https://instructis.co.in/partner#webpage',
+      url: 'https://instructis.co.in/partner',
+      name: 'Partner With Us | Instructis',
+      description: "Partner with Instructis — India's growing EdTech platform. Content, institute, corporate, and technology partnership opportunities.",
+      isPartOf: { '@id': 'https://instructis.co.in/#website' },
+      about: { '@id': 'https://instructis.co.in/#organization' }
+    }
+  ];
 
   return (
     <main className="bg-white">
-      <Seo title="Partner With Us" description="Partner with Instructis — India's growing EdTech platform. Content, institute, corporate, and technology partnership opportunities." image="/og-image.svg" />
+      <Seo
+        title="Partner With Us"
+        description="Partner with Instructis — India's growing EdTech platform. Content, institute, corporate, and technology partnership opportunities."
+        image="/og-image.svg"
+        jsonLd={jsonLd}
+      />
 
       {/* Hero */}
       <section ref={spotlightRef} className="spotlight-cursor gradient-cta py-16 md:py-20 relative overflow-hidden">
