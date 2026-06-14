@@ -42,13 +42,15 @@ export default function Navbar() {
 
     const update = () => {
       const current = window.scrollY;
-      const scrollingDown = current > lastScrollY;
+      const delta = current - lastScrollY;
 
-      if (scrollingDown && current > 80) {
+      // Only toggle compact mode if there's a meaningful scroll delta (>10px)
+      // and the page actually has enough content to scroll
+      const isPageScrollable = document.documentElement.scrollHeight > window.innerHeight + 100;
+
+      if (isPageScrollable && delta > 10 && current > 80) {
         setIsCompact(true);
-      } else if (!scrollingDown) {
-        setIsCompact(false);
-      } else if (current < 40) {
+      } else if (delta < -10 || current < 40) {
         setIsCompact(false);
       }
 
