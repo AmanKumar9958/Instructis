@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
-Disallow: /faculty-marks-upload
+Disallow: /faculty/
 Disallow: /dashboard
+
 Sitemap: https://instructis.co.in/sitemap.xml
