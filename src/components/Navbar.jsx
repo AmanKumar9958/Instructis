@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, lazy, Suspense } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { Menu, X, UploadCloud, GraduationCap, Users, BookOpen, ShieldCheck, Mail, Lock, Loader2, Search, ChevronDown } from 'lucide-react';
 import { getFriendlyErrorMessage } from '../utils/errors';
@@ -9,6 +9,7 @@ import MegaMenu from './MegaMenu';
 const SearchOverlay = lazy(() => import('./SearchOverlay'));
 
 export default function Navbar() {
+  const { pathname } = useLocation();
   const { user, role, logout, loginWithGoogle, loginSuperAdmin } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -198,23 +199,55 @@ export default function Navbar() {
               <div className="relative">
                 <button
                   onClick={() => setShowMegaMenu(!showMegaMenu)}
-                  className="flex items-center gap-1 text-sm font-semibold text-gray-600 hover:text-brand-purple transition-colors px-3 py-2 rounded-lg hover:bg-gray-50"
+                  className={`flex items-center gap-1 text-sm transition-colors px-3 py-2 rounded-lg ${
+                    ['/ai-ml', '/coding', '/careers'].some(path => pathname.startsWith(path))
+                      ? 'text-brand-purple bg-brand-light-purple font-bold shadow-sm shadow-brand-purple/5'
+                      : 'text-gray-600 hover:text-brand-purple hover:bg-gray-50 font-semibold'
+                  }`}
                 >
                   Explore
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${showMegaMenu ? 'rotate-180' : ''}`} />
                 </button>
               </div>
 
-              <Link to="/competitive-exams" className="text-sm font-semibold text-gray-600 hover:text-brand-purple transition-colors px-3 py-2 rounded-lg hover:bg-gray-50">
+              <Link
+                to="/competitive-exams"
+                className={`text-sm transition-colors px-3 py-2 rounded-lg ${
+                  pathname.startsWith('/competitive-exams') || pathname === '/jee' || pathname === '/neet'
+                    ? 'text-brand-purple bg-brand-light-purple font-bold shadow-sm shadow-brand-purple/5'
+                    : 'text-gray-600 hover:text-brand-purple hover:bg-gray-50 font-semibold'
+                }`}
+              >
                 Exams
               </Link>
-              <Link to="/centers" className="text-sm font-semibold text-gray-600 hover:text-brand-purple transition-colors px-3 py-2 rounded-lg hover:bg-gray-50">
+              <Link
+                to="/centers"
+                className={`text-sm transition-colors px-3 py-2 rounded-lg ${
+                  pathname.startsWith('/centers')
+                    ? 'text-brand-purple bg-brand-light-purple font-bold shadow-sm shadow-brand-purple/5'
+                    : 'text-gray-600 hover:text-brand-purple hover:bg-gray-50 font-semibold'
+                }`}
+              >
                 Centers
               </Link>
-              <Link to="/about" className="text-sm font-semibold text-gray-600 hover:text-brand-purple transition-colors px-3 py-2 rounded-lg hover:bg-gray-50">
+              <Link
+                to="/about"
+                className={`text-sm transition-colors px-3 py-2 rounded-lg ${
+                  pathname.startsWith('/about')
+                    ? 'text-brand-purple bg-brand-light-purple font-bold shadow-sm shadow-brand-purple/5'
+                    : 'text-gray-600 hover:text-brand-purple hover:bg-gray-50 font-semibold'
+                }`}
+              >
                 About
               </Link>
-              <Link to="/partner" className="text-sm font-bold text-brand-purple hover:text-brand-purple-dark transition-colors px-3 py-2 rounded-lg hover:bg-brand-light-purple">
+              <Link
+                to="/partner"
+                className={`text-sm font-bold transition-all px-3 py-2 rounded-lg ${
+                  pathname.startsWith('/partner')
+                    ? 'text-white bg-brand-purple hover:bg-brand-purple-dark shadow-md shadow-brand-purple/20'
+                    : 'text-brand-purple hover:text-brand-purple-dark hover:bg-brand-light-purple'
+                }`}
+              >
                 Partner With Us
               </Link>
             </div>
@@ -262,22 +295,70 @@ export default function Navbar() {
           <div className="lg:hidden bg-white border-t border-gray-100 px-4 pt-4 pb-6 absolute w-full shadow-lg z-40">
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-1">
-                <Link to="/competitive-exams" onClick={closeMobileMenu} className="text-base font-semibold text-gray-700 hover:text-brand-purple py-2 px-3 rounded-lg hover:bg-gray-50">
+                <Link
+                  to="/competitive-exams"
+                  onClick={closeMobileMenu}
+                  className={`text-base py-2 px-3 rounded-lg transition-all ${
+                    pathname.startsWith('/competitive-exams') || pathname === '/jee' || pathname === '/neet'
+                      ? 'font-bold text-brand-purple bg-brand-light-purple'
+                      : 'font-semibold text-gray-700 hover:text-brand-purple hover:bg-gray-50 transition-colors'
+                  }`}
+                >
                   Competitive Exams
                 </Link>
-                <Link to="/ai-ml" onClick={closeMobileMenu} className="text-base font-semibold text-gray-700 hover:text-brand-purple py-2 px-3 rounded-lg hover:bg-gray-50">
+                <Link
+                  to="/ai-ml"
+                  onClick={closeMobileMenu}
+                  className={`text-base py-2 px-3 rounded-lg transition-all ${
+                    pathname.startsWith('/ai-ml')
+                      ? 'font-bold text-brand-purple bg-brand-light-purple'
+                      : 'font-semibold text-gray-700 hover:text-brand-purple hover:bg-gray-50 transition-colors'
+                  }`}
+                >
                   AI & Machine Learning
                 </Link>
-                <Link to="/coding" onClick={closeMobileMenu} className="text-base font-semibold text-gray-700 hover:text-brand-purple py-2 px-3 rounded-lg hover:bg-gray-50">
+                <Link
+                  to="/coding"
+                  onClick={closeMobileMenu}
+                  className={`text-base py-2 px-3 rounded-lg transition-all ${
+                    pathname.startsWith('/coding')
+                      ? 'font-bold text-brand-purple bg-brand-light-purple'
+                      : 'font-semibold text-gray-700 hover:text-brand-purple hover:bg-gray-50 transition-colors'
+                  }`}
+                >
                   Coding & Programming
                 </Link>
-                <Link to="/centers" onClick={closeMobileMenu} className="text-base font-semibold text-gray-700 hover:text-brand-purple py-2 px-3 rounded-lg hover:bg-gray-50">
+                <Link
+                  to="/centers"
+                  onClick={closeMobileMenu}
+                  className={`text-base py-2 px-3 rounded-lg transition-all ${
+                    pathname.startsWith('/centers')
+                      ? 'font-bold text-brand-purple bg-brand-light-purple'
+                      : 'font-semibold text-gray-700 hover:text-brand-purple hover:bg-gray-50 transition-colors'
+                  }`}
+                >
                   Centers
                 </Link>
-                <Link to="/about" onClick={closeMobileMenu} className="text-base font-semibold text-gray-700 hover:text-brand-purple py-2 px-3 rounded-lg hover:bg-gray-50">
+                <Link
+                  to="/about"
+                  onClick={closeMobileMenu}
+                  className={`text-base py-2 px-3 rounded-lg transition-all ${
+                    pathname.startsWith('/about')
+                      ? 'font-bold text-brand-purple bg-brand-light-purple'
+                      : 'font-semibold text-gray-700 hover:text-brand-purple hover:bg-gray-50 transition-colors'
+                  }`}
+                >
                   About
                 </Link>
-                <Link to="/partner" onClick={closeMobileMenu} className="text-base font-bold text-brand-purple py-2 px-3 rounded-lg hover:bg-brand-light-purple">
+                <Link
+                  to="/partner"
+                  onClick={closeMobileMenu}
+                  className={`text-base font-bold transition-all py-2 px-3 rounded-lg ${
+                    pathname.startsWith('/partner')
+                      ? 'text-white bg-brand-purple shadow-md shadow-brand-purple/20'
+                      : 'text-brand-purple hover:bg-brand-light-purple transition-colors'
+                  }`}
+                >
                   Partner With Us
                 </Link>
               </div>

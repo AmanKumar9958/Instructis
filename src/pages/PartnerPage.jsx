@@ -154,6 +154,59 @@ export default function PartnerPage() {
         </div>
       </section>
 
+      {/* Partners & Integrations */}
+      <section className="py-20 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SectionHeader
+            badge="Partners"
+            title={<>More partners and integrations than <span className="gradient-text-purple">any other</span> edtech company</>}
+            subtitle="And not just any partners and integrations. The best in the business."
+          />
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {[
+              { name: 'AWS', sub: 'Amazon Web Services', color: '#FF9900', bg: '#FFF8F0' },
+              { name: 'Google', sub: 'for Education', color: '#4285F4', bg: '#F0F5FF' },
+              { name: 'Cidilabs', sub: 'EdTech Tools', color: '#2ECC71', bg: '#F0FDF4' },
+              { name: 'Turnitin', sub: 'Integrity Solutions', color: '#1F4E79', bg: '#F0F4FA' },
+              { name: 'Inspera', sub: 'Assessment Platform', color: '#E74C3C', bg: '#FFF0F0' },
+              { name: 'Lincoln Learning', sub: 'K-12 Solutions', color: '#2C3E8F', bg: '#F0F1FA' },
+              { name: 'BigBlueButton', sub: 'Virtual Classrooms', color: '#283593', bg: '#F0F1FA' },
+              { name: 'Poll Everywhere', sub: 'Live Engagement', color: '#5C6BC0', bg: '#F3F2FF' },
+              { name: 'FeedbackFruits', sub: 'Peer Learning', color: '#FF6D00', bg: '#FFF5EC' },
+              { name: 'Atomic Jolt', sub: 'LMS Integration', color: '#7CB342', bg: '#F5FAF0' },
+              { name: 'DREAM', sub: 'Research & Analytics', color: '#00838F', bg: '#F0FAFB' },
+              { name: 'Copyleaks', sub: 'Plagiarism Detection', color: '#1565C0', bg: '#F0F5FF' },
+            ].map((partner, idx) => (
+              <Reveal key={partner.name} direction="up" delay={idx * 50}>
+                <div
+                  className="group relative flex flex-col items-center justify-center p-5 rounded-2xl border border-gray-100 bg-white hover:shadow-card transition-all duration-300 hover:-translate-y-1 cursor-default min-h-[110px]"
+                >
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-2.5 transition-colors duration-300"
+                    style={{ background: partner.bg }}>
+                    <span className="text-lg font-black" style={{ color: partner.color }}>
+                      {partner.name.charAt(0)}
+                    </span>
+                  </div>
+                  <h5 className="text-sm font-bold text-gray-900 text-center leading-tight">
+                    {partner.name}
+                  </h5>
+                  <p className="text-[10px] text-gray-400 font-medium text-center mt-0.5">
+                    {partner.sub}
+                  </p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+
+          <Reveal direction="up" delay={300}>
+            <p className="text-center text-sm text-gray-400 mt-8">
+              ...and many more world-class technology &amp; education partners
+            </p>
+          </Reveal>
+        </div>
+      </section>
+
       {/* How It Works */}
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
