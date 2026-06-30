@@ -50,7 +50,7 @@
     scroll-behavior: smooth;
   }
   body {
-    @apply text-gray-800 antialiased bg-white;
+    @apply text-gray-800 antialiased bg-slate-50;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }

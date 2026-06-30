@@ -24,7 +24,7 @@ export default function TrustedBy() {
             <Reveal key={stat.label} direction="up" delay={idx * 100}>
               <div className="text-center p-6 rounded-2xl bg-surface-secondary hover:shadow-card transition-shadow duration-300">
                 <div className="text-3xl md:text-4xl font-black text-gray-900 mb-1">
-                  <AnimatedCounter value={stat.value} suffix={stat.suffix} duration={2} delay={idx * 150} />
+                  <AnimatedCounter value={stat.value} suffix={stat.suffix} duration={2} delay={idx * 0.15} />
                 </div>
                 <p className="text-sm text-gray-500 font-medium">{stat.label}</p>
               </div>

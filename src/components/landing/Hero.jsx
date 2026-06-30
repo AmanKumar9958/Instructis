@@ -153,13 +153,13 @@ export default function Hero() {
               </div>
               <div>
                 <div className="text-2xl font-black text-gray-900">
-                  <AnimatedCounter value={10} suffix="+" duration={1.5} delay={200} />
+                  <AnimatedCounter value={10} suffix="+" duration={1.5} delay={0.2} />
                 </div>
                 <p className="text-xs text-gray-500 font-medium mt-0.5">Exams</p>
               </div>
               <div>
                 <div className="text-2xl font-black text-gray-900">
-                  <AnimatedCounter value={94} suffix="%" duration={2} delay={400} />
+                  <AnimatedCounter value={94} suffix="%" duration={2} delay={0.4} />
                 </div>
                 <p className="text-xs text-gray-500 font-medium mt-0.5">Success Rate</p>
               </div>
@@ -187,7 +187,7 @@ export default function Hero() {
 
           {/* Right: Lead form */}
           <div className="order-1 lg:order-2">
-            <div id="book-session" className="bg-white rounded-3xl shadow-elevated p-7 lg:p-8 max-w-md mx-auto w-full relative">
+            <div id="book-session" className="bg-white rounded-3xl shadow-elevated p-8 lg:p-10 max-w-lg mx-auto w-full relative">
               {/* Glow behind card */}
               <div className="absolute -inset-1 bg-gradient-to-r from-brand-purple/10 to-brand-orange/10 rounded-[28px] blur-xl -z-10" />
 
@@ -210,11 +210,11 @@ export default function Hero() {
                     </div>
                   )}
                   <input type="text" name="fullName" required value={formData.fullName} onChange={handleChange} placeholder="Full Name"
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-purple/30 focus:border-brand-purple bg-gray-50/50 transition-all text-sm" />
+                    className="w-full px-5 py-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-purple/30 focus:border-brand-purple bg-gray-50/50 transition-all text-base" />
                   <input type="tel" name="mobile" required value={formData.mobile} onChange={handleChange} placeholder="Mobile Number"
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-purple/30 focus:border-brand-purple bg-gray-50/50 transition-all text-sm" />
+                    className="w-full px-5 py-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-purple/30 focus:border-brand-purple bg-gray-50/50 transition-all text-base" />
                   <select name="grade" required value={formData.grade} onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-purple/30 focus:border-brand-purple bg-gray-50/50 text-gray-500 transition-all text-sm">
+                    className="w-full px-5 py-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-purple/30 focus:border-brand-purple bg-gray-50/50 text-gray-500 transition-all text-base">
                     <option value="">Select Grade</option>
                     <option value="11">Class 11</option>
                     <option value="12">Class 12</option>
@@ -223,7 +223,7 @@ export default function Hero() {
                     <option value="professional">Working Professional</option>
                   </select>
                   <select name="targetExam" required value={formData.targetExam} onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-purple/30 focus:border-brand-purple bg-gray-50/50 text-gray-500 transition-all text-sm">
+                    className="w-full px-5 py-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-purple/30 focus:border-brand-purple bg-gray-50/50 text-gray-500 transition-all text-base">
                     <option value="">Select Program</option>
                     <option value="jee">JEE Main & Advanced</option>
                     <option value="neet">NEET UG</option>
@@ -238,7 +238,7 @@ export default function Hero() {
                   </select>
                   <MagneticButton className="w-full">
                     <button type="submit" disabled={status === 'loading'}
-                      className={`w-full text-white font-bold py-3.5 rounded-xl transition-all text-sm shadow-md ${status === 'loading' ? 'bg-gray-400 cursor-not-allowed' : 'bg-brand-orange hover:bg-brand-orange-dark hover:shadow-lg hover:shadow-brand-orange/20'}`}>
+                      className={`w-full text-white font-bold py-4 rounded-xl transition-all text-base shadow-md ${status === 'loading' ? 'bg-gray-400 cursor-not-allowed' : 'bg-brand-orange hover:bg-brand-orange-dark hover:shadow-lg hover:shadow-brand-orange/20'}`}>
                       {status === 'loading' ? 'Sending...' : 'Schedule a Free Demo'}
                     </button>
                   </MagneticButton>
