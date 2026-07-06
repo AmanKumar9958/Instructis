@@ -32,17 +32,15 @@ export default function LandingPage() {
       name: 'Instructis',
       url: 'https://instructis.co.in/',
       description: 'Comprehensive learning platform for competitive exams, AI & Machine Learning, coding, and career paths.',
-      telephone: '+91 7093858372',
       email: 'contact@instructis.co.in',
       address: {
         '@type': 'PostalAddress',
-        streetAddress: 'Zebrold Tech Park, Plot no.13, Software units layout, Madhapur',
-        addressLocality: 'Hyderabad',
-        addressRegion: 'Telangana',
-        postalCode: '500081',
-        addressCountry: 'IN'
-      },
-      areaServed: 'IN'
+        streetAddress: 'Bockenheimer Anlage 44',
+        addressLocality: 'Frankfurt am Main',
+        addressRegion: 'Hessen',
+        postalCode: '60322',
+        addressCountry: 'DE'
+      }
     },
     {
       '@context': 'https://schema.org',

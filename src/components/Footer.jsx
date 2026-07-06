@@ -72,14 +72,11 @@ export default function Footer() {
             <h4 className="text-sm font-bold uppercase tracking-wider text-gray-300 mb-5">Get in Touch</h4>
             <ul className="space-y-2.5 text-sm text-gray-400">
               <li className="flex items-start gap-2">
-                <span className="font-semibold text-gray-300">Call:</span> +91 7093858372
-              </li>
-              <li className="flex items-start gap-2">
                 <span className="font-semibold text-gray-300">Email:</span> contact@instructis.co.in
               </li>
               <li className="flex items-start gap-2 mt-3">
                 <span className="font-semibold text-gray-300">Address:</span>
-                <span>Zebrold Tech Park, Plot no.13, Software units layout, Madhapur, Hyderabad - 500081</span>
+                <span>Bockenheimer Anlage 44, Frankfurt am Main, 60322, Germany</span>
               </li>
             </ul>
           </div>

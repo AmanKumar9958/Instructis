@@ -65,7 +65,7 @@ export default function Hero() {
     <section
       ref={spotlightRef}
       id="home"
-      className="spotlight-cursor relative min-h-[calc(100vh-4rem)] overflow-hidden"
+      className="spotlight-cursor relative overflow-hidden"
     >
       {/* Animated mesh gradient background */}
       <div className="absolute inset-0 gradient-mesh animate-mesh" />

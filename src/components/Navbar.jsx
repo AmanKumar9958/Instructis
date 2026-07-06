@@ -261,7 +261,6 @@ export default function Navbar() {
               >
                 <Search className="w-4 h-4" />
                 <span className="hidden xl:inline">Search...</span>
-                <kbd className="hidden xl:inline text-[10px] font-mono bg-white border border-gray-200 px-1.5 py-0.5 rounded text-gray-400">⌘K</kbd>
               </button>
 
               <AuthStatusUI isMobile={false} />
