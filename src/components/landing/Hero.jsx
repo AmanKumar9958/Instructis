@@ -50,8 +50,15 @@ export default function Hero() {
         })
       });
       if (!response.ok) throw new Error("Failed to send email");
-      const bookingsRef = collection(db, 'bookings');
-      await addDoc(bookingsRef, { ...formData, createdAt: serverTimestamp() });
+
+      // Best-effort Firestore save — don't block form success on permissions
+      try {
+        const bookingsRef = collection(db, 'bookings');
+        await addDoc(bookingsRef, { ...formData, createdAt: serverTimestamp() });
+      } catch (firestoreErr) {
+        console.warn('Firestore save skipped:', firestoreErr.message);
+      }
+
       setStatus('success');
       setFormData({ fullName: '', mobile: '', grade: '', targetExam: '' });
     } catch (error) {

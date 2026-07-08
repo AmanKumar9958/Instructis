@@ -240,16 +240,40 @@ export default function Navbar() {
               >
                 About
               </Link>
-              <Link
-                to="/partner"
-                className={`text-sm font-bold transition-all px-3 py-2 rounded-lg ${
-                  pathname.startsWith('/partner')
-                    ? 'text-white bg-brand-purple hover:bg-brand-purple-dark shadow-md shadow-brand-purple/20'
-                    : 'text-brand-purple hover:text-brand-purple-dark hover:bg-brand-light-purple'
-                }`}
-              >
-                Partner With Us
-              </Link>
+              {role === 'Faculty' ? (
+                <Link
+                  to="/faculty/classes"
+                  className={`text-sm font-bold transition-all px-3 py-2 rounded-lg ${
+                    pathname.startsWith('/faculty/classes')
+                      ? 'text-white bg-brand-purple hover:bg-brand-purple-dark shadow-md shadow-brand-purple/20'
+                      : 'text-brand-purple hover:text-brand-purple-dark hover:bg-brand-light-purple'
+                  }`}
+                >
+                  Classes
+                </Link>
+              ) : role === 'Student' ? (
+                <Link
+                  to="/student/join-class"
+                  className={`text-sm font-bold transition-all px-3 py-2 rounded-lg ${
+                    pathname.startsWith('/student/join-class')
+                      ? 'text-white bg-brand-purple hover:bg-brand-purple-dark shadow-md shadow-brand-purple/20'
+                      : 'text-brand-purple hover:text-brand-purple-dark hover:bg-brand-light-purple'
+                  }`}
+                >
+                  Join Class
+                </Link>
+              ) : (
+                <Link
+                  to="/partner"
+                  className={`text-sm font-bold transition-all px-3 py-2 rounded-lg ${
+                    pathname.startsWith('/partner')
+                      ? 'text-white bg-brand-purple hover:bg-brand-purple-dark shadow-md shadow-brand-purple/20'
+                      : 'text-brand-purple hover:text-brand-purple-dark hover:bg-brand-light-purple'
+                  }`}
+                >
+                  Partner With Us
+                </Link>
+              )}
             </div>
 
             {/* Desktop right: search + auth */}
@@ -349,17 +373,43 @@ export default function Navbar() {
                 >
                   About
                 </Link>
-                <Link
-                  to="/partner"
-                  onClick={closeMobileMenu}
-                  className={`text-base font-bold transition-all py-2 px-3 rounded-lg ${
-                    pathname.startsWith('/partner')
-                      ? 'text-white bg-brand-purple shadow-md shadow-brand-purple/20'
-                      : 'text-brand-purple hover:bg-brand-light-purple transition-colors'
-                  }`}
-                >
-                  Partner With Us
-                </Link>
+                {role === 'Faculty' ? (
+                  <Link
+                    to="/faculty/classes"
+                    onClick={closeMobileMenu}
+                    className={`text-base font-bold transition-all py-2 px-3 rounded-lg ${
+                      pathname.startsWith('/faculty/classes')
+                        ? 'text-white bg-brand-purple shadow-md shadow-brand-purple/20'
+                        : 'text-brand-purple hover:bg-brand-light-purple transition-colors'
+                    }`}
+                  >
+                    Classes
+                  </Link>
+                ) : role === 'Student' ? (
+                  <Link
+                    to="/student/join-class"
+                    onClick={closeMobileMenu}
+                    className={`text-base font-bold transition-all py-2 px-3 rounded-lg ${
+                      pathname.startsWith('/student/join-class')
+                        ? 'text-white bg-brand-purple shadow-md shadow-brand-purple/20'
+                        : 'text-brand-purple hover:bg-brand-light-purple transition-colors'
+                    }`}
+                  >
+                    Join Class
+                  </Link>
+                ) : (
+                  <Link
+                    to="/partner"
+                    onClick={closeMobileMenu}
+                    className={`text-base font-bold transition-all py-2 px-3 rounded-lg ${
+                      pathname.startsWith('/partner')
+                        ? 'text-white bg-brand-purple shadow-md shadow-brand-purple/20'
+                        : 'text-brand-purple hover:bg-brand-light-purple transition-colors'
+                    }`}
+                  >
+                    Partner With Us
+                  </Link>
+                )}
               </div>
               <div className="border-t border-gray-100 pt-4">
                 <AuthStatusUI isMobile={true} />
