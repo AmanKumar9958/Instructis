@@ -16,6 +16,7 @@ const CodingPage = lazy(() => import('./pages/CodingPage'));
 const CareersPage = lazy(() => import('./pages/CareersPage'));
 const PartnerPage = lazy(() => import('./pages/PartnerPage'));
 const TeacherClassesPage = lazy(() => import('./pages/TeacherClassesPage'));
+const StudentJoinClassPage = lazy(() => import('./pages/StudentJoinClassPage'));
 
 const RouteFallback = () => <PageSpinner />;
 
@@ -39,6 +40,7 @@ function App() {
             <Route path="about" element={<AboutPage />} />
             <Route path="faculty/marks-upload" element={<FacultyMarksUpload />} />
             <Route path="faculty/classes" element={<TeacherClassesPage />} />
+            <Route path="student/join-class" element={<StudentJoinClassPage />} />
             {/* Legacy redirects */}
             <Route path="jee" element={<JeePage />} />
             <Route path="neet" element={<NeetPage />} />
