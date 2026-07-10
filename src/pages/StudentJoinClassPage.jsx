@@ -14,7 +14,8 @@ import {
   User,
   Clock,
   Radio,
-  Search,
+  History,
+  ChevronDown,
   BookOpen,
   Sparkles,
   AlertTriangle,
@@ -94,6 +95,11 @@ export default function StudentJoinClassPage() {
   const [activeFilter, setActiveFilter] = useState('All');
   const [quote] = useState(() => getRandomQuote());
 
+  /* ── Past (ended) classes ── */
+  const [pastClasses, setPastClasses] = useState([]);
+  const [pastLoading, setPastLoading] = useState(true);
+  const [showHistory, setShowHistory] = useState(false);
+
   /* ── Firestore real-time listener (only active classes) ── */
   useEffect(() => {
     const q = query(
@@ -111,7 +117,7 @@ export default function StudentJoinClassPage() {
       },
       (err) => {
         console.error('Firestore read error:', err);
-        setError('Unable to load live classes right now. Please try again shortly.');
+        setError(err.message || 'Unable to load live classes right now. Please try again shortly.');
         setIsLoading(false);
       }
     );
@@ -119,11 +125,37 @@ export default function StudentJoinClassPage() {
     return unsub;
   }, []);
 
-  /* ── Derived: filtered list ── */
+  /* ── Firestore listener for ended classes ── */
+  useEffect(() => {
+    const q = query(
+      collection(db, 'live_classes'),
+      where('is_active', '==', false),
+      orderBy('created_at', 'desc')
+    );
+    const unsub = onSnapshot(
+      q,
+      (snap) => {
+        setPastClasses(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+        setPastLoading(false);
+      },
+      (err) => {
+        console.error('Past classes error:', err);
+        setPastLoading(false);
+      }
+    );
+    return unsub;
+  }, []);
+
+  /* ── Derived: filtered lists ── */
   const filteredClasses = useMemo(() => {
     if (activeFilter === 'All') return classes;
     return classes.filter((c) => c.target_group === activeFilter);
   }, [classes, activeFilter]);
+
+  const filteredPast = useMemo(() => {
+    if (activeFilter === 'All') return pastClasses;
+    return pastClasses.filter((c) => c.target_group === activeFilter);
+  }, [pastClasses, activeFilter]);
 
   if (authLoading) return null;
 
@@ -288,6 +320,84 @@ export default function StudentJoinClassPage() {
               ))}
             </div>
           )}
+
+          {/* ══════════════════════════════════════════════════
+              CLASS HISTORY — Past / Ended Classes
+             ══════════════════════════════════════════════════ */}
+          <section className="mt-12">
+            <button
+              onClick={() => setShowHistory((p) => !p)}
+              className="flex items-center gap-3 mb-6 group w-full text-left"
+            >
+              <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center group-hover:bg-gray-200 transition-colors">
+                <History className="w-5 h-5 text-gray-500" />
+              </div>
+              <div className="flex-1">
+                <h2 className="text-xl font-bold text-gray-900">Class History</h2>
+                <p className="text-sm text-gray-400">Past sessions from your teachers</p>
+              </div>
+              <ChevronDown
+                className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${
+                  showHistory ? 'rotate-180' : ''
+                }`}
+              />
+            </button>
+
+            {showHistory && (
+              <>
+                {pastLoading ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <SkeletonCard key={i} />
+                    ))}
+                  </div>
+                ) : filteredPast.length === 0 ? (
+                  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center">
+                    <p className="text-gray-400 font-medium">No past classes found for this filter.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {filteredPast.map((cls) => (
+                      <div
+                        key={cls.id}
+                        className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col opacity-80 hover:opacity-100 transition-opacity"
+                      >
+                        <div className="h-1 bg-gradient-to-r from-gray-300 to-gray-400" />
+                        <div className="p-5 sm:p-6 flex flex-col flex-1">
+                          <div className="flex items-center justify-between mb-3">
+                            <span
+                              className={`inline-flex items-center text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${
+                                CATEGORY_COLORS[cls.target_group] || 'bg-gray-50 text-gray-600 border-gray-200'
+                              }`}
+                            >
+                              {cls.target_group}
+                            </span>
+                            <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-gray-100 text-gray-500">
+                              Ended
+                            </span>
+                          </div>
+
+                          <h3 className="text-base font-bold text-gray-800 mb-2 leading-snug line-clamp-2">
+                            {cls.title}
+                          </h3>
+
+                          <div className="flex items-center gap-2 text-sm text-gray-500 mb-1.5">
+                            <User className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+                            <span className="truncate">{cls.teacher_name || 'Instructor'}</span>
+                          </div>
+
+                          <div className="flex items-center gap-2 text-sm text-gray-500">
+                            <Clock className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+                            <span>{formatTime(cls.scheduled_at)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+          </section>
         </div>
       </div>
     </>

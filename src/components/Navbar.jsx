@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, lazy, Suspense } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { Menu, X, UploadCloud, GraduationCap, Users, BookOpen, ShieldCheck, Mail, Lock, Loader2, Search, ChevronDown } from 'lucide-react';
 import { getFriendlyErrorMessage } from '../utils/errors';
@@ -10,6 +10,7 @@ const SearchOverlay = lazy(() => import('./SearchOverlay'));
 
 export default function Navbar() {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const { user, role, logout, loginWithGoogle, loginSuperAdmin } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -167,6 +168,7 @@ export default function Navbar() {
             try {
               await logout();
               setIsMobileMenuOpen(false);
+              navigate('/');
             } finally {
               setLoading(false);
               setIsLoggingOut(false);

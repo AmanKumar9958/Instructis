@@ -64,6 +64,7 @@ export default function TeacherClassesPage() {
   const [deletingId, setDeletingId] = useState(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const [togglingId, setTogglingId] = useState(null);
+  const [listError, setListError] = useState('');
 
   /* ── Auth guard ── */
   useEffect(() => {
@@ -85,9 +86,12 @@ export default function TeacherClassesPage() {
       (snap) => {
         setClasses(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
         setListLoading(false);
+        setListError('');
       },
       (err) => {
         console.error('live_classes listener error:', err);
+        // Firestore composite index errors include a direct creation link in the message
+        setListError(err.message || 'Failed to load classes.');
         setListLoading(false);
       }
     );
@@ -127,7 +131,10 @@ export default function TeacherClassesPage() {
       setScheduledAt(now.toISOString().slice(0, 16));
     } catch (err) {
       console.error(err);
-      setFormMsg({ type: 'error', text: 'Failed to publish. Please try again.' });
+      const msg = err.code === 'permission-denied'
+        ? 'Permission denied — Firestore security rules need to allow writes to "live_classes" for authenticated users. Please update your Firestore rules.'
+        : `Failed to publish: ${err.message}`;
+      setFormMsg({ type: 'error', text: msg });
     } finally {
       setPublishing(false);
     }
@@ -339,7 +346,16 @@ export default function TeacherClassesPage() {
               <h2 className="text-xl font-bold text-gray-900">Your Classes</h2>
             </div>
 
-            {listLoading ? (
+            {listError ? (
+              <div className="bg-white rounded-3xl border border-red-200 shadow-sm p-8 text-center">
+                <div className="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Video className="w-6 h-6 text-red-400" />
+                </div>
+                <p className="text-red-600 font-semibold mb-2">Failed to load classes</p>
+                <p className="text-gray-500 text-sm max-w-lg mx-auto mb-3">{listError}</p>
+                <p className="text-gray-400 text-xs">Check the browser console (F12) — if a composite index is required, Firestore provides a direct link to create it.</p>
+              </div>
+            ) : listLoading ? (
               <div className="flex items-center justify-center py-20 text-gray-400 gap-2">
                 <Loader2 className="w-5 h-5 animate-spin" /> Loading classes…
               </div>
