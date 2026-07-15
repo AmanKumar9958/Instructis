@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, lazy, Suspense } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { Menu, X, UploadCloud, GraduationCap, Users, BookOpen, ShieldCheck, Mail, Lock, Loader2, Search, ChevronDown } from 'lucide-react';
+import { Menu, X, UploadCloud, GraduationCap, Users, Loader2, Search, ChevronDown } from 'lucide-react';
 import { getFriendlyErrorMessage } from '../utils/errors';
 import LoadingOverlay from './LoadingOverlay';
 import MegaMenu from './MegaMenu';
@@ -19,8 +19,7 @@ export default function Navbar() {
 
   // Custom auth states
   const [selectedRole, setSelectedRole] = useState(null);
-  const [adminEmail, setAdminEmail] = useState('');
-  const [adminPass, setAdminPass] = useState('');
+
   const [errorText, setErrorText] = useState('');
   const [loading, setLoading] = useState(false);
   const [isCompact, setIsCompact] = useState(false);
@@ -87,25 +86,9 @@ export default function Navbar() {
   const handleRoleSelect = async (r) => {
     setErrorText('');
     setSelectedRole(r);
-
-    if (r !== 'SuperAdmin') {
-      setLoading(true);
-      try {
-        await loginWithGoogle(r);
-        handleCloseModal();
-      } catch (err) {
-        setErrorText(getFriendlyErrorMessage(err));
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
-
-  const handleSuperAdminLogin = async (e) => {
-    e.preventDefault();
     setLoading(true);
     try {
-      await loginSuperAdmin(adminEmail, adminPass);
+      await loginWithGoogle(r);
       handleCloseModal();
     } catch (err) {
       setErrorText(getFriendlyErrorMessage(err));
@@ -113,6 +96,8 @@ export default function Navbar() {
       setLoading(false);
     }
   };
+
+
 
   const closeMobileMenu = useCallback(() => setIsMobileMenuOpen(false), []);
 
@@ -461,8 +446,6 @@ export default function Navbar() {
                   {[
                     { id: 'Student', icon: <GraduationCap />, label: 'Student' },
                     { id: 'Parents', icon: <Users />, label: 'Parent' },
-                    { id: 'Faculty', icon: <BookOpen />, label: 'Faculty' },
-                    { id: 'SuperAdmin', icon: <ShieldCheck />, label: 'Admin' }
                   ].map(r => (
                     <button
                       key={r.id}
@@ -477,55 +460,6 @@ export default function Navbar() {
                     </button>
                   ))}
                 </div>
-              ) : selectedRole === 'SuperAdmin' ? (
-                <form onSubmit={handleSuperAdminLogin} className="space-y-5">
-                  <div className="flex items-center gap-3 mb-6 p-3 bg-gray-50 rounded-xl">
-                    <ShieldCheck className="text-brand-purple w-6 h-6" />
-                    <span className="font-bold text-gray-700">Admin Authentication</span>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    <div className="relative">
-                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <input
-                        type="email"
-                        required
-                        placeholder="Admin Email"
-                        value={adminEmail}
-                        onChange={(e) => setAdminEmail(e.target.value)}
-                        className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-purple focus:bg-white transition-all"
-                      />
-                    </div>
-                    <div className="relative">
-                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <input
-                        type="password"
-                        required
-                        placeholder="Password"
-                        value={adminPass}
-                        onChange={(e) => setAdminPass(e.target.value)}
-                        className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-purple focus:bg-white transition-all"
-                      />
-                    </div>
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full bg-brand-purple hover:bg-brand-purple-dark text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-brand-purple/20 transform hover:-translate-y-0.5 active:translate-y-0 mt-4 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
-                  >
-                    {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
-                    {loading ? 'Authenticating...' : 'Log In as Admin'}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => { setSelectedRole(null); setErrorText(''); }}
-                    className="w-full text-gray-400 hover:text-brand-purple text-sm font-bold mt-4 transition-colors flex items-center justify-center gap-2"
-                  >
-                    &larr; Change Role
-                  </button>
-                </form>
               ) : (
                 <div className="text-center py-10">
                   <div className="relative w-20 h-20 mx-auto mb-6">

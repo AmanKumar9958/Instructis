@@ -12,6 +12,12 @@ export const ROLE_OPTIONS = [
   { value: ROLES.SUPER_ADMIN, label: 'Super Admin' },
 ]
 
+/** Subset shown in the main Navbar login modal (Student & Parent only). */
+export const STUDENT_ROLE_OPTIONS = [
+  { value: ROLES.STUDENT, label: 'Student' },
+  { value: ROLES.PARENT, label: 'Parent' },
+]
+
 export const hasRequiredRole = (userRole, allowedRoles = []) => {
   if (!userRole) {
     return false

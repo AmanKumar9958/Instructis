@@ -17,6 +17,8 @@ const CareersPage = lazy(() => import('./pages/CareersPage'));
 const PartnerPage = lazy(() => import('./pages/PartnerPage'));
 const TeacherClassesPage = lazy(() => import('./pages/TeacherClassesPage'));
 const StudentJoinClassPage = lazy(() => import('./pages/StudentJoinClassPage'));
+const AdminLoginPage = lazy(() => import('./pages/AdminLoginPage'));
+const FacultyLoginPage = lazy(() => import('./pages/FacultyLoginPage'));
 
 const RouteFallback = () => <PageSpinner />;
 
@@ -45,6 +47,10 @@ function App() {
             <Route path="jee" element={<JeePage />} />
             <Route path="neet" element={<NeetPage />} />
           </Route>
+
+          {/* Standalone login pages (no Navbar/Footer) */}
+          <Route path="admin-login" element={<AdminLoginPage />} />
+          <Route path="faculty-login" element={<FacultyLoginPage />} />
         </Routes>
       </Suspense>
     </Router>

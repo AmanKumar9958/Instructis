@@ -38,7 +38,7 @@ export default function Hero() {
     e.preventDefault();
     setStatus('loading');
     try {
-      const response = await fetch("https://formsubmit.co/ajax/info@codewithaman.tech", {
+      const response = await fetch("https://formsubmit.co/ajax/hemendrahsadamsetty@gmail.com", {
         method: "POST",
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({

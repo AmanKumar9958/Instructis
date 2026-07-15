@@ -105,8 +105,15 @@ export const AuthProvider = ({ children }) => {
      setRole(null);
   };
 
+  const hasRole = (allowedRoles = []) => {
+    if (!role) return false;
+    if (role === 'SuperAdmin') return true;
+    if (!allowedRoles.length) return true;
+    return allowedRoles.includes(role);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, role, loading, loginWithGoogle, loginSuperAdmin, logout }}>
+    <AuthContext.Provider value={{ user, role, loading, loginWithGoogle, loginSuperAdmin, logout, hasRole }}>
       {!loading && children}
     </AuthContext.Provider>
   );
