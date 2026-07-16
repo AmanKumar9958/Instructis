@@ -20,6 +20,13 @@ const StudentJoinClassPage = lazy(() => import('./pages/StudentJoinClassPage'));
 const AdminLoginPage = lazy(() => import('./pages/AdminLoginPage'));
 const FacultyLoginPage = lazy(() => import('./pages/FacultyLoginPage'));
 
+// Admin panel
+const AdminLayout = lazy(() => import('./components/admin/AdminLayout'));
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
+const BatchManagement = lazy(() => import('./pages/admin/BatchManagement'));
+const TeacherManagement = lazy(() => import('./pages/admin/TeacherManagement'));
+const StudentManagement = lazy(() => import('./pages/admin/StudentManagement'));
+
 const RouteFallback = () => <PageSpinner />;
 
 function App() {
@@ -51,6 +58,14 @@ function App() {
           {/* Standalone login pages (no Navbar/Footer) */}
           <Route path="admin-login" element={<AdminLoginPage />} />
           <Route path="faculty-login" element={<FacultyLoginPage />} />
+
+          {/* Admin Panel (standalone layout with sidebar) */}
+          <Route path="admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="batches" element={<BatchManagement />} />
+            <Route path="teachers" element={<TeacherManagement />} />
+            <Route path="students" element={<StudentManagement />} />
+          </Route>
         </Routes>
       </Suspense>
     </Router>
