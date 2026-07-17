@@ -14,7 +14,7 @@ export default function AdminLoginPage() {
 
   useEffect(() => {
     if (user && role === 'SuperAdmin') {
-      navigate('/', { replace: true })
+      navigate('/admin', { replace: true })
     }
   }, [user, role, navigate])
 
@@ -24,7 +24,7 @@ export default function AdminLoginPage() {
     setLoading(true)
     try {
       await loginSuperAdmin(email, password)
-      navigate('/', { replace: true })
+      navigate('/admin', { replace: true })
     } catch (err) {
       setError(getFriendlyErrorMessage(err))
     } finally {
