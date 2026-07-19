@@ -151,7 +151,7 @@ export default function StudentManagement() {
             <td className="px-5 py-4">
               <div className="flex items-center gap-3">
                 {student.profile_url ? (
-                  <img src={student.profile_url} alt="" className="w-8 h-8 rounded-lg object-cover" />
+                  <img src={student.profile_url} alt="" className="w-8 h-8 rounded-lg object-cover" referrerPolicy="no-referrer" onError={(e) => { e.target.onerror = null; e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name || 'S')}&background=random`; }} />
                 ) : (
                   <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-accent-emerald text-xs font-bold">
                     {(student.name || student.email || '?').charAt(0).toUpperCase()}

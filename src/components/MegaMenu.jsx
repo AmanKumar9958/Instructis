@@ -19,7 +19,7 @@ export default function MegaMenu({ isOpen, onClose }) {
 
       {/* Menu panel */}
       <div className="fixed top-16 left-0 right-0 z-[100] mt-2 mx-4 lg:mx-auto lg:max-w-5xl">
-        <div className="glass-card rounded-2xl shadow-elevated p-6 lg:p-8 animate-[scaleIn_200ms_ease]">
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-elevated p-6 lg:p-8 animate-[scaleIn_200ms_ease]">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Categories */}
             <div className="lg:col-span-1">

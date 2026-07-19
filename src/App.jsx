@@ -27,6 +27,13 @@ const BatchManagement = lazy(() => import('./pages/admin/BatchManagement'));
 const TeacherManagement = lazy(() => import('./pages/admin/TeacherManagement'));
 const StudentManagement = lazy(() => import('./pages/admin/StudentManagement'));
 
+// Teacher panel
+const TeacherLayout = lazy(() => import('./components/teacher/TeacherLayout'));
+const TeacherDashboard = lazy(() => import('./pages/teacher/TeacherDashboard'));
+const TeacherClasses = lazy(() => import('./pages/teacher/TeacherClasses'));
+const TeacherQuizzes = lazy(() => import('./pages/teacher/TeacherQuizzes'));
+const TeacherStudents = lazy(() => import('./pages/teacher/TeacherStudents'));
+
 const RouteFallback = () => <PageSpinner />;
 
 function App() {
@@ -48,7 +55,7 @@ function App() {
             <Route path="centers" element={<CentersPage />} />
             <Route path="about" element={<AboutPage />} />
             <Route path="faculty/marks-upload" element={<FacultyMarksUpload />} />
-            <Route path="faculty/classes" element={<TeacherClassesPage />} />
+            {/* Note: /faculty/classes is replaced by the new /teacher/classes panel */}
             <Route path="student/join-class" element={<StudentJoinClassPage />} />
             {/* Legacy redirects */}
             <Route path="jee" element={<JeePage />} />
@@ -65,6 +72,14 @@ function App() {
             <Route path="batches" element={<BatchManagement />} />
             <Route path="teachers" element={<TeacherManagement />} />
             <Route path="students" element={<StudentManagement />} />
+          </Route>
+
+          {/* Teacher Panel (standalone layout with sidebar) */}
+          <Route path="teacher" element={<TeacherLayout />}>
+            <Route index element={<TeacherDashboard />} />
+            <Route path="classes" element={<TeacherClasses />} />
+            <Route path="quizzes" element={<TeacherQuizzes />} />
+            <Route path="students" element={<TeacherStudents />} />
           </Route>
         </Routes>
       </Suspense>

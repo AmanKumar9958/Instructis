@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { auth, db, googleProvider } from '../firebase/firebase';
-import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
+import { signInWithPopup, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { AuthContext } from './AuthContextObject';
 
@@ -78,31 +78,41 @@ export const AuthProvider = ({ children }) => {
   const loginSuperAdmin = async (email, password) => {
     const adminEmail = import.meta.env.VITE_SUPER_ADMIN_ID;
     const adminPass = import.meta.env.VITE_SUPER_ADMIN_PASS;
-    
-    if (email === adminEmail && password === adminPass) {
-       // Since SuperAdmin sits outside standard Firebase Auth in this spec, we manage state manually.
-       // Note: reloading page will detach SuperAdmin because it's not saved in localStorage in this basic setup.
-       const adminMock = {
-         uid: 'super_admin_id',
-         displayName: "Super Admin",
-         email: adminEmail,
-         profile_url: "",
-         role: 'SuperAdmin'
-       };
-       setUser(adminMock);
-       setRole('SuperAdmin');
-       return true;
-    } else {
-       throw new Error("Invalid SuperAdmin Credentials");
+
+    if (email !== adminEmail || password !== adminPass) {
+      throw new Error('Invalid SuperAdmin Credentials');
     }
+
+    // Use real Firebase Auth so Firestore security rules allow access
+    const result = await signInWithEmailAndPassword(auth, email, password);
+    const loggedInUser = result.user;
+
+    // Ensure a user document exists with SuperAdmin role
+    const userRef = doc(db, 'users', loggedInUser.uid);
+    const userDoc = await getDoc(userRef);
+
+    if (!userDoc.exists()) {
+      await setDoc(userRef, {
+        name: 'Super Admin',
+        email: adminEmail,
+        role: 'SuperAdmin',
+        profile_url: '',
+        accountCreatedAt: serverTimestamp(),
+        lastLogin: serverTimestamp(),
+      });
+    } else {
+      await updateDoc(userRef, { role: 'SuperAdmin', lastLogin: serverTimestamp() });
+    }
+
+    setUser({ ...loggedInUser, displayName: 'Super Admin', role: 'SuperAdmin', profile_url: '' });
+    setRole('SuperAdmin');
+    return true;
   };
 
   const logout = async () => {
-     if (role !== 'SuperAdmin') {
-       await signOut(auth);
-     }
-     setUser(null);
-     setRole(null);
+    await signOut(auth);
+    setUser(null);
+    setRole(null);
   };
 
   const hasRole = (allowedRoles = []) => {

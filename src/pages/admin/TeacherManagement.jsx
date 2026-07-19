@@ -143,7 +143,7 @@ export default function TeacherManagement() {
             <td className="px-5 py-4">
               <div className="flex items-center gap-3">
                 {teacher.profile_url ? (
-                  <img src={teacher.profile_url} alt="" className="w-8 h-8 rounded-lg object-cover" />
+                  <img src={teacher.profile_url} alt="" className="w-8 h-8 rounded-lg object-cover" referrerPolicy="no-referrer" onError={(e) => { e.target.onerror = null; e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(teacher.name || 'T')}&background=random`; }} />
                 ) : (
                   <div className="w-8 h-8 rounded-lg bg-brand-light-purple flex items-center justify-center text-brand-purple text-xs font-bold">
                     {(teacher.name || teacher.email || '?').charAt(0).toUpperCase()}

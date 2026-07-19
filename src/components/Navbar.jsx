@@ -134,6 +134,8 @@ export default function Navbar() {
               src={user.profile_url || user.photoURL || user.photoUrl}
               alt="Profile"
               className="w-9 h-9 rounded-full object-cover border-2 border-gray-100"
+              referrerPolicy="no-referrer"
+              onError={(e) => { e.target.onerror = null; e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || user.name || 'U')}&background=random`; }}
             />
           ) : (
             <div className="w-9 h-9 rounded-full bg-brand-light-purple flex items-center justify-center text-brand-purple font-bold text-sm">

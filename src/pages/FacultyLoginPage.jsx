@@ -11,7 +11,7 @@ export default function FacultyLoginPage() {
 
   useEffect(() => {
     if (user && role === 'Faculty') {
-      navigate('/', { replace: true })
+      navigate('/teacher', { replace: true })
     }
   }, [user, role, navigate])
 
@@ -20,7 +20,7 @@ export default function FacultyLoginPage() {
     setLoading(true)
     try {
       await loginWithGoogle('Faculty')
-      navigate('/', { replace: true })
+      navigate('/teacher', { replace: true })
     } catch (err) {
       setError(getFriendlyErrorMessage(err))
     } finally {
