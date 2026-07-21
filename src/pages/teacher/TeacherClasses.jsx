@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { collection, query, where, getDocs, addDoc, serverTimestamp, doc, updateDoc, deleteDoc, orderBy } from 'firebase/firestore'
+import { collection, query, where, getDocs, addDoc, serverTimestamp, doc, updateDoc, deleteDoc, orderBy, Timestamp } from 'firebase/firestore'
 import { db } from '../../firebase/firebase'
 import { useAuth } from '../../hooks/useAuth'
 import { useToast } from '../../components/admin/Toast'
@@ -90,13 +90,16 @@ export default function TeacherClasses() {
     setSubmitting(true)
     try {
       const scheduledAt = new Date(`${formData.scheduled_date}T${formData.scheduled_time}`)
+      const selectedBatch = batches.find(b => b.id === formData.batch_id)
       
       const newClassData = {
         title: formData.title,
         batch_id: formData.batch_id,
+        target_group: selectedBatch ? selectedBatch.name : 'General',
         meet_link: formatMeetLink(formData.meet_link),
+        teacher_name: user.name || user.email || 'Instructor',
         teacher_id: user.uid,
-        scheduled_at: scheduledAt.toISOString(),
+        scheduled_at: Timestamp.fromDate(scheduledAt),
         is_active: true,
         created_at: serverTimestamp()
       }
@@ -265,7 +268,7 @@ export default function TeacherClasses() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {classes.map(cls => {
-                  const dateObj = new Date(cls.scheduled_at)
+                  const dateObj = cls.scheduled_at?.toDate ? cls.scheduled_at.toDate() : new Date(cls.scheduled_at)
                   const batch = batches.find(b => b.id === cls.batch_id)
                   
                   return (

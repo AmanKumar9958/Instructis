@@ -76,21 +76,38 @@ export default function TeacherManagement() {
     }
   }
 
-  // Assign teacher ID
   const openAssignId = (teacher) => {
     setAssignTarget(teacher)
-    setTeacherIdInput(teacher.teacher_id || '')
+    const currentId = teacher.teacher_id || ''
+    setTeacherIdInput(currentId.startsWith('INS-') ? currentId.substring(4) : currentId)
   }
 
   const handleAssignId = async (e) => {
     e.preventDefault()
     if (!assignTarget) return
+    const finalId = `INS-${teacherIdInput.trim()}`
+    
     setSavingId(true)
     try {
+      // Check for duplicates
+      const q = query(
+        collection(db, 'users'), 
+        where('role', '==', 'Faculty'), 
+        where('teacher_id', '==', finalId)
+      )
+      const snap = await getDocs(q)
+      const isDuplicate = snap.docs.some(d => d.id !== assignTarget.id)
+      
+      if (isDuplicate) {
+        toast.error(`Teacher ID "${finalId}" is already assigned.`)
+        setSavingId(false)
+        return
+      }
+
       await updateDoc(doc(db, 'users', assignTarget.id), {
-        teacher_id: teacherIdInput.trim(),
+        teacher_id: finalId,
       })
-      toast.success(`Teacher ID set to "${teacherIdInput.trim()}"`)
+      toast.success(`Teacher ID set to "${finalId}"`)
       setAssignTarget(null)
       await fetchTeachers()
     } catch (err) {
@@ -172,18 +189,13 @@ export default function TeacherManagement() {
                 <button
                   onClick={() => handleToggleWhitelist(teacher)}
                   disabled={togglingId === teacher.id}
-                  className={`p-2 rounded-lg transition-colors ${
+                  className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors border ${
                     teacher.is_whitelisted
-                      ? 'text-emerald-500 hover:text-red-500 hover:bg-red-50'
-                      : 'text-gray-400 hover:text-emerald-500 hover:bg-emerald-50'
+                      ? 'text-red-600 bg-red-50 hover:bg-red-100 border-red-200'
+                      : 'text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border-emerald-200'
                   } disabled:opacity-50`}
-                  title={teacher.is_whitelisted ? 'Revoke Access' : 'Approve'}
                 >
-                  {teacher.is_whitelisted ? (
-                    <ShieldOff className="w-4 h-4" />
-                  ) : (
-                    <ShieldCheck className="w-4 h-4" />
-                  )}
+                  {teacher.is_whitelisted ? 'Make Inactive' : 'Make Active'}
                 </button>
                 {/* Assign ID */}
                 <button
@@ -226,14 +238,19 @@ export default function TeacherManagement() {
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1.5">Teacher ID</label>
-            <input
-              type="text"
-              required
-              value={teacherIdInput}
-              onChange={(e) => setTeacherIdInput(e.target.value)}
-              placeholder="e.g., FAC-102"
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-purple/30 focus:border-brand-purple transition-all"
-            />
+            <div className="flex items-center">
+              <span className="px-4 py-2.5 bg-gray-50 border border-r-0 border-gray-200 rounded-l-xl text-gray-500 font-semibold text-sm">
+                INS-
+              </span>
+              <input
+                type="text"
+                required
+                value={teacherIdInput}
+                onChange={(e) => setTeacherIdInput(e.target.value)}
+                placeholder="101"
+                className="w-full px-4 py-2.5 rounded-r-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-purple/30 focus:border-brand-purple transition-all"
+              />
+            </div>
           </div>
 
           <div className="flex items-center justify-end gap-3 pt-2">

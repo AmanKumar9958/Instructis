@@ -40,7 +40,7 @@ function getRandomQuote() {
 }
 
 /* ── Filter options ── */
-const FILTERS = ['All', 'Class 11', 'Class 12', 'GATE', 'CAT', 'General'];
+// FILTERS is now dynamically computed inside the component
 
 /* ── Category badge colour map ── */
 const CATEGORY_COLORS = {
@@ -146,6 +146,20 @@ export default function StudentJoinClassPage() {
     return unsub;
   }, []);
 
+  /* ── Dynamic Filters ── */
+  const dynamicFilters = useMemo(() => {
+    const allTargets = new Set();
+    classes.forEach(c => {
+      if (c.target_group) allTargets.add(c.target_group);
+    });
+    pastClasses.forEach(c => {
+      if (c.target_group) allTargets.add(c.target_group);
+    });
+    // Keep standard ones as defaults, plus dynamically added ones
+    ['Class 11', 'Class 12', 'GATE', 'CAT', 'General'].forEach(t => allTargets.add(t));
+    return ['All', ...Array.from(allTargets)];
+  }, [classes, pastClasses]);
+
   /* ── Derived: filtered lists ── */
   const filteredClasses = useMemo(() => {
     if (activeFilter === 'All') return classes;
@@ -190,7 +204,7 @@ export default function StudentJoinClassPage() {
           {/* ── Filter Tabs ── */}
           <div className="mb-8 overflow-x-auto pb-1 -mx-1 px-1">
             <div className="flex gap-2 min-w-max">
-              {FILTERS.map((f) => (
+              {dynamicFilters.map((f) => (
                 <button
                   key={f}
                   onClick={() => setActiveFilter(f)}

@@ -57,7 +57,7 @@ export default function TeacherStudents() {
         const studentsQuery = query(
           collection(db, 'users'),
           where('role', '==', 'student'),
-          where('assigned_batch_id', '==', selectedBatchId)
+          where('assigned_batches', 'array-contains', selectedBatchId)
         )
         
         const studentsSnapshot = await getDocs(studentsQuery)

@@ -14,6 +14,9 @@ import DataTable from '../../components/admin/DataTable'
 import Modal from '../../components/admin/Modal'
 import ConfirmDialog from '../../components/admin/ConfirmDialog'
 import { useToast } from '../../components/admin/Toast'
+import examData from '../../data/examData'
+import { aiMlCourses } from '../../data/aiMlData'
+import { codingCourses } from '../../data/codingData'
 
 const COLUMNS = [
   { label: 'Name' },
@@ -31,8 +34,11 @@ export default function StudentManagement() {
 
   // Assign batch modal
   const [assignTarget, setAssignTarget] = useState(null)
-  const [selectedBatchId, setSelectedBatchId] = useState('')
+  const [selectedBatches, setSelectedBatches] = useState([])
   const [savingBatch, setSavingBatch] = useState(false)
+
+  // Student details modal
+  const [detailsTarget, setDetailsTarget] = useState(null)
 
   // Delete confirmation
   const [deleteTarget, setDeleteTarget] = useState(null)
@@ -48,11 +54,23 @@ export default function StudentManagement() {
         getDocs(collection(db, 'batches')),
       ])
 
-      const batchList = batchSnap.docs.map((d) => ({ id: d.id, ...d.data() }))
-      const map = {}
-      batchList.forEach((b) => { map[b.id] = b.name })
+      const firebaseBatchList = batchSnap.docs.map((d) => ({ id: d.id, ...d.data() }))
+      
+      const staticBatches = [
+        ...examData.map(e => ({ id: e.id, name: e.shortName || e.name, status: 'active' })),
+        ...aiMlCourses.map(c => ({ id: c.title.toLowerCase().replace(/\s+/g, '-'), name: c.title, status: 'active' })),
+        ...codingCourses.map(c => ({ id: c.title.toLowerCase().replace(/\s+/g, '-'), name: c.title, status: 'active' }))
+      ];
 
-      setBatches(batchList.filter((b) => b.status === 'active'))
+      const allBatches = [...staticBatches, ...firebaseBatchList];
+      const uniqueBatchesMap = new Map();
+      allBatches.forEach(b => uniqueBatchesMap.set(b.id, b));
+      const finalBatchList = Array.from(uniqueBatchesMap.values());
+
+      const map = {}
+      finalBatchList.forEach((b) => { map[b.id] = b.name })
+
+      setBatches(finalBatchList.filter((b) => b.status === 'active'))
       setBatchMap(map)
       setStudents(studentSnap.docs.map((d) => ({ id: d.id, ...d.data() })))
     } catch (err) {
@@ -70,18 +88,25 @@ export default function StudentManagement() {
   // Assign / change batch
   const openAssignBatch = (student) => {
     setAssignTarget(student)
-    setSelectedBatchId(student.assigned_batch_id || '')
+    if (student.assigned_batches && Array.isArray(student.assigned_batches)) {
+      setSelectedBatches(student.assigned_batches)
+    } else if (student.assigned_batch_id) {
+      setSelectedBatches([student.assigned_batch_id])
+    } else {
+      setSelectedBatches([])
+    }
   }
 
   const handleAssignBatch = async (e) => {
     e.preventDefault()
-    if (!assignTarget || !selectedBatchId) return
+    if (!assignTarget) return
     setSavingBatch(true)
     try {
       await updateDoc(doc(db, 'users', assignTarget.id), {
-        assigned_batch_id: selectedBatchId,
+        assigned_batches: selectedBatches,
+        assigned_batch_id: null,
       })
-      toast.success(`Batch assigned to ${assignTarget.name || assignTarget.email}`)
+      toast.success(`Batches assigned to ${assignTarget.name || assignTarget.email}`)
       setAssignTarget(null)
       await fetchData()
     } catch (err) {
@@ -92,14 +117,21 @@ export default function StudentManagement() {
     }
   }
 
+  const toggleBatchSelection = (batchId) => {
+    setSelectedBatches(prev => 
+      prev.includes(batchId) ? prev.filter(id => id !== batchId) : [...prev, batchId]
+    )
+  }
+
   // Remove from batch
   const handleRemoveBatch = async (student) => {
     setRemovingBatchId(student.id)
     try {
       await updateDoc(doc(db, 'users', student.id), {
+        assigned_batches: [],
         assigned_batch_id: null,
       })
-      toast.success(`${student.name || student.email} removed from batch`)
+      toast.success(`All batches removed for ${student.name || student.email}`)
       await fetchData()
     } catch (err) {
       console.error('Remove batch error:', err)
@@ -148,28 +180,32 @@ export default function StudentManagement() {
         emptyMessage="No students registered yet."
         renderRow={(student) => (
           <tr key={student.id} className="hover:bg-gray-50/50 transition-colors">
-            <td className="px-5 py-4">
+            <td className="px-5 py-4 cursor-pointer group" onClick={() => setDetailsTarget(student)}>
               <div className="flex items-center gap-3">
-                {student.profile_url ? (
-                  <img src={student.profile_url} alt="" className="w-8 h-8 rounded-lg object-cover" referrerPolicy="no-referrer" onError={(e) => { e.target.onerror = null; e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name || 'S')}&background=random`; }} />
+                {student.photoURL ? (
+                  <img src={student.photoURL} alt="" className="w-8 h-8 rounded-lg object-cover" />
                 ) : (
                   <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-accent-emerald text-xs font-bold">
                     {(student.name || student.email || '?').charAt(0).toUpperCase()}
                   </div>
                 )}
-                <span className="text-sm font-semibold text-gray-900">{student.name || '—'}</span>
+                <span className="text-sm font-semibold text-gray-900 group-hover:text-brand-purple transition-colors">{student.name || '—'}</span>
               </div>
             </td>
-            <td className="px-5 py-4 text-sm text-gray-500">{student.email || '—'}</td>
-            <td className="px-5 py-4">
-              {student.assigned_batch_id && batchMap[student.assigned_batch_id] ? (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-brand-light-purple text-brand-purple text-xs font-bold border border-brand-purple/10">
-                  <BookOpen className="w-3 h-3" />
-                  {batchMap[student.assigned_batch_id]}
-                </span>
-              ) : (
-                <span className="text-xs text-gray-300 font-medium">No Batch</span>
-              )}
+            <td className="px-5 py-4 text-sm text-gray-500 cursor-pointer" onClick={() => setDetailsTarget(student)}>{student.email || '—'}</td>
+            <td className="px-5 py-4 cursor-pointer" onClick={() => setDetailsTarget(student)}>
+              {(() => {
+                const assignedCount = student.assigned_batches?.length || (student.assigned_batch_id ? 1 : 0);
+                if (assignedCount > 0) {
+                  return (
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-brand-light-purple text-brand-purple text-xs font-bold border border-brand-purple/10">
+                      <BookOpen className="w-3 h-3" />
+                      {assignedCount} {assignedCount === 1 ? 'Batch' : 'Batches'} Assigned
+                    </span>
+                  )
+                }
+                return <span className="text-xs text-gray-300 font-medium">No Batch</span>
+              })()}
             </td>
             <td className="px-5 py-4">
               <div className="flex items-center gap-1">
@@ -182,7 +218,7 @@ export default function StudentManagement() {
                   <BookOpen className="w-4 h-4" />
                 </button>
                 {/* Remove from batch */}
-                {student.assigned_batch_id && (
+                {(student.assigned_batches?.length > 0 || student.assigned_batch_id) && (
                   <button
                     onClick={() => handleRemoveBatch(student)}
                     disabled={removingBatchId === student.id}
@@ -224,21 +260,23 @@ export default function StudentManagement() {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Select Batch *</label>
-            <select
-              required
-              value={selectedBatchId}
-              onChange={(e) => setSelectedBatchId(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-purple/30 focus:border-brand-purple transition-all bg-white"
-            >
-              <option value="">Choose a batch...</option>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Select Batches</label>
+            <div className="max-h-60 overflow-y-auto space-y-2 border border-gray-100 rounded-xl p-2 bg-white">
               {batches.map((b) => (
-                <option key={b.id} value={b.id}>{b.name}</option>
+                <label key={b.id} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors border border-transparent hover:border-gray-200">
+                  <input
+                    type="checkbox"
+                    checked={selectedBatches.includes(b.id)}
+                    onChange={() => toggleBatchSelection(b.id)}
+                    className="w-4 h-4 text-brand-purple rounded border-gray-300 focus:ring-brand-purple"
+                  />
+                  <span className="text-sm font-medium text-gray-700">{b.name}</span>
+                </label>
               ))}
-            </select>
-            {batches.length === 0 && (
-              <p className="text-xs text-amber-500 mt-1.5">No active batches found. Create a batch first.</p>
-            )}
+              {batches.length === 0 && (
+                <p className="text-xs text-amber-500 p-2">No active batches found. Create a batch first.</p>
+              )}
+            </div>
           </div>
 
           <div className="flex items-center justify-end gap-3 pt-2">
@@ -251,7 +289,7 @@ export default function StudentManagement() {
             </button>
             <button
               type="submit"
-              disabled={savingBatch || !selectedBatchId}
+              disabled={savingBatch}
               className="px-5 py-2.5 text-sm font-bold text-white bg-brand-purple hover:bg-brand-purple-dark rounded-xl transition-colors shadow-sm shadow-brand-purple/20 disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {savingBatch && (
@@ -275,6 +313,50 @@ export default function StudentManagement() {
         title="Remove Student"
         message={`Are you sure you want to permanently remove "${deleteTarget?.name || deleteTarget?.email}"? This will delete their account data.`}
       />
+
+      {/* Student Details Modal */}
+      <Modal
+        isOpen={!!detailsTarget}
+        onClose={() => setDetailsTarget(null)}
+        title="Student Details"
+      >
+        <div className="space-y-6">
+          <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-2xl">
+            {detailsTarget?.photoURL ? (
+              <img src={detailsTarget.photoURL} alt="" className="w-16 h-16 rounded-xl object-cover shadow-sm" />
+            ) : (
+              <div className="w-16 h-16 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-700 text-2xl font-bold">
+                {(detailsTarget?.name || detailsTarget?.email || '?').charAt(0).toUpperCase()}
+              </div>
+            )}
+            <div>
+              <h3 className="text-lg font-bold text-gray-900">{detailsTarget?.name || 'No Name'}</h3>
+              <p className="text-sm text-gray-500">{detailsTarget?.email}</p>
+            </div>
+          </div>
+          
+          <div>
+            <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+              <BookOpen className="w-4 h-4 text-brand-purple" />
+              Assigned Batches
+            </h4>
+            <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
+              {(() => {
+                const assignedIds = detailsTarget?.assigned_batches || (detailsTarget?.assigned_batch_id ? [detailsTarget.assigned_batch_id] : []);
+                if (assignedIds.length === 0) {
+                  return <p className="text-sm text-gray-400 italic">No batches assigned yet.</p>
+                }
+                return assignedIds.map(id => (
+                  <div key={id} className="flex items-center justify-between p-3 bg-white border border-gray-100 rounded-xl shadow-sm">
+                    <span className="text-sm font-semibold text-gray-800">{batchMap[id] || id}</span>
+                    <span className="text-[10px] text-gray-400 font-mono bg-gray-50 px-2 py-0.5 rounded">ID: {id}</span>
+                  </div>
+                ))
+              })()}
+            </div>
+          </div>
+        </div>
+      </Modal>
     </div>
   )
 }

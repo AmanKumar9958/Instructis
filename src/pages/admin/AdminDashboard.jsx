@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom'
 import { db } from '../../firebase/firebase'
 import { collection, getDocs, query, where } from 'firebase/firestore'
 import { BookOpen, Users, GraduationCap, ArrowRight, TrendingUp, Clock } from 'lucide-react'
+import examData from '../../data/examData'
+import { aiMlCourses } from '../../data/aiMlData'
+import { codingCourses } from '../../data/codingData'
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({ batches: 0, teachers: 0, students: 0 })
@@ -16,8 +19,19 @@ export default function AdminDashboard() {
           getDocs(query(collection(db, 'users'), where('role', '==', 'Faculty'))),
           getDocs(query(collection(db, 'users'), where('role', '==', 'Student'))),
         ])
+
+        const firebaseBatchList = batchSnap.docs.map((d) => ({ id: d.id, ...d.data() }))
+        const staticBatches = [
+          ...examData.map(e => ({ id: e.id, name: e.shortName || e.name })),
+          ...aiMlCourses.map(c => ({ id: c.title.toLowerCase().replace(/\s+/g, '-'), name: c.title })),
+          ...codingCourses.map(c => ({ id: c.title.toLowerCase().replace(/\s+/g, '-'), name: c.title }))
+        ]
+        const allBatches = [...staticBatches, ...firebaseBatchList]
+        const uniqueBatchesMap = new Map()
+        allBatches.forEach(b => uniqueBatchesMap.set(b.id, b))
+
         setStats({
-          batches: batchSnap.size,
+          batches: uniqueBatchesMap.size,
           teachers: teacherSnap.size,
           students: studentSnap.size,
         })

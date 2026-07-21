@@ -28,7 +28,7 @@ export default function TeacherDashboard() {
           const studentsQuery = query(
             collection(db, 'users'), 
             where('role', '==', 'student'),
-            where('assigned_batch_id', 'in', user.assigned_batches)
+            where('assigned_batches', 'array-contains-any', user.assigned_batches)
           )
           const studentsSnapshot = await getDocs(studentsQuery)
           studentCount = studentsSnapshot.size

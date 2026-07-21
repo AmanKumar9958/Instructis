@@ -3,6 +3,8 @@ import { Search, X, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import examData from '../data/examData';
 import categoryData from '../data/categoryData';
+import { aiMlCourses } from '../data/aiMlData';
+import { codingCourses } from '../data/codingData';
 
 /**
  * Global search overlay.
@@ -64,6 +66,27 @@ export default function SearchOverlay({ isOpen, onClose }) {
         subtitle: cat.description,
         link: `/${cat.slug}`,
         tags: [cat.title, cat.description].join(' ')
+      });
+    });
+
+    // Courses
+    aiMlCourses.forEach(course => {
+      items.push({
+        type: 'AI & ML Course',
+        title: course.title,
+        subtitle: course.level,
+        link: '/ai-ml',
+        tags: [course.title, course.level, ...(course.tags || [])].join(' ')
+      });
+    });
+
+    codingCourses.forEach(course => {
+      items.push({
+        type: 'Coding Course',
+        title: course.title,
+        subtitle: course.level,
+        link: '/coding',
+        tags: [course.title, course.level, ...(course.tags || [])].join(' ')
       });
     });
 

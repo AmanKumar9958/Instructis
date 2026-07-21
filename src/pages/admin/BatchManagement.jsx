@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react'
 import { db } from '../../firebase/firebase'
+import examData from '../../data/examData'
+import { aiMlCourses } from '../../data/aiMlData'
+import { codingCourses } from '../../data/codingData'
 import {
   collection,
   getDocs,
@@ -7,6 +10,7 @@ import {
   updateDoc,
   deleteDoc,
   doc,
+  setDoc,
   serverTimestamp,
   orderBy,
   query,
@@ -43,7 +47,18 @@ export default function BatchManagement() {
     try {
       const q = query(collection(db, 'batches'), orderBy('created_at', 'desc'))
       const snap = await getDocs(q)
-      setBatches(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
+      const firebaseBatches = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
+
+      const staticBatches = [
+        ...examData.map(e => ({ id: e.id, name: e.shortName || e.name, description: e.tagline || e.description, status: 'active', isStatic: true, created_at: new Date() })),
+        ...aiMlCourses.map(c => ({ id: c.title.toLowerCase().replace(/\s+/g, '-'), name: c.title, description: c.description, status: 'active', isStatic: true, created_at: new Date() })),
+        ...codingCourses.map(c => ({ id: c.title.toLowerCase().replace(/\s+/g, '-'), name: c.title, description: c.description, status: 'active', isStatic: true, created_at: new Date() }))
+      ];
+
+      const allBatches = [...staticBatches, ...firebaseBatches];
+      const uniqueBatchesMap = new Map();
+      allBatches.forEach(b => uniqueBatchesMap.set(b.id, b));
+      setBatches(Array.from(uniqueBatchesMap.values()));
     } catch (err) {
       console.error('Failed to fetch batches:', err)
       toast.error('Failed to load batches')
@@ -115,6 +130,28 @@ export default function BatchManagement() {
     }
   }
 
+  const handleToggleStatus = async (batch) => {
+    const newStatus = batch.status === 'active' ? 'archived' : 'active'
+    try {
+      if (batch.isStatic) {
+        await setDoc(doc(db, 'batches', batch.id), {
+          name: batch.name,
+          description: batch.description,
+          status: newStatus,
+          created_at: serverTimestamp(),
+          isStaticOverride: true
+        })
+      } else {
+        await updateDoc(doc(db, 'batches', batch.id), { status: newStatus })
+      }
+      toast.success(`Batch marked as ${newStatus}`)
+      await fetchBatches()
+    } catch (err) {
+      console.error(err)
+      toast.error('Failed to update status')
+    }
+  }
+
   const formatDate = (ts) => {
     if (!ts) return '—'
     const d = ts.toDate ? ts.toDate() : new Date(ts)
@@ -149,7 +186,12 @@ export default function BatchManagement() {
         emptyMessage="No batches yet. Create your first batch!"
         renderRow={(batch) => (
           <tr key={batch.id} className="hover:bg-gray-50/50 transition-colors">
-            <td className="px-5 py-4 text-sm font-semibold text-gray-900">{batch.name}</td>
+            <td className="px-5 py-4">
+              <div className="flex flex-col">
+                <span className="text-sm font-semibold text-gray-900">{batch.name}</span>
+                <span className="text-[10px] text-gray-400 font-mono mt-0.5" title="Systematic ID">ID: {batch.id}</span>
+              </div>
+            </td>
             <td className="px-5 py-4 text-sm text-gray-500 max-w-xs truncate">{batch.description || '—'}</td>
             <td className="px-5 py-4">
               <StatusBadge status={batch.status || 'active'} />
@@ -158,19 +200,33 @@ export default function BatchManagement() {
             <td className="px-5 py-4">
               <div className="flex items-center gap-1">
                 <button
-                  onClick={() => openEdit(batch)}
-                  className="p-2 rounded-lg text-gray-400 hover:text-brand-purple hover:bg-brand-light-purple transition-colors"
-                  title="Edit"
+                  onClick={() => handleToggleStatus(batch)}
+                  className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors border ${
+                    batch.status === 'active'
+                      ? 'text-red-600 bg-red-50 hover:bg-red-100 border-red-200'
+                      : 'text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border-emerald-200'
+                  }`}
                 >
-                  <Pencil className="w-4 h-4" />
+                  {batch.status === 'active' ? 'Make Inactive' : 'Make Active'}
                 </button>
-                <button
-                  onClick={() => setDeleteTarget(batch)}
-                  className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
-                  title="Delete"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                {!batch.isStatic && !batch.isStaticOverride && (
+                  <>
+                    <button
+                      onClick={() => openEdit(batch)}
+                      className="p-2 rounded-lg text-gray-400 hover:text-brand-purple hover:bg-brand-light-purple transition-colors"
+                      title="Edit"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => setDeleteTarget(batch)}
+                      className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                      title="Delete"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </>
+                )}
               </div>
             </td>
           </tr>
