@@ -12,7 +12,8 @@ const paths = [
   { title: 'UPSC Foundation', description: 'Prelims + Mains + Interview', link: '/competitive-exams/upsc', color: '#F59E0B', tag: 'Government' },
   { title: 'Full-Stack Dev', description: 'React, Node.js, cloud deploy', link: '/coding', color: '#06B6D4', tag: 'Coding' },
   { title: 'CAT Quantitative', description: 'Speed, accuracy, strategy', link: '/competitive-exams/cat', color: '#6366F1', tag: 'Management' },
-  { title: 'Deep Learning', description: 'CNNs, RNNs, Transformers', link: '/ai-ml', color: '#F43F5E', tag: 'AI/ML' }
+  { title: 'Deep Learning', description: 'CNNs, RNNs, Transformers', link: '/ai-ml', color: '#F43F5E', tag: 'AI/ML' },
+  { title: 'IELTS Mastery', description: 'Target 8+ Band Score', link: '/competitive-exams/ielts', color: '#E11D48', tag: 'Study Abroad' }
 ];
 
 export default function PopularPaths() {

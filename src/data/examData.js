@@ -1,4 +1,4 @@
-import { Calculator, Stethoscope, Landmark, Shield, TrendingUp, Brain, Cpu, Scale, Swords } from 'lucide-react';
+import { Calculator, Stethoscope, Landmark, Shield, TrendingUp, Brain, Cpu, Scale, Swords, Globe } from 'lucide-react';
 
 /**
  * Centralized exam configuration.
@@ -383,6 +383,61 @@ const examData = [
       'Begin physical fitness preparation alongside academics'
     ],
     ctaLabel: 'Start NDA preparation',
+    ctaLink: '/#book-session',
+    isDetailed: true
+  },
+  {
+    id: 'ielts',
+    slug: 'ielts',
+    name: 'IELTS Exam Preparation',
+    shortName: 'IELTS',
+    category: 'Study Abroad',
+    tagline: 'Achieve your target band score in IELTS with expert guidance.',
+    description: 'Comprehensive IELTS preparation covering Reading, Writing, Listening, and Speaking modules. Get personalized feedback, mock tests, and strategies to maximize your band score for global opportunities.',
+    icon: Globe,
+    color: '#E11D48',
+    highlights: [
+      'Extensive practice for Reading, Writing, Listening, and Speaking',
+      'Personalized feedback on writing tasks and speaking interviews',
+      'Vocabulary and grammar enhancement modules',
+      'Full-length mock tests under real exam conditions',
+      'Time management and question-solving strategies',
+      'Guidance for both Academic and General Training modules'
+    ],
+    subjects: ['Reading', 'Writing', 'Listening', 'Speaking'],
+    eligibility: 'Anyone looking to study, work, or migrate to an English-speaking country',
+    examPattern: {
+      mode: 'Paper-based or Computer-delivered',
+      duration: '2 hours 45 minutes',
+      sections: 'Listening (30 min), Reading (60 min), Writing (60 min), Speaking (11-14 min)',
+      questions: 'Varies by section',
+      marking: 'Band scale from 1 (Non-user) to 9 (Expert user)'
+    },
+    preparationTips: [
+      'Immerse yourself in English daily (podcasts, news, movies)',
+      'Practice skimming and scanning techniques for Reading',
+      'Focus on coherence and vocabulary for Writing tasks',
+      'Speak naturally and confidently in the Speaking test',
+      'Take timed mock tests to build stamina and speed'
+    ],
+    whatYouLearn: [
+      'Understand the complete IELTS test format and scoring criteria',
+      'Master proven strategies for Listening, Reading, Writing, and Speaking modules',
+      'Expand your vocabulary and grammatical range for a higher band score',
+      'Enhance time management skills under actual test conditions'
+    ],
+    courseTypes: [
+      'Academic IELTS Preparation',
+      'General Training IELTS Preparation',
+      'IELTS Life Skills',
+      'UKVI IELTS Preparation'
+    ],
+    durationInfo: [
+      { duration: '2–4 weeks', description: 'Intensive preparation' },
+      { duration: '1–3 months', description: 'Regular preparation' },
+      { duration: '3–6 months', description: 'For students who need to improve their English significantly' }
+    ],
+    ctaLabel: 'Start IELTS preparation',
     ctaLink: '/#book-session',
     isDetailed: true
   }

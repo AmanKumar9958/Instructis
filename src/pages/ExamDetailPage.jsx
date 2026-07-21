@@ -76,6 +76,64 @@ export default function ExamDetailPage() {
         </div>
       </section>
 
+      {/* Additional Course Details (Optional) */}
+      {(exam.whatYouLearn || exam.courseTypes || exam.durationInfo) && (
+        <section className="py-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <SectionHeader badge="Course Details" title={<>More about the <span style={{ color: exam.color }}>{exam.shortName}</span> course</>} />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {exam.whatYouLearn && (
+                <Reveal direction="up" delay={0}>
+                  <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm h-full hover:shadow-md transition-shadow">
+                    <h3 className="text-xl font-bold text-gray-900 mb-6">What you'll learn</h3>
+                    <ul className="space-y-4">
+                      {exam.whatYouLearn.map((item, idx) => (
+                        <li key={idx} className="flex gap-3 text-gray-700 text-sm">
+                          <CheckCircle className="w-5 h-5 flex-shrink-0" style={{ color: exam.color }} />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </Reveal>
+              )}
+              
+              {exam.courseTypes && (
+                <Reveal direction="up" delay={80}>
+                  <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm h-full hover:shadow-md transition-shadow">
+                    <h3 className="text-xl font-bold text-gray-900 mb-6">Types of courses</h3>
+                    <ul className="space-y-4">
+                      {exam.courseTypes.map((item, idx) => (
+                        <li key={idx} className="flex gap-3 text-gray-700 text-sm">
+                          <CheckCircle className="w-5 h-5 flex-shrink-0" style={{ color: exam.color }} />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </Reveal>
+              )}
+
+              {exam.durationInfo && (
+                <Reveal direction="up" delay={160}>
+                  <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm h-full hover:shadow-md transition-shadow">
+                    <h3 className="text-xl font-bold text-gray-900 mb-6">Course duration</h3>
+                    <div className="space-y-5">
+                      {exam.durationInfo.map((item, idx) => (
+                        <div key={idx} className="flex flex-col gap-1 pb-4 border-b border-gray-50 last:border-0 last:pb-0">
+                          <span className="font-bold text-gray-900 text-sm">{item.duration}</span>
+                          <span className="text-gray-600 text-sm">{item.description}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </Reveal>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Exam Pattern & Details */}
       <section className="py-16 bg-surface-secondary">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

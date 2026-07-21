@@ -41,6 +41,7 @@ export default function Footer() {
               <li><Link to="/competitive-exams/upsc" className="hover:text-brand-orange transition-colors">UPSC Civil Services</Link></li>
               <li><Link to="/competitive-exams/cat" className="hover:text-brand-orange transition-colors">CAT</Link></li>
               <li><Link to="/competitive-exams/gate" className="hover:text-brand-orange transition-colors">GATE</Link></li>
+              <li><Link to="/competitive-exams/ielts" className="hover:text-brand-orange transition-colors">IELTS</Link></li>
               <li><Link to="/competitive-exams" className="hover:text-brand-orange transition-colors font-medium">View All →</Link></li>
             </ul>
           </div>
