@@ -133,7 +133,6 @@ export default function AdminDashboard() {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
-            { to: '/admin/batches', label: 'Create New Batch', desc: 'Add a new course batch', icon: BookOpen, color: 'text-brand-purple bg-brand-light-purple' },
             { to: '/admin/teachers', label: 'Approve Teachers', desc: 'Review pending faculty', icon: Users, color: 'text-brand-orange bg-orange-50' },
             { to: '/admin/students', label: 'Assign Students', desc: 'Assign batches to students', icon: GraduationCap, color: 'text-accent-emerald bg-emerald-50' },
           ].map((action) => (

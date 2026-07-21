@@ -169,13 +169,13 @@ export default function BatchManagement() {
           </div>
           <h1 className="text-2xl font-black text-gray-900 tracking-tight">Batches</h1>
         </div>
-        <button
+        {/* <button
           onClick={openCreate}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-purple hover:bg-brand-purple-dark text-white font-bold text-sm rounded-xl transition-colors shadow-md shadow-brand-purple/20"
+          className="flex items-center gap-2 px-5 py-2.5 bg-brand-purple hover:bg-brand-purple-dark text-white text-sm font-bold rounded-xl transition-all shadow-sm shadow-brand-purple/20 hover:shadow-md hover:-translate-y-0.5"
         >
           <Plus className="w-4 h-4" />
-          Add Batch
-        </button>
+          New Batch
+        </button> */}
       </div>
 
       {/* Table */}
@@ -201,11 +201,10 @@ export default function BatchManagement() {
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => handleToggleStatus(batch)}
-                  className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors border ${
-                    batch.status === 'active'
-                      ? 'text-red-600 bg-red-50 hover:bg-red-100 border-red-200'
-                      : 'text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border-emerald-200'
-                  }`}
+                  className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors border ${batch.status === 'active'
+                    ? 'text-red-600 bg-red-50 hover:bg-red-100 border-red-200'
+                    : 'text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border-emerald-200'
+                    }`}
                 >
                   {batch.status === 'active' ? 'Make Inactive' : 'Make Active'}
                 </button>
