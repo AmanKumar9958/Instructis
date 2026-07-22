@@ -12,13 +12,9 @@ export default function Navbar() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { user, role, logout, loginWithGoogle, loginSuperAdmin } = useAuth();
-  const [showModal, setShowModal] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showMegaMenu, setShowMegaMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
-
-  // Custom auth states
-  const [selectedRole, setSelectedRole] = useState(null);
 
   const [errorText, setErrorText] = useState('');
   const [loading, setLoading] = useState(false);
@@ -70,26 +66,11 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleOpenModal = () => {
-    setShowModal(true);
-    setSelectedRole(null);
+  const handleStudentLogin = async () => {
     setErrorText('');
-    setIsMobileMenuOpen(false);
-  };
-
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setSelectedRole(null);
-    setErrorText('');
-  };
-
-  const handleRoleSelect = async (r) => {
-    setErrorText('');
-    setSelectedRole(r);
     setLoading(true);
     try {
-      await loginWithGoogle(r);
-      handleCloseModal();
+      await loginWithGoogle('Student');
     } catch (err) {
       setErrorText(getFriendlyErrorMessage(err));
     } finally {
@@ -104,12 +85,22 @@ export default function Navbar() {
   const AuthStatusUI = ({ isMobile }) => {
     if (!user) {
       return (
-        <button
-          onClick={handleOpenModal}
-          className={`bg-brand-purple hover:bg-brand-purple-dark text-white font-bold rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-brand-purple/20 ${isMobile ? 'w-full py-3 text-lg' : 'py-2.5 px-6 text-sm'}`}
-        >
-          Log In
-        </button>
+        <div className="flex flex-col items-center gap-2 w-full">
+          {errorText && (
+            <span className="text-[10px] sm:text-xs text-red-500 font-semibold bg-red-50 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-red-100 shadow-sm whitespace-nowrap">
+              {errorText}
+            </span>
+          )}
+          <button
+            onClick={handleStudentLogin}
+            disabled={loading}
+            className={`group relative overflow-hidden flex items-center justify-center gap-2 bg-gradient-to-r from-brand-purple to-brand-orange text-white font-bold rounded-xl transition-all duration-300 hover:shadow-xl hover:shadow-brand-purple/30 hover:-translate-y-0.5 ${isMobile ? 'w-full py-3 text-lg' : 'py-2.5 px-6 text-sm'} ${loading ? 'opacity-80 cursor-not-allowed' : ''}`}
+          >
+            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+            {/* <GraduationCap className="w-5 h-5 group-hover:scale-110 transition-transform duration-300 relative z-10" /> */}
+            <span className="relative z-10">Login</span>
+          </button>
+        </div>
       );
     }
 
@@ -188,11 +179,10 @@ export default function Navbar() {
               <div className="relative">
                 <button
                   onClick={() => setShowMegaMenu(!showMegaMenu)}
-                  className={`flex items-center gap-1 text-sm transition-colors px-3 py-2 rounded-lg ${
-                    ['/ai-ml', '/coding', '/careers'].some(path => pathname.startsWith(path))
+                  className={`flex items-center gap-1 text-sm transition-colors px-3 py-2 rounded-lg ${['/ai-ml', '/coding', '/careers'].some(path => pathname.startsWith(path))
                       ? 'text-brand-purple bg-brand-light-purple font-bold shadow-sm shadow-brand-purple/5'
                       : 'text-gray-600 hover:text-brand-purple hover:bg-gray-50 font-semibold'
-                  }`}
+                    }`}
                 >
                   Explore
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${showMegaMenu ? 'rotate-180' : ''}`} />
@@ -201,64 +191,58 @@ export default function Navbar() {
 
               <Link
                 to="/competitive-exams"
-                className={`text-sm transition-colors px-3 py-2 rounded-lg ${
-                  pathname.startsWith('/competitive-exams') || pathname === '/jee' || pathname === '/neet'
+                className={`text-sm transition-colors px-3 py-2 rounded-lg ${pathname.startsWith('/competitive-exams') || pathname === '/jee' || pathname === '/neet'
                     ? 'text-brand-purple bg-brand-light-purple font-bold shadow-sm shadow-brand-purple/5'
                     : 'text-gray-600 hover:text-brand-purple hover:bg-gray-50 font-semibold'
-                }`}
+                  }`}
               >
                 Exams
               </Link>
               <Link
                 to="/centers"
-                className={`text-sm transition-colors px-3 py-2 rounded-lg ${
-                  pathname.startsWith('/centers')
+                className={`text-sm transition-colors px-3 py-2 rounded-lg ${pathname.startsWith('/centers')
                     ? 'text-brand-purple bg-brand-light-purple font-bold shadow-sm shadow-brand-purple/5'
                     : 'text-gray-600 hover:text-brand-purple hover:bg-gray-50 font-semibold'
-                }`}
+                  }`}
               >
                 Centers
               </Link>
               <Link
                 to="/about"
-                className={`text-sm transition-colors px-3 py-2 rounded-lg ${
-                  pathname.startsWith('/about')
+                className={`text-sm transition-colors px-3 py-2 rounded-lg ${pathname.startsWith('/about')
                     ? 'text-brand-purple bg-brand-light-purple font-bold shadow-sm shadow-brand-purple/5'
                     : 'text-gray-600 hover:text-brand-purple hover:bg-gray-50 font-semibold'
-                }`}
+                  }`}
               >
                 About
               </Link>
               {role === 'Faculty' ? (
                 <Link
                   to="/faculty/classes"
-                  className={`text-sm font-bold transition-all px-3 py-2 rounded-lg ${
-                    pathname.startsWith('/faculty/classes')
+                  className={`text-sm font-bold transition-all px-3 py-2 rounded-lg ${pathname.startsWith('/faculty/classes')
                       ? 'text-white bg-brand-purple hover:bg-brand-purple-dark shadow-md shadow-brand-purple/20'
                       : 'text-brand-purple hover:text-brand-purple-dark hover:bg-brand-light-purple'
-                  }`}
+                    }`}
                 >
                   Classes
                 </Link>
               ) : role === 'Student' ? (
                 <Link
                   to="/student/join-class"
-                  className={`text-sm font-bold transition-all px-3 py-2 rounded-lg ${
-                    pathname.startsWith('/student/join-class')
+                  className={`text-sm font-bold transition-all px-3 py-2 rounded-lg ${pathname.startsWith('/student/join-class')
                       ? 'text-white bg-brand-purple hover:bg-brand-purple-dark shadow-md shadow-brand-purple/20'
                       : 'text-brand-purple hover:text-brand-purple-dark hover:bg-brand-light-purple'
-                  }`}
+                    }`}
                 >
                   Join Class
                 </Link>
               ) : (
                 <Link
                   to="/partner"
-                  className={`text-sm font-bold transition-all px-3 py-2 rounded-lg ${
-                    pathname.startsWith('/partner')
+                  className={`text-sm font-bold transition-all px-3 py-2 rounded-lg ${pathname.startsWith('/partner')
                       ? 'text-white bg-brand-purple hover:bg-brand-purple-dark shadow-md shadow-brand-purple/20'
                       : 'text-brand-purple hover:text-brand-purple-dark hover:bg-brand-light-purple'
-                  }`}
+                    }`}
                 >
                   Partner With Us
                 </Link>
@@ -310,55 +294,50 @@ export default function Navbar() {
                 <Link
                   to="/competitive-exams"
                   onClick={closeMobileMenu}
-                  className={`text-base py-2 px-3 rounded-lg transition-all ${
-                    pathname.startsWith('/competitive-exams') || pathname === '/jee' || pathname === '/neet'
+                  className={`text-base py-2 px-3 rounded-lg transition-all ${pathname.startsWith('/competitive-exams') || pathname === '/jee' || pathname === '/neet'
                       ? 'font-bold text-brand-purple bg-brand-light-purple'
                       : 'font-semibold text-gray-700 hover:text-brand-purple hover:bg-gray-50 transition-colors'
-                  }`}
+                    }`}
                 >
                   Competitive Exams
                 </Link>
                 <Link
                   to="/ai-ml"
                   onClick={closeMobileMenu}
-                  className={`text-base py-2 px-3 rounded-lg transition-all ${
-                    pathname.startsWith('/ai-ml')
+                  className={`text-base py-2 px-3 rounded-lg transition-all ${pathname.startsWith('/ai-ml')
                       ? 'font-bold text-brand-purple bg-brand-light-purple'
                       : 'font-semibold text-gray-700 hover:text-brand-purple hover:bg-gray-50 transition-colors'
-                  }`}
+                    }`}
                 >
                   AI & Machine Learning
                 </Link>
                 <Link
                   to="/coding"
                   onClick={closeMobileMenu}
-                  className={`text-base py-2 px-3 rounded-lg transition-all ${
-                    pathname.startsWith('/coding')
+                  className={`text-base py-2 px-3 rounded-lg transition-all ${pathname.startsWith('/coding')
                       ? 'font-bold text-brand-purple bg-brand-light-purple'
                       : 'font-semibold text-gray-700 hover:text-brand-purple hover:bg-gray-50 transition-colors'
-                  }`}
+                    }`}
                 >
                   Coding & Programming
                 </Link>
                 <Link
                   to="/centers"
                   onClick={closeMobileMenu}
-                  className={`text-base py-2 px-3 rounded-lg transition-all ${
-                    pathname.startsWith('/centers')
+                  className={`text-base py-2 px-3 rounded-lg transition-all ${pathname.startsWith('/centers')
                       ? 'font-bold text-brand-purple bg-brand-light-purple'
                       : 'font-semibold text-gray-700 hover:text-brand-purple hover:bg-gray-50 transition-colors'
-                  }`}
+                    }`}
                 >
                   Centers
                 </Link>
                 <Link
                   to="/about"
                   onClick={closeMobileMenu}
-                  className={`text-base py-2 px-3 rounded-lg transition-all ${
-                    pathname.startsWith('/about')
+                  className={`text-base py-2 px-3 rounded-lg transition-all ${pathname.startsWith('/about')
                       ? 'font-bold text-brand-purple bg-brand-light-purple'
                       : 'font-semibold text-gray-700 hover:text-brand-purple hover:bg-gray-50 transition-colors'
-                  }`}
+                    }`}
                 >
                   About
                 </Link>
@@ -366,11 +345,10 @@ export default function Navbar() {
                   <Link
                     to="/faculty/classes"
                     onClick={closeMobileMenu}
-                    className={`text-base font-bold transition-all py-2 px-3 rounded-lg ${
-                      pathname.startsWith('/faculty/classes')
+                    className={`text-base font-bold transition-all py-2 px-3 rounded-lg ${pathname.startsWith('/faculty/classes')
                         ? 'text-white bg-brand-purple shadow-md shadow-brand-purple/20'
                         : 'text-brand-purple hover:bg-brand-light-purple transition-colors'
-                    }`}
+                      }`}
                   >
                     Classes
                   </Link>
@@ -378,11 +356,10 @@ export default function Navbar() {
                   <Link
                     to="/student/join-class"
                     onClick={closeMobileMenu}
-                    className={`text-base font-bold transition-all py-2 px-3 rounded-lg ${
-                      pathname.startsWith('/student/join-class')
+                    className={`text-base font-bold transition-all py-2 px-3 rounded-lg ${pathname.startsWith('/student/join-class')
                         ? 'text-white bg-brand-purple shadow-md shadow-brand-purple/20'
                         : 'text-brand-purple hover:bg-brand-light-purple transition-colors'
-                    }`}
+                      }`}
                   >
                     Join Class
                   </Link>
@@ -390,11 +367,10 @@ export default function Navbar() {
                   <Link
                     to="/partner"
                     onClick={closeMobileMenu}
-                    className={`text-base font-bold transition-all py-2 px-3 rounded-lg ${
-                      pathname.startsWith('/partner')
+                    className={`text-base font-bold transition-all py-2 px-3 rounded-lg ${pathname.startsWith('/partner')
                         ? 'text-white bg-brand-purple shadow-md shadow-brand-purple/20'
                         : 'text-brand-purple hover:bg-brand-light-purple transition-colors'
-                    }`}
+                      }`}
                   >
                     Partner With Us
                   </Link>
@@ -413,75 +389,7 @@ export default function Navbar() {
         <SearchOverlay isOpen={showSearch} onClose={() => setShowSearch(false)} />
       </Suspense>
 
-      {/* Role Selection / Login Modal */}
-      {showModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
-          <div className="bg-white max-w-md w-full rounded-3xl shadow-2xl overflow-hidden relative animate-in zoom-in-95 duration-300">
-            {/* Top Branding Bar */}
-            <div className="h-1.5 bg-gradient-to-r from-brand-purple to-brand-orange w-full" />
-            
-            <button
-              onClick={handleCloseModal}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 p-2 bg-gray-50 hover:bg-gray-100 rounded-full transition-colors z-10"
-            >
-              <X className="w-5 h-5" />
-            </button>
 
-            <div className="p-8">
-              <div className="text-center mb-8">
-                <div className="inline-block p-3 rounded-2xl bg-brand-light-purple text-brand-purple mb-4">
-                  <GraduationCap className="w-8 h-8" />
-                </div>
-                <h2 className="text-3xl font-black text-gray-900 tracking-tight">Welcome Back</h2>
-                <p className="text-gray-500 mt-2 font-medium">Log into your Instructis account</p>
-              </div>
-
-              {errorText && (
-                <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm mb-6 font-semibold text-center border border-red-100 flex items-center justify-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-red-600 rounded-full animate-pulse" />
-                  {errorText}
-                </div>
-              )}
-
-              {!selectedRole ? (
-                <div className="grid grid-cols-2 gap-4">
-                  {[
-                    { id: 'Student', icon: <GraduationCap />, label: 'Student' },
-                    { id: 'Parents', icon: <Users />, label: 'Parent' },
-                  ].map(r => (
-                    <button
-                      key={r.id}
-                      disabled={loading}
-                      onClick={() => handleRoleSelect(r.id)}
-                      className={`group flex flex-col items-center justify-center p-6 rounded-2xl border-2 border-gray-100 transition-all duration-300 transform ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:border-brand-purple hover:bg-brand-light-purple/50 hover:-translate-y-1'}`}
-                    >
-                      <div className="w-12 h-12 rounded-xl bg-gray-50 text-gray-400 group-hover:bg-white group-hover:text-brand-purple flex items-center justify-center mb-3 transition-colors shadow-sm">
-                        {loading && selectedRole === r.id ? <Loader2 className="w-6 h-6 animate-spin text-brand-purple" /> : r.icon}
-                      </div>
-                      <span className="font-bold text-gray-700 group-hover:text-brand-purple transition-colors">{r.label}</span>
-                    </button>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-10">
-                  <div className="relative w-20 h-20 mx-auto mb-6">
-                    <div className="absolute inset-0 bg-brand-purple rounded-full animate-ping opacity-20" />
-                    <div className="relative w-20 h-20 bg-brand-light-purple rounded-full flex items-center justify-center text-brand-purple">
-                      <GraduationCap className="w-10 h-10" />
-                    </div>
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Google Auth</h3>
-                  <p className="text-gray-500 font-medium">Opening secure sign-in for {selectedRole}...</p>
-                </div>
-              )}
-              
-              <p className="text-[10px] text-center text-gray-400 mt-8 leading-relaxed">
-                By continuing, you agree to Instructis' <span className="underline hover:text-brand-purple cursor-pointer">Terms</span> and <span className="underline hover:text-brand-purple cursor-pointer">Privacy Policy</span>.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
       {/* Full Screen Loading Overlay */}
       {loading && (
         <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-white/90 backdrop-blur-sm animate-in fade-in duration-300">
