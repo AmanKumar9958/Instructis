@@ -227,7 +227,7 @@ const Centers = () => {
         )}
 
         {/* ─── Map ─── */}
-        <div className="relative rounded-2xl overflow-hidden shadow-elevated group">
+        <div className="relative z-0 rounded-2xl overflow-hidden shadow-elevated group">
           {/* Top gradient accent bar */}
           <div className="absolute top-0 left-0 right-0 h-1 z-10 bg-gradient-to-r from-brand-purple via-brand-purple-light to-brand-orange" />
 

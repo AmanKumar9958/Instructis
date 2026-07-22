@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react'
-import { collection, query, where, getDocs } from 'firebase/firestore'
+import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore'
 import { db } from '../../firebase/firebase'
 import { useAuth } from '../../hooks/useAuth'
-import { Video, FileQuestion, Users, CheckCircle, ShieldCheck } from 'lucide-react'
+import { Video, FileQuestion, Users, CheckCircle, ShieldCheck, BookOpen } from 'lucide-react'
+import examData from '../../data/examData'
+import { aiMlCourses } from '../../data/aiMlData'
+import { codingCourses } from '../../data/codingData'
 
 export default function TeacherDashboard() {
   const { user } = useAuth()
   const [stats, setStats] = useState({ classes: 0, quizzes: 0, students: 0 })
+  const [assignedBatches, setAssignedBatches] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -22,18 +26,41 @@ export default function TeacherDashboard() {
         const quizzesQuery = query(collection(db, 'quizzes'), where('teacher_id', '==', user.uid))
         const quizzesSnapshot = await getDocs(quizzesQuery)
         
-        // Fetch students if assigned_batches is available
+        const userDocRef = doc(db, 'users', user.uid)
+        const userDocSnap = await getDoc(userDocRef)
+        const freshUser = userDocSnap.exists() ? { ...user, ...userDocSnap.data() } : user
+        const assignedBatchesArr = freshUser.assigned_batches || []
+        
         let studentCount = 0
-        if (user.assigned_batches && user.assigned_batches.length > 0) {
+        if (assignedBatchesArr.length > 0) {
+          // Fetch batches names
+          const batchesQuery = query(collection(db, 'batches'))
+          const batchesSnapshot = await getDocs(batchesQuery)
+          const firebaseBatchList = batchesSnapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+          
+          const staticBatches = [
+            ...examData.map(e => ({ id: e.id, name: e.shortName || e.name })),
+            ...aiMlCourses.map(c => ({ id: c.title.toLowerCase().replace(/\s+/g, '-'), name: c.title })),
+            ...codingCourses.map(c => ({ id: c.title.toLowerCase().replace(/\s+/g, '-'), name: c.title }))
+          ]
+
+          const allSystemBatches = [...staticBatches, ...firebaseBatchList]
+          const uniqueBatchesMap = new Map()
+          allSystemBatches.forEach(b => uniqueBatchesMap.set(b.id, b))
+          const finalBatchList = Array.from(uniqueBatchesMap.values())
+
+          const assigned = finalBatchList.filter(b => assignedBatchesArr.includes(b.id))
+          setAssignedBatches(assigned)
+          
+          // Fetch students
           const studentsQuery = query(
             collection(db, 'users'), 
-            where('role', '==', 'student'),
-            where('assigned_batches', 'array-contains-any', user.assigned_batches)
+            where('role', '==', 'Student'), // Capitalized 'Student' correctly
+            where('assigned_batches', 'array-contains-any', assignedBatchesArr)
           )
           const studentsSnapshot = await getDocs(studentsQuery)
           studentCount = studentsSnapshot.size
         }
-        
         setStats({
           classes: classesSnapshot.size,
           quizzes: quizzesSnapshot.size,
@@ -83,9 +110,22 @@ export default function TeacherDashboard() {
                 <span className="text-gray-400">ID:</span>
                 <span className="text-gray-900">{user?.teacher_id || user?.uid}</span>
               </div>
-              <div className="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
-                <span className="text-gray-400">Batches:</span>
-                <span className="text-gray-900">{user?.assigned_batches?.length || 0}</span>
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2 text-sm text-gray-500 font-medium">
+                  <BookOpen className="w-4 h-4 text-brand-purple" />
+                  Assigned Batches ({assignedBatches.length})
+                </div>
+                {assignedBatches.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {assignedBatches.map(b => (
+                      <span key={b.id} className="inline-flex items-center px-3 py-1 rounded-lg bg-gray-50 border border-gray-100 text-sm font-semibold text-gray-800 shadow-sm">
+                        {b.name}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <span className="text-sm text-gray-400 italic">No batches assigned yet.</span>
+                )}
               </div>
             </div>
           </div>

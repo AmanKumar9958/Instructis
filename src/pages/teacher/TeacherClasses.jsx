@@ -4,6 +4,9 @@ import { db } from '../../firebase/firebase'
 import { useAuth } from '../../hooks/useAuth'
 import { useToast } from '../../components/admin/Toast'
 import { Video, Calendar, Clock, Link as LinkIcon, Plus, Trash2, PowerOff, Loader2 } from 'lucide-react'
+import examData from '../../data/examData'
+import { aiMlCourses } from '../../data/aiMlData'
+import { codingCourses } from '../../data/codingData'
 
 export default function TeacherClasses() {
   const { user } = useAuth()
@@ -31,15 +34,22 @@ export default function TeacherClasses() {
       try {
         // Fetch Batches assigned to teacher
         if (user.assigned_batches && user.assigned_batches.length > 0) {
-          // Note: 'in' queries support max 10 values. Assuming teacher has <= 10 batches.
-          const batchesQuery = query(
-            collection(db, 'batches')
-            // Firestore rules might require fetching all and filtering if we don't have batch IDs as a queryable field, 
-            // but assuming we can fetch by doc ID or we just fetch all active and filter locally for safety with small data
-          )
+          const batchesQuery = query(collection(db, 'batches'))
           const batchesSnapshot = await getDocs(batchesQuery)
-          const allBatches = batchesSnapshot.docs.map(d => ({ id: d.id, ...d.data() }))
-          const assigned = allBatches.filter(b => user.assigned_batches.includes(b.id))
+          const firebaseBatchList = batchesSnapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+          
+          const staticBatches = [
+            ...examData.map(e => ({ id: e.id, name: e.shortName || e.name })),
+            ...aiMlCourses.map(c => ({ id: c.title.toLowerCase().replace(/\s+/g, '-'), name: c.title })),
+            ...codingCourses.map(c => ({ id: c.title.toLowerCase().replace(/\s+/g, '-'), name: c.title }))
+          ]
+
+          const allSystemBatches = [...staticBatches, ...firebaseBatchList]
+          const uniqueBatchesMap = new Map()
+          allSystemBatches.forEach(b => uniqueBatchesMap.set(b.id, b))
+          const finalBatchList = Array.from(uniqueBatchesMap.values())
+
+          const assigned = finalBatchList.filter(b => user.assigned_batches.includes(b.id))
           setBatches(assigned)
           
           if (assigned.length > 0) {
