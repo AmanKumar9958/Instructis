@@ -43,6 +43,7 @@ const StudentDashboard = lazy(() => import('./pages/student/StudentDashboard'));
 const StudentClasses = lazy(() => import('./pages/student/StudentClasses'));
 const StudentQuizzes = lazy(() => import('./pages/student/StudentQuizzes'));
 const StudentQuizAttempt = lazy(() => import('./pages/student/StudentQuizAttempt'));
+const StudentMarks = lazy(() => import('./pages/student/StudentMarks'));
 
 const RouteFallback = () => <PageSpinner />;
 
@@ -98,6 +99,7 @@ function App() {
             <Route index element={<StudentDashboard />} />
             <Route path="classes" element={<StudentClasses />} />
             <Route path="quizzes" element={<StudentQuizzes />} />
+            <Route path="marks" element={<StudentMarks />} />
           </Route>
 
           {/* Fullscreen Quiz Attempt (No sidebar layout) */}

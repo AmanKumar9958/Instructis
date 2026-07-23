@@ -12,12 +12,14 @@ import {
   ChevronRight,
   Shield,
   Loader2,
+  FileSpreadsheet,
 } from 'lucide-react'
 
 const NAV_ITEMS = [
   { to: '/student', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/student/classes', label: 'Classes Hub', icon: Video },
   { to: '/student/quizzes', label: 'Quizzes', icon: FileQuestion },
+  { to: '/student/marks', label: 'Marks', icon: FileSpreadsheet },
 ]
 
 export default function StudentLayout() {
