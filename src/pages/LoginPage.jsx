@@ -9,18 +9,22 @@ const LoginPage = () => {
   const { user, loginWithGoogle, authActionLoading } = useAuth()
   const [isOpen, setIsOpen] = useState(true)
 
+  const handleLogin = async (selectedRole) => {
+    await loginWithGoogle(selectedRole)
+  }
+
   useEffect(() => {
     if (user) {
-      const nextPath = location.state?.from || '/'
+      let nextPath = location.state?.from
+      if (!nextPath || nextPath === '/') {
+        if (user.role === 'Student') nextPath = '/student'
+        else if (user.role === 'Faculty') nextPath = '/teacher'
+        else if (user.role === 'SuperAdmin') nextPath = '/admin'
+        else nextPath = '/'
+      }
       navigate(nextPath, { replace: true })
     }
   }, [location.state, navigate, user])
-
-  const handleLogin = async (selectedRole) => {
-    await loginWithGoogle(selectedRole)
-    const nextPath = location.state?.from || '/'
-    navigate(nextPath, { replace: true })
-  }
 
   return (
     <section className="w-full max-w-xl rounded-3xl bg-white p-8 shadow-xl shadow-stone-200 md:p-10 dark:bg-gray-800 dark:shadow-none">

@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, lazy, Suspense } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { Menu, X, UploadCloud, GraduationCap, Users, Loader2, Search, ChevronDown } from 'lucide-react';
+import { Menu, X, UploadCloud, GraduationCap, Users, Loader2, Search, ChevronDown, LayoutDashboard } from 'lucide-react';
 import { getFriendlyErrorMessage } from '../utils/errors';
 import LoadingOverlay from './LoadingOverlay';
 import MegaMenu from './MegaMenu';
@@ -107,18 +107,16 @@ export default function Navbar() {
     return (
       <div className={`flex ${isMobile ? 'flex-col space-y-4' : 'items-center space-x-4'}`}>
         <div className="flex items-center space-x-3">
-          {['Faculty', 'SuperAdmin'].includes(role) && (
-            <Link
-              to="/faculty/marks-upload"
-              onClick={closeMobileMenu}
-              className={`group relative text-gray-500 hover:text-brand-purple transition-colors p-2 flex items-center justify-center rounded-full hover:bg-purple-50 ${isMobile ? 'self-start mb-2 bg-gray-100' : ''}`}
-            >
-              <UploadCloud className="w-5 h-5" />
-              <span className={`absolute ${isMobile ? 'left-10' : '-bottom-10 left-1/2 -translate-x-1/2'} opacity-0 group-hover:opacity-100 transition-opacity bg-gray-800 text-white text-xs py-1 px-2 rounded whitespace-nowrap pointer-events-none z-50`}>
-                Marks Upload
-              </span>
-            </Link>
-          )}
+          <Link
+            to={role === 'Student' ? '/student' : role === 'Faculty' ? '/teacher' : role === 'SuperAdmin' ? '/admin' : '/'}
+            onClick={closeMobileMenu}
+            className={`group relative text-gray-500 hover:text-brand-purple transition-colors p-2 flex items-center justify-center rounded-full hover:bg-purple-50 ${isMobile ? 'self-start mb-2 bg-gray-100' : ''}`}
+          >
+            <LayoutDashboard className="w-5 h-5" />
+            <span className={`absolute ${isMobile ? 'left-10' : '-bottom-10 left-1/2 -translate-x-1/2'} opacity-0 group-hover:opacity-100 transition-opacity bg-gray-800 text-white text-xs py-1 px-2 rounded whitespace-nowrap pointer-events-none z-50`}>
+              Dashboard
+            </span>
+          </Link>
 
           {user.profile_url || user.photoURL || user.photoUrl ? (
             <img

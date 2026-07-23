@@ -133,13 +133,12 @@ export default function FacultyMarksUpload() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#fdfbfb] via-[#ebedee] to-[#f4f4f9] py-10 px-4 sm:px-6 lg:px-8 font-sans transition-all">
+    <div className="font-sans transition-all space-y-8 animate-in slide-in-from-bottom-4 fade-in duration-500">
       <Seo
         title="Faculty marks upload"
         description="Secure internal portal for faculty to upload and manage student marks."
         noIndex
       />
-      <div className="max-w-7xl mx-auto space-y-8 animate-in slide-in-from-bottom-4 fade-in duration-500">
         
         {/* Header / Filters Section */}
         <div className="bg-white/70 backdrop-blur-xl p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/50 flex flex-col lg:flex-row lg:items-center justify-between gap-6 transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
@@ -373,8 +372,6 @@ export default function FacultyMarksUpload() {
             </div>
           </div>
         </div>
-
       </div>
-    </div>
   );
 }

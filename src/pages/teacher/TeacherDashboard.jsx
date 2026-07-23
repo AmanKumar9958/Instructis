@@ -18,25 +18,47 @@ export default function TeacherDashboard() {
       if (!user) return
       
       try {
-        // Fetch classes
-        const classesQuery = query(collection(db, 'live_classes'), where('teacher_id', '==', user.uid))
-        const classesSnapshot = await getDocs(classesQuery)
+        // Fetch classes (resilient)
+        let classesCount = 0
+        try {
+          const classesQuery = query(collection(db, 'live_classes'), where('teacher_id', '==', user.uid))
+          const classesSnapshot = await getDocs(classesQuery)
+          classesCount = classesSnapshot.size
+        } catch (clsErr) {
+          console.warn("Could not fetch classes", clsErr)
+        }
         
-        // Fetch quizzes
-        const quizzesQuery = query(collection(db, 'quizzes'), where('teacher_id', '==', user.uid))
-        const quizzesSnapshot = await getDocs(quizzesQuery)
+        // Fetch quizzes (resilient)
+        let quizzesCount = 0
+        try {
+          const quizzesQuery = query(collection(db, 'quizzes'), where('teacher_id', '==', user.uid))
+          const quizzesSnapshot = await getDocs(quizzesQuery)
+          quizzesCount = quizzesSnapshot.size
+        } catch (quizErr) {
+          console.warn("Could not fetch quizzes", quizErr)
+        }
         
-        const userDocRef = doc(db, 'users', user.uid)
-        const userDocSnap = await getDoc(userDocRef)
-        const freshUser = userDocSnap.exists() ? { ...user, ...userDocSnap.data() } : user
-        const assignedBatchesArr = freshUser.assigned_batches || []
+        let assignedBatchesArr = user.assigned_batches || []
+        try {
+          const userDocRef = doc(db, 'users', user.uid)
+          const userDocSnap = await getDoc(userDocRef)
+          const freshUser = userDocSnap.exists() ? { ...user, ...userDocSnap.data() } : user
+          assignedBatchesArr = freshUser.assigned_batches || []
+        } catch (usrErr) {
+          console.warn("Could not fetch fresh user", usrErr)
+        }
         
         let studentCount = 0
         if (assignedBatchesArr.length > 0) {
           // Fetch batches names
-          const batchesQuery = query(collection(db, 'batches'))
-          const batchesSnapshot = await getDocs(batchesQuery)
-          const firebaseBatchList = batchesSnapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+          let firebaseBatchList = []
+          try {
+            const batchesQuery = query(collection(db, 'batches'))
+            const batchesSnapshot = await getDocs(batchesQuery)
+            firebaseBatchList = batchesSnapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+          } catch (batchErr) {
+             console.warn("Could not fetch batches collection", batchErr)
+          }
           
           const staticBatches = [
             ...examData.map(e => ({ id: e.id, name: e.shortName || e.name })),
@@ -53,21 +75,42 @@ export default function TeacherDashboard() {
           setAssignedBatches(assigned)
           
           // Fetch students
-          const studentsQuery = query(
-            collection(db, 'users'), 
-            where('role', '==', 'Student'), // Capitalized 'Student' correctly
-            where('assigned_batches', 'array-contains-any', assignedBatchesArr)
-          )
-          const studentsSnapshot = await getDocs(studentsQuery)
-          studentCount = studentsSnapshot.size
+          try {
+            // Firestore 'in' query supports max 10 elements. If >10, we chunk it.
+            if (assignedBatchesArr.length <= 10) {
+              const studentsQuery = query(
+                collection(db, 'users'), 
+                where('role', '==', 'Student'),
+                where('assigned_batches', 'array-contains-any', assignedBatchesArr)
+              )
+              const studentsSnapshot = await getDocs(studentsQuery)
+              studentCount = studentsSnapshot.size
+            } else {
+              let total = 0
+              for (let i = 0; i < assignedBatchesArr.length; i += 10) {
+                const chunk = assignedBatchesArr.slice(i, i + 10)
+                const q = query(
+                  collection(db, 'users'), 
+                  where('role', '==', 'Student'),
+                  where('assigned_batches', 'array-contains-any', chunk)
+                )
+                const snap = await getDocs(q)
+                total += snap.size
+              }
+              studentCount = total
+            }
+          } catch (stuErr) {
+            console.warn("Could not fetch students", stuErr)
+          }
         }
+        
         setStats({
-          classes: classesSnapshot.size,
-          quizzes: quizzesSnapshot.size,
-          students: studentCount
+          classes: classesCount,
+          students: studentCount,
+          quizzes: quizzesCount
         })
-      } catch (error) {
-        console.error("Error fetching stats:", error)
+      } catch (err) {
+        console.error("Error fetching stats:", err)
       } finally {
         setLoading(false)
       }

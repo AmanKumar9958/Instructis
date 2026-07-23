@@ -34,6 +34,11 @@ const TeacherClasses = lazy(() => import('./pages/teacher/TeacherClasses'));
 const TeacherQuizzes = lazy(() => import('./pages/teacher/TeacherQuizzes'));
 const TeacherStudents = lazy(() => import('./pages/teacher/TeacherStudents'));
 
+// Student panel
+const StudentLayout = lazy(() => import('./components/student/StudentLayout'));
+const StudentDashboard = lazy(() => import('./pages/student/StudentDashboard'));
+const StudentClasses = lazy(() => import('./pages/student/StudentClasses'));
+
 const RouteFallback = () => <PageSpinner />;
 
 function App() {
@@ -54,7 +59,6 @@ function App() {
             {/* Existing pages */}
             <Route path="centers" element={<CentersPage />} />
             <Route path="about" element={<AboutPage />} />
-            <Route path="faculty/marks-upload" element={<FacultyMarksUpload />} />
             {/* Note: /faculty/classes is replaced by the new /teacher/classes panel */}
             <Route path="student/join-class" element={<StudentJoinClassPage />} />
             {/* Legacy redirects */}
@@ -79,7 +83,14 @@ function App() {
             <Route index element={<TeacherDashboard />} />
             <Route path="classes" element={<TeacherClasses />} />
             <Route path="quizzes" element={<TeacherQuizzes />} />
+            <Route path="marks-upload" element={<FacultyMarksUpload />} />
             <Route path="students" element={<TeacherStudents />} />
+          </Route>
+
+          {/* Student Panel (standalone layout with sidebar) */}
+          <Route path="student" element={<StudentLayout />}>
+            <Route index element={<StudentDashboard />} />
+            <Route path="classes" element={<StudentClasses />} />
           </Route>
         </Routes>
       </Suspense>

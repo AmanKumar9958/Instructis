@@ -5,33 +5,27 @@ import { ToastProvider } from '../admin/Toast'
 import {
   LayoutDashboard,
   Video,
-  FileQuestion,
-  Users,
   LogOut,
   Menu,
   X,
   ChevronRight,
   Shield,
   Loader2,
-  UploadCloud,
 } from 'lucide-react'
 
 const NAV_ITEMS = [
-  { to: '/teacher', label: 'Dashboard', icon: LayoutDashboard, end: true },
-  { to: '/teacher/classes', label: 'Live Classes', icon: Video },
-  { to: '/teacher/quizzes', label: 'Quizzes', icon: FileQuestion },
-  { to: '/teacher/marks-upload', label: 'Marks Upload', icon: UploadCloud },
-  { to: '/teacher/students', label: 'My Students', icon: Users },
+  { to: '/student', label: 'Dashboard', icon: LayoutDashboard, end: true },
+  { to: '/student/classes', label: 'Classes Hub', icon: Video },
 ]
 
-export default function TeacherLayout() {
+export default function StudentLayout() {
   const { user, role, logout } = useAuth()
   const navigate = useNavigate()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [loggingOut, setLoggingOut] = useState(false)
 
-  // Guard — redirect non-faculty
-  if (role !== 'Faculty') {
+  // Guard — redirect non-students
+  if (role !== 'Student') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
         <div className="bg-white rounded-2xl border border-red-100 p-8 max-w-md w-full text-center shadow-lg">
@@ -39,7 +33,7 @@ export default function TeacherLayout() {
             <Shield className="w-7 h-7 text-red-500" />
           </div>
           <h2 className="text-xl font-bold text-gray-900 mb-2">Access Denied</h2>
-          <p className="text-gray-500 text-sm mb-6">You need Faculty privileges to access this panel.</p>
+          <p className="text-gray-500 text-sm mb-6">You need Student privileges to access this panel.</p>
           <button
             onClick={() => navigate('/')}
             className="px-6 py-2.5 bg-brand-purple text-white font-bold rounded-xl text-sm hover:bg-brand-purple-dark transition-colors"
@@ -68,9 +62,9 @@ export default function TeacherLayout() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-lg font-black tracking-tight">
-              INSTRUCTIS<span className="text-brand-orange">.</span>
+              INSTRUCTIS<span className="text-brand-purple">.</span>
             </h1>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/30 mt-0.5">Faculty Panel</p>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/30 mt-0.5">Student Panel</p>
           </div>
           {isMobile && (
             <button onClick={() => setSidebarOpen(false)} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors">
@@ -103,15 +97,15 @@ export default function TeacherLayout() {
         ))}
       </nav>
 
-      {/* Faculty profile & logout */}
+      {/* Student profile & logout */}
       <div className="p-4 border-t border-white/[0.06]">
         <div className="flex items-center gap-3 mb-3 px-1">
           <div className="w-8 h-8 rounded-lg bg-brand-purple/20 flex items-center justify-center text-brand-purple-light text-xs font-bold flex-shrink-0">
-            {user?.displayName?.charAt(0) || user?.name?.charAt(0) || 'F'}
+            {user?.displayName?.charAt(0) || user?.name?.charAt(0) || 'S'}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-bold text-white/80 truncate">{user?.displayName || user?.name || 'Faculty'}</p>
-            <p className="text-[10px] text-brand-orange font-semibold uppercase tracking-wider">Faculty</p>
+            <p className="text-xs font-bold text-white/80 truncate">{user?.displayName || user?.name || 'Student'}</p>
+            <p className="text-[10px] text-brand-purple font-semibold uppercase tracking-wider">Student</p>
           </div>
         </div>
         <button
@@ -150,18 +144,16 @@ export default function TeacherLayout() {
           <header className="lg:hidden sticky top-0 z-30 bg-white/90 backdrop-blur-xl border-b border-gray-100 px-4 py-3 flex items-center justify-between">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="p-2 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors"
+              className="p-2 -ml-2 rounded-xl text-gray-500 hover:bg-gray-100 transition-colors"
             >
               <Menu className="w-5 h-5" />
             </button>
-            <h1 className="text-sm font-black text-brand-purple tracking-tight">
-              INSTRUCTIS<span className="text-brand-orange">.</span>
-            </h1>
-            <div className="w-9" /> {/* spacer for centering */}
+            <div className="font-black text-gray-900 tracking-tight">INSTRUCTIS</div>
+            <div className="w-9" />
           </header>
 
           {/* Page content */}
-          <main className="flex-1 p-4 sm:p-6 lg:p-8">
+          <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-7xl mx-auto w-full">
             <Outlet />
           </main>
         </div>
