@@ -37,7 +37,7 @@ export default function StudentClasses() {
         // Fetch live_classes for all assigned batches
         const classesRef = collection(db, 'live_classes')
         const allFetchedClasses = []
-        
+
         // Firestore 'in' queries are limited to 10 items.
         // We chunk the array if it's larger than 10, or just query if <= 10.
         const chunkedBatches = []
@@ -94,9 +94,9 @@ export default function StudentClasses() {
 
   const now = new Date().getTime()
 
-  // Categorize classes
-  const liveClasses = classes.filter(c => c.is_active)
-  const upcomingClasses = classes.filter(c => !c.is_active && (c.scheduled_at?.toMillis() || 0) > now)
+  // Categorize classes by both is_active flag AND scheduled date
+  const liveClasses = classes.filter(c => c.is_active && (c.scheduled_at?.toMillis() || 0) <= now)
+  const upcomingClasses = classes.filter(c => (c.scheduled_at?.toMillis() || 0) > now)
   const pastClasses = classes.filter(c => !c.is_active && (c.scheduled_at?.toMillis() || 0) <= now)
 
   // Reverse past classes to show newest past class first
@@ -124,17 +124,15 @@ export default function StudentClasses() {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 ${
-              activeTab === tab.id
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 ${activeTab === tab.id
                 ? 'bg-gray-900 text-white shadow-md'
                 : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
-            }`}
+              }`}
           >
             <tab.icon className={`w-4 h-4 ${activeTab === tab.id ? 'text-white' : tab.color}`} />
             {tab.label}
-            <span className={`px-2 py-0.5 rounded-full text-xs ${
-              activeTab === tab.id ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'
-            }`}>
+            <span className={`px-2 py-0.5 rounded-full text-xs ${activeTab === tab.id ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'
+              }`}>
               {tab.count}
             </span>
           </button>
@@ -146,7 +144,7 @@ export default function StudentClasses() {
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {displayClasses.map(cls => {
             const dateObj = cls.scheduled_at ? new Date(cls.scheduled_at.toMillis()) : new Date()
-            
+
             return (
               <div key={cls.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col group hover:shadow-md transition-shadow">
                 <div className={`h-1.5 w-full ${activeTab === 'live' ? 'bg-red-500' : activeTab === 'upcoming' ? 'bg-brand-purple' : 'bg-gray-300'}`} />
@@ -163,10 +161,10 @@ export default function StudentClasses() {
                       </span>
                     )}
                   </div>
-                  
+
                   <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2">{cls.title}</h3>
                   <p className="text-sm text-gray-500 mb-4">by {cls.teacher_name || 'Faculty'}</p>
-                  
+
                   <div className="mt-auto space-y-3">
                     <div className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 p-2.5 rounded-xl border border-gray-100">
                       <Calendar className="w-4 h-4 text-brand-purple" />
@@ -176,7 +174,7 @@ export default function StudentClasses() {
                     </div>
 
                     {activeTab === 'live' && (
-                      <a 
+                      <a
                         href={cls.meet_link}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -185,19 +183,19 @@ export default function StudentClasses() {
                         Join Class <ExternalLink className="w-4 h-4" />
                       </a>
                     )}
-                    
+
                     {activeTab === 'upcoming' && (
                       <button disabled className="w-full py-2.5 bg-gray-100 text-gray-500 rounded-xl font-bold cursor-not-allowed border border-gray-200">
                         Starts at {dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </button>
                     )}
 
-                    {activeTab === 'past' && (
+                    {/* {activeTab === 'past' && (
                       <button className="flex items-center justify-center gap-2 w-full py-2.5 bg-white border-2 border-gray-100 hover:border-gray-200 text-gray-700 rounded-xl font-bold transition-colors">
                         <PlayCircle className="w-4 h-4" />
                         View Recording
                       </button>
-                    )}
+                    )} */}
                   </div>
                 </div>
               </div>
@@ -207,9 +205,9 @@ export default function StudentClasses() {
       ) : (
         <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center flex flex-col items-center justify-center">
           <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
-            {activeTab === 'live' ? <PlayCircle className="w-8 h-8 text-red-300" /> : 
-             activeTab === 'upcoming' ? <Calendar className="w-8 h-8 text-brand-purple/30" /> :
-             <Clock className="w-8 h-8 text-gray-300" />}
+            {activeTab === 'live' ? <PlayCircle className="w-8 h-8 text-red-300" /> :
+              activeTab === 'upcoming' ? <Calendar className="w-8 h-8 text-brand-purple/30" /> :
+                <Clock className="w-8 h-8 text-gray-300" />}
           </div>
           <h3 className="text-lg font-bold text-gray-900 mb-1">No {activeTab} classes</h3>
           <p className="text-gray-500">There are currently no {activeTab} classes for your batches.</p>

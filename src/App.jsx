@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
 import Layout from './components/Layout';
 import PageSpinner from './components/PageSpinner';
+import ProtectedRoute from './components/ProtectedRoute';
+import { ToastProvider } from './components/admin/Toast';
 
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const FacultyMarksUpload = lazy(() => import('./pages/FacultyMarksUpload'));
@@ -32,12 +34,15 @@ const TeacherLayout = lazy(() => import('./components/teacher/TeacherLayout'));
 const TeacherDashboard = lazy(() => import('./pages/teacher/TeacherDashboard'));
 const TeacherClasses = lazy(() => import('./pages/teacher/TeacherClasses'));
 const TeacherQuizzes = lazy(() => import('./pages/teacher/TeacherQuizzes'));
+const TeacherQuizResults = lazy(() => import('./pages/teacher/TeacherQuizResults'));
 const TeacherStudents = lazy(() => import('./pages/teacher/TeacherStudents'));
 
 // Student panel
 const StudentLayout = lazy(() => import('./components/student/StudentLayout'));
 const StudentDashboard = lazy(() => import('./pages/student/StudentDashboard'));
 const StudentClasses = lazy(() => import('./pages/student/StudentClasses'));
+const StudentQuizzes = lazy(() => import('./pages/student/StudentQuizzes'));
+const StudentQuizAttempt = lazy(() => import('./pages/student/StudentQuizAttempt'));
 
 const RouteFallback = () => <PageSpinner />;
 
@@ -83,6 +88,7 @@ function App() {
             <Route index element={<TeacherDashboard />} />
             <Route path="classes" element={<TeacherClasses />} />
             <Route path="quizzes" element={<TeacherQuizzes />} />
+            <Route path="quizzes/:quizId/results" element={<TeacherQuizResults />} />
             <Route path="marks-upload" element={<FacultyMarksUpload />} />
             <Route path="students" element={<TeacherStudents />} />
           </Route>
@@ -91,7 +97,20 @@ function App() {
           <Route path="student" element={<StudentLayout />}>
             <Route index element={<StudentDashboard />} />
             <Route path="classes" element={<StudentClasses />} />
+            <Route path="quizzes" element={<StudentQuizzes />} />
           </Route>
+
+          {/* Fullscreen Quiz Attempt (No sidebar layout) */}
+          <Route
+            path="student/quiz/:quizId"
+            element={
+              <ProtectedRoute allowedRoles={['Student']}>
+                <ToastProvider>
+                  <StudentQuizAttempt />
+                </ToastProvider>
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </Suspense>
     </Router>

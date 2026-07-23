@@ -5,6 +5,7 @@ import { ToastProvider } from '../admin/Toast'
 import {
   LayoutDashboard,
   Video,
+  FileQuestion,
   LogOut,
   Menu,
   X,
@@ -16,6 +17,7 @@ import {
 const NAV_ITEMS = [
   { to: '/student', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/student/classes', label: 'Classes Hub', icon: Video },
+  { to: '/student/quizzes', label: 'Quizzes', icon: FileQuestion },
 ]
 
 export default function StudentLayout() {
