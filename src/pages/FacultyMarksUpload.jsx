@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { db } from '../firebase/firebase';
@@ -12,10 +12,116 @@ import {
   MoreVertical,
   Plus,
   Upload,
-  BarChart,
+  BarChart3,
   Award,
-  Users
+  Users,
+  GraduationCap,
+  Filter,
+  FileSpreadsheet,
+  CheckCircle2,
+  AlertCircle,
+  BookOpen,
+  TrendingUp,
+  ChevronRight,
+  Search,
+  X,
+  Sparkles,
+  ArrowUpRight,
+  CloudUpload,
+  UserPlus,
 } from 'lucide-react';
+
+/* ── Animated Number Counter ── */
+function AnimatedNumber({ value, duration = 1200, suffix = '' }) {
+  const [display, setDisplay] = useState(0);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (value === 0) { setDisplay(0); return; }
+    const startTime = performance.now();
+
+    function tick(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplay(Math.round(eased * value));
+      if (progress < 1) ref.current = requestAnimationFrame(tick);
+    }
+
+    ref.current = requestAnimationFrame(tick);
+    return () => ref.current && cancelAnimationFrame(ref.current);
+  }, [value, duration]);
+
+  return <span>{display}{suffix}</span>;
+}
+
+/* ── Tooltip wrapper ── */
+function Tooltip({ children, text }) {
+  return (
+    <div className="relative group/tooltip">
+      {children}
+      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 text-xs font-medium text-white bg-gray-900 rounded-lg opacity-0 group-hover/tooltip:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap shadow-lg z-50">
+        {text}
+        <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-2 h-2 bg-gray-900 rotate-45" />
+      </div>
+    </div>
+  );
+}
+
+/* ── Filter Select ── */
+function FilterSelect({ icon: Icon, label, value, onChange, children }) {
+  return (
+    <div className="flex flex-col gap-1.5 min-w-[160px]">
+      <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+        <Icon className="w-3.5 h-3.5" />
+        {label}
+      </label>
+      <select
+        className="appearance-none bg-white/80 border border-gray-200/80 rounded-xl py-2.5 px-3.5 pr-8 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-purple/30 focus:border-brand-purple transition-all cursor-pointer hover:border-gray-300 hover:bg-white"
+        value={value}
+        onChange={onChange}
+        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
+      >
+        {children}
+      </select>
+    </div>
+  );
+}
+
+/* ── Percentile Bar ── */
+function PercentileBar({ value }) {
+  const color = value >= 90
+    ? 'from-emerald-400 to-emerald-500'
+    : value >= 70
+      ? 'from-amber-400 to-amber-500'
+      : 'from-rose-400 to-rose-500';
+
+  const textColor = value >= 90
+    ? 'text-emerald-700'
+    : value >= 70
+      ? 'text-amber-700'
+      : 'text-rose-700';
+
+  const bgColor = value >= 90
+    ? 'bg-emerald-50'
+    : value >= 70
+      ? 'bg-amber-50'
+      : 'bg-rose-50';
+
+  return (
+    <div className="flex items-center gap-3 min-w-[140px]">
+      <div className={`relative w-full h-2 rounded-full ${bgColor} overflow-hidden`}>
+        <div
+          className={`absolute inset-y-0 left-0 rounded-full bg-gradient-to-r ${color} transition-all duration-700 ease-out`}
+          style={{ width: `${Math.min(value, 100)}%` }}
+        />
+      </div>
+      <span className={`text-sm font-bold tabular-nums ${textColor} min-w-[48px] text-right`}>
+        {value}%
+      </span>
+    </div>
+  );
+}
 
 export default function FacultyMarksUpload() {
   const { user, role, loading } = useAuth();
@@ -26,10 +132,12 @@ export default function FacultyMarksUpload() {
   const [subject, setSubject] = useState('Select a subject');
   const [testName, setTestName] = useState('Select a test');
   const [uploading, setUploading] = useState(false);
+  const [savedIds, setSavedIds] = useState(new Set());
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Stats
   const totalStudents = students.length;
-  const avgMarks = students.length > 0 
+  const avgMarks = students.length > 0
     ? Math.round(students.reduce((acc, curr) => acc + (curr.total || 0), 0) / students.length)
     : 0;
   const highestPercentile = students.length > 0
@@ -66,7 +174,7 @@ export default function FacultyMarksUpload() {
         // Mock percentile calculation based on total out of 900
         const percentage = (total / 900) * 100;
         const percentile = isNaN(percentage) ? 0 : Math.min(percentage + (Math.random() * 5), 100); // just a mock bump
-        
+
         return {
           id: row.id || Math.random().toString(36).substring(7),
           name: row.Name || row.name || 'Unknown',
@@ -83,6 +191,7 @@ export default function FacultyMarksUpload() {
       });
 
       setStudents(parsedStudents);
+      setSavedIds(new Set());
     };
     reader.readAsArrayBuffer(file);
   };
@@ -98,6 +207,12 @@ export default function FacultyMarksUpload() {
       }
       return student;
     }));
+    // Remove saved state if edited again
+    setSavedIds(prev => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
   };
 
   const handleSave = async (student) => {
@@ -118,7 +233,7 @@ export default function FacultyMarksUpload() {
         facultyUid: user?.uid || 'unknown',
         timestamp: serverTimestamp()
       });
-      alert(`Saved marks for ${student.name} successfully!`);
+      setSavedIds(prev => new Set(prev).add(student.id));
     } catch (error) {
       console.error("Error saving marks:", error);
       alert("Failed to save marks.");
@@ -132,246 +247,487 @@ export default function FacultyMarksUpload() {
     setParentsNotified(prev => prev + 1);
   };
 
+  // Filtered students by search
+  const filteredStudents = searchTerm
+    ? students.filter(s => s.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    : students;
+
+  // Performance tier for avatar ring
+  const getAvatarRing = (percentile) => {
+    if (percentile >= 90) return 'ring-2 ring-emerald-400 ring-offset-2';
+    if (percentile >= 70) return 'ring-2 ring-amber-400 ring-offset-2';
+    return 'ring-2 ring-gray-200 ring-offset-2';
+  };
+
+  // Mark validation
+  const isMarkValid = (val) => val >= 0 && val <= 300;
+
   return (
-    <div className="font-sans transition-all space-y-8 animate-in slide-in-from-bottom-4 fade-in duration-500">
+    <main className="font-sans space-y-6" aria-label="Faculty Marks Upload">
       <Seo
         title="Faculty marks upload"
         description="Secure internal portal for faculty to upload and manage student marks."
         noIndex
       />
-        
-        {/* Header / Filters Section */}
-        <div className="bg-white/70 backdrop-blur-xl p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/50 flex flex-col lg:flex-row lg:items-center justify-between gap-6 transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
-          <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4 w-full">
-            <h1 className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-brand-purple to-brand-orange text-2xl mr-4 tracking-tight drop-shadow-sm">Class Filters</h1>
-            
-            <div className="flex items-center gap-2 text-sm">
-              <span className="font-medium text-gray-600">Exam:</span>
-              <select className="border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-brand-purple focus:border-brand-purple" value={exam} onChange={e => setExam(e.target.value)}>
-                <option>JEE</option>
-                <option>NEET</option>
-              </select>
-            </div>
 
-            <div className="flex items-center gap-2 text-sm">
-              <span className="font-medium text-gray-600">Batch:</span>
-              <select className="border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-brand-purple focus:border-brand-purple" value={batch} onChange={e => setBatch(e.target.value)}>
-                <option>Select a batch</option>
-                <option>Titanium 2026</option>
-                <option>Alpha 2025</option>
-              </select>
-            </div>
-
-            <div className="flex items-center gap-2 text-sm">
-              <span className="font-medium text-gray-600">Subject:</span>
-              <select className="border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-brand-purple focus:border-brand-purple" value={subject} onChange={e => setSubject(e.target.value)}>
-                <option>Select a subject</option>
-                <option>All Subjects</option>
-                <option>Maths</option>
-              </select>
-            </div>
-
-            <div className="flex items-center gap-2 text-sm">
-              <span className="font-medium text-gray-600">Test Name:</span>
-              <select className="border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-brand-purple focus:border-brand-purple" value={testName} onChange={e => setTestName(e.target.value)}>
-                <option>Select a test</option>
-                <option>Mains Mock Test 1</option>
-                <option>Advanced Full Test</option>
-              </select>
+      {/* ─── Page Header ─── */}
+      <section className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2 text-xs font-medium text-gray-400 mb-2">
+            <span>Dashboard</span>
+            <ChevronRight className="w-3 h-3" />
+            <span className="text-brand-purple">Marks Upload</span>
+          </div>
+          <h1 className="text-3xl font-extrabold tracking-tight">
+            <span className="bg-gradient-to-r from-brand-purple via-brand-purple-light to-brand-orange bg-clip-text text-transparent">
+              Marks Upload
+            </span>
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">
+            Upload student marks, track performance, and notify parents — all in one place.
+          </p>
+        </div>
+        {students.length > 0 && (
+          <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-4 duration-300">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search students..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9 pr-8 py-2.5 text-sm bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-purple/30 focus:border-brand-purple transition-all w-64"
+                aria-label="Search students"
+              />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  aria-label="Clear search"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
             </div>
           </div>
-          
-          <div className="flex gap-3 mt-4 lg:mt-0 lg:ml-auto">
-            <div className="relative">
-              <input 
-                type="file" 
-                accept=".xlsx, .csv" 
-                onChange={handleFileUpload} 
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+        )}
+      </section>
+
+      {/* ─── Filter Panel ─── */}
+      <section
+        className="glass-card rounded-2xl p-5 shadow-card transition-shadow hover:shadow-card-hover"
+        aria-label="Class Filters"
+      >
+        <div className="flex flex-col xl:flex-row xl:items-end gap-5">
+          {/* Filters */}
+          <div className="flex flex-wrap items-end gap-4 flex-1">
+            <FilterSelect
+              icon={GraduationCap}
+              label="Exam"
+              value={exam}
+              onChange={e => setExam(e.target.value)}
+            >
+              <option>JEE</option>
+              <option>NEET</option>
+            </FilterSelect>
+
+            <FilterSelect
+              icon={BookOpen}
+              label="Batch"
+              value={batch}
+              onChange={e => setBatch(e.target.value)}
+            >
+              <option>Select a batch</option>
+              <option>Titanium 2026</option>
+              <option>Alpha 2025</option>
+            </FilterSelect>
+
+            <FilterSelect
+              icon={Sparkles}
+              label="Subject"
+              value={subject}
+              onChange={e => setSubject(e.target.value)}
+            >
+              <option>Select a subject</option>
+              <option>All Subjects</option>
+              <option>Maths</option>
+            </FilterSelect>
+
+            <FilterSelect
+              icon={FileText}
+              label="Test Name"
+              value={testName}
+              onChange={e => setTestName(e.target.value)}
+            >
+              <option>Select a test</option>
+              <option>Mains Mock Test 1</option>
+              <option>Advanced Full Test</option>
+            </FilterSelect>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-3 flex-shrink-0">
+            <div className="relative group">
+              <input
+                type="file"
+                accept=".xlsx, .csv"
+                onChange={handleFileUpload}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                 title="Upload Excel or CSV"
+                aria-label="Upload spreadsheet file"
               />
-              <button className="flex items-center justify-center gap-2 px-6 py-3 bg-white hover:bg-gray-50 text-gray-700 font-bold rounded-xl transition-all border border-gray-200 w-full lg:w-auto shadow-sm hover:shadow-md transform hover:-translate-y-0.5">
-                <Upload className="w-5 h-5" />
-                Upload Sheet
+              <button className="flex items-center gap-2.5 px-5 py-2.5 bg-white hover:bg-gray-50 text-gray-700 font-semibold rounded-xl transition-all border border-gray-200 shadow-sm hover:shadow-md group-hover:-translate-y-0.5 duration-200">
+                <CloudUpload className="w-4.5 h-4.5 text-brand-purple group-hover:scale-110 transition-transform duration-200" />
+                <span className="text-sm">Upload Sheet</span>
               </button>
             </div>
-            <button className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-purple to-purple-600 text-white font-bold rounded-xl transition-all shadow-md hover:shadow-lg w-full lg:w-auto border border-purple-500 transform hover:-translate-y-0.5">
-              <Plus className="w-5 h-5" />
-              Add Student
+            <button
+              className="flex items-center gap-2.5 px-5 py-2.5 bg-gradient-to-r from-brand-purple to-brand-purple-light text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 duration-200 border border-brand-purple/20"
+              aria-label="Add a student manually"
+            >
+              <UserPlus className="w-4.5 h-4.5" />
+              <span className="text-sm">Add Student</span>
             </button>
           </div>
         </div>
+      </section>
 
-        {/* Data Table */}
-        <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/50 overflow-hidden transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-gradient-to-r from-gray-50/80 to-gray-100/80 text-gray-700 uppercase font-extrabold tracking-wider text-xs border-b border-gray-200 backdrop-blur-md">
-                <tr>
-                  <th scope="col" className="p-4 w-12 text-center">
-                    <input type="checkbox" className="w-4 h-4 text-brand-purple bg-gray-100 border-gray-300 rounded focus:ring-brand-purple" />
-                  </th>
-                  <th scope="col" className="px-4 py-4">Student Name</th>
-                  <th scope="col" className="px-4 py-4 text-center">Math <span className="text-gray-400 font-normal ml-1">(300)</span></th>
-                  <th scope="col" className="px-4 py-4 text-center">Physics <span className="text-gray-400 font-normal ml-1">(300)</span></th>
-                  <th scope="col" className="px-4 py-4 text-center">Chemistry <span className="text-gray-400 font-normal ml-1">(300)</span></th>
-                  <th scope="col" className="px-4 py-4 text-center">Total Marks <span className="text-gray-400 font-normal ml-1">(900)</span></th>
-                  <th scope="col" className="px-4 py-4">Percentile</th>
-                  <th scope="col" className="px-4 py-4 text-center">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {students.map((student) => {
-                  const pointsTotal = student.mp + student.pp + student.cp;
-                  const pointsColor = pointsTotal >= 20 ? 'text-green-600 bg-green-50' : 'text-orange-500 bg-orange-50';
-                  
-                  return (
-                    <tr key={student.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="p-4 text-center">
-                        <input type="checkbox" className="w-4 h-4 text-brand-purple bg-gray-100 border-gray-300 rounded focus:ring-brand-purple" />
-                      </td>
-                      <td className="px-4 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-3">
-                          <img 
-                            src={`https://api.dicebear.com/7.x/notionists/svg?seed=${student.name}`} 
-                            alt="avatar" 
-                            className="w-10 h-10 rounded-full bg-gray-100"
-                          />
-                          <span className="font-semibold text-gray-800">{student.name}</span>
+      {/* ─── KPI Stats Strip ─── */}
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-4" aria-label="Performance overview">
+        {/* Students */}
+        <div className="group glass-card rounded-2xl p-5 flex items-center gap-4 shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-0.5">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-purple/10 to-brand-purple-light/10 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform duration-300">
+            <Users className="w-5.5 h-5.5 text-brand-purple" />
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Students</p>
+            <p className="text-2xl font-extrabold text-gray-900 tabular-nums leading-tight mt-0.5">
+              <AnimatedNumber value={totalStudents} />
+            </p>
+          </div>
+        </div>
+
+        {/* Avg Marks */}
+        <div className="group glass-card rounded-2xl p-5 flex items-center gap-4 shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-0.5">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent-emerald/10 to-emerald-200/20 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform duration-300">
+            <BarChart3 className="w-5.5 h-5.5 text-accent-emerald" />
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Avg. Marks</p>
+            <p className="text-2xl font-extrabold text-gray-900 tabular-nums leading-tight mt-0.5">
+              <AnimatedNumber value={avgMarks} />
+              <span className="text-sm text-gray-400 font-medium ml-1">/ 900</span>
+            </p>
+          </div>
+        </div>
+
+        {/* Highest Percentile */}
+        <div className="group glass-card rounded-2xl p-5 flex items-center gap-4 shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-0.5">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent-amber/10 to-amber-200/20 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform duration-300">
+            <Award className="w-5.5 h-5.5 text-accent-amber" />
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Highest %ile</p>
+            <p className="text-2xl font-extrabold text-gray-900 tabular-nums leading-tight mt-0.5">
+              <AnimatedNumber value={parseFloat(highestPercentile)} suffix="%" />
+            </p>
+          </div>
+        </div>
+
+        {/* Parents Notified */}
+        <div className="group glass-card rounded-2xl p-5 flex items-center gap-4 shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-0.5">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent-rose/10 to-rose-200/20 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform duration-300">
+            <MessageCircle className="w-5.5 h-5.5 text-accent-rose" />
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Parents Notified</p>
+            <p className="text-2xl font-extrabold text-gray-900 tabular-nums leading-tight mt-0.5">
+              <AnimatedNumber value={parentsNotified} />
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Data Table ─── */}
+      <section
+        className="glass-card rounded-2xl shadow-card overflow-hidden transition-shadow hover:shadow-card-hover"
+        aria-label="Student marks table"
+      >
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-left">
+            <thead>
+              <tr className="bg-gradient-to-r from-gray-50/90 to-gray-100/70 border-b-2 border-brand-purple/10">
+                <th scope="col" className="p-4 w-12 text-center">
+                  <input
+                    type="checkbox"
+                    className="w-4 h-4 text-brand-purple bg-white border-gray-300 rounded focus:ring-brand-purple/40 cursor-pointer"
+                    aria-label="Select all students"
+                  />
+                </th>
+                <th scope="col" className="px-4 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Student Name
+                </th>
+                <th scope="col" className="px-4 py-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Math <span className="text-gray-400 font-normal">(300)</span>
+                </th>
+                <th scope="col" className="px-4 py-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Physics <span className="text-gray-400 font-normal">(300)</span>
+                </th>
+                <th scope="col" className="px-4 py-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Chemistry <span className="text-gray-400 font-normal">(300)</span>
+                </th>
+                <th scope="col" className="px-4 py-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Total <span className="text-gray-400 font-normal">(900)</span>
+                </th>
+                <th scope="col" className="px-4 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Percentile
+                </th>
+                <th scope="col" className="px-4 py-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100/80">
+              {filteredStudents.map((student, index) => {
+                const isSaved = savedIds.has(student.id);
+                const pointsTotal = student.mp + student.pp + student.cp;
+
+                return (
+                  <tr
+                    key={student.id}
+                    className="hover:bg-brand-purple/[0.02] transition-colors duration-150 group/row"
+                    style={{ animationDelay: `${index * 40}ms` }}
+                  >
+                    {/* Checkbox */}
+                    <td className="p-4 text-center">
+                      <input
+                        type="checkbox"
+                        className="w-4 h-4 text-brand-purple bg-white border-gray-300 rounded focus:ring-brand-purple/40 cursor-pointer"
+                        aria-label={`Select ${student.name}`}
+                      />
+                    </td>
+
+                    {/* Student Name + Avatar */}
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={`https://api.dicebear.com/7.x/notionists/svg?seed=${student.name}`}
+                          alt={`${student.name} avatar`}
+                          className={`w-10 h-10 rounded-full bg-gray-50 ${getAvatarRing(student.percentile)} transition-all duration-300`}
+                        />
+                        <div>
+                          <span className="font-semibold text-gray-800 text-sm">{student.name}</span>
+                          {isSaved && (
+                            <span className="flex items-center gap-1 text-[11px] text-emerald-600 font-medium mt-0.5">
+                              <CheckCircle2 className="w-3 h-3" /> Saved
+                            </span>
+                          )}
                         </div>
-                      </td>
-                      <td className="px-4 py-4">
-                        <div className="flex flex-col items-center">
-                          <input 
-                            type="number" 
-                            className="w-16 text-center py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple"
-                            value={student.math}
-                            onChange={(e) => handleMarksChange(student.id, 'math', e.target.value)}
-                          />
-                        </div>
-                      </td>
-                      <td className="px-4 py-4">
-                        <div className="flex items-center justify-center gap-2">
-                           <input 
-                            type="number" 
-                            className="w-16 text-center py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple"
-                            value={student.physics}
-                            onChange={(e) => handleMarksChange(student.id, 'physics', e.target.value)}
-                          />
-                          {student.pp > 0 && <span className="text-xs font-bold text-green-500 w-6">↑+{student.pp}</span>}
-                        </div>
-                      </td>
-                      <td className="px-4 py-4">
-                         <div className="flex items-center justify-center gap-2">
-                           <input 
-                            type="number" 
-                            className="w-16 text-center py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-purple"
-                            value={student.chemistry}
-                            onChange={(e) => handleMarksChange(student.id, 'chemistry', e.target.value)}
-                          />
-                           {student.cp > 0 && <span className="text-xs font-bold text-green-500 w-6">↑+{student.cp}</span>}
-                        </div>
-                      </td>
-                      <td className="px-4 py-4 text-center font-bold text-gray-900">
-                        {student.total} <span className="text-gray-400 font-medium text-xs">/ 300</span>
-                      </td>
-                      <td className="px-4 py-4">
-                        <div className="flex items-center gap-3">
-                          <span className={`font-bold ${student.percentile >= 90 ? 'text-green-600' : 'text-orange-500'}`}>
-                            {student.percentile}%
-                          </span>
-                          <span className={`text-xs font-bold px-2 py-1 rounded-md ${pointsColor}`}>
-                            +{pointsTotal} Points
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-4 text-center">
-                         <div className="flex items-center justify-center gap-3">
-                           <button 
+                      </div>
+                    </td>
+
+                    {/* Math */}
+                    <td className="px-4 py-4">
+                      <div className="flex justify-center">
+                        <input
+                          type="number"
+                          min="0"
+                          max="300"
+                          className={`w-[72px] text-center py-2 text-sm font-medium rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 ${
+                            !isMarkValid(student.math)
+                              ? 'border-rose-300 bg-rose-50/50 text-rose-700 focus:ring-rose-300'
+                              : 'border-gray-200 bg-white text-gray-800 hover:border-gray-300 focus:ring-brand-purple/30 focus:border-brand-purple'
+                          }`}
+                          value={student.math}
+                          onChange={(e) => handleMarksChange(student.id, 'math', e.target.value)}
+                          aria-label={`${student.name} Math marks`}
+                        />
+                      </div>
+                    </td>
+
+                    {/* Physics */}
+                    <td className="px-4 py-4">
+                      <div className="flex justify-center">
+                        <input
+                          type="number"
+                          min="0"
+                          max="300"
+                          className={`w-[72px] text-center py-2 text-sm font-medium rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 ${
+                            !isMarkValid(student.physics)
+                              ? 'border-rose-300 bg-rose-50/50 text-rose-700 focus:ring-rose-300'
+                              : 'border-gray-200 bg-white text-gray-800 hover:border-gray-300 focus:ring-brand-purple/30 focus:border-brand-purple'
+                          }`}
+                          value={student.physics}
+                          onChange={(e) => handleMarksChange(student.id, 'physics', e.target.value)}
+                          aria-label={`${student.name} Physics marks`}
+                        />
+                      </div>
+                    </td>
+
+                    {/* Chemistry */}
+                    <td className="px-4 py-4">
+                      <div className="flex justify-center">
+                        <input
+                          type="number"
+                          min="0"
+                          max="300"
+                          className={`w-[72px] text-center py-2 text-sm font-medium rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 ${
+                            !isMarkValid(student.chemistry)
+                              ? 'border-rose-300 bg-rose-50/50 text-rose-700 focus:ring-rose-300'
+                              : 'border-gray-200 bg-white text-gray-800 hover:border-gray-300 focus:ring-brand-purple/30 focus:border-brand-purple'
+                          }`}
+                          value={student.chemistry}
+                          onChange={(e) => handleMarksChange(student.id, 'chemistry', e.target.value)}
+                          aria-label={`${student.name} Chemistry marks`}
+                        />
+                      </div>
+                    </td>
+
+                    {/* Total */}
+                    <td className="px-4 py-4 text-center">
+                      <div className="inline-flex items-baseline gap-1">
+                        <span className="text-base font-bold text-gray-900 tabular-nums">{student.total}</span>
+                        <span className="text-xs text-gray-400 font-medium">/ 900</span>
+                      </div>
+                    </td>
+
+                    {/* Percentile */}
+                    <td className="px-4 py-4">
+                      <PercentileBar value={student.percentile} />
+                    </td>
+
+                    {/* Actions */}
+                    <td className="px-4 py-4">
+                      <div className="flex items-center justify-center">
+                        <div className="inline-flex items-center bg-gray-50 rounded-xl p-1 gap-0.5 opacity-70 group-hover/row:opacity-100 transition-opacity duration-200">
+                          <Tooltip text={isSaved ? 'Saved!' : 'Save marks'}>
+                            <button
                               onClick={() => handleSave(student)}
-                              className="flex items-center justify-center hover:scale-110 w-9 h-9 bg-blue-100 hover:bg-blue-600 text-blue-600 hover:text-white rounded-full text-xs font-bold transition-all shadow-sm"
-                              title="Save Marks"
+                              className={`flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200 ${
+                                isSaved
+                                  ? 'bg-emerald-100 text-emerald-600'
+                                  : 'hover:bg-brand-purple/10 text-gray-500 hover:text-brand-purple'
+                              }`}
+                              aria-label={`Save marks for ${student.name}`}
                             >
-                             <Save className="w-4 h-4" />
-                           </button>
-                           <button className="flex items-center justify-center hover:scale-110 w-9 h-9 text-red-500 bg-red-50 hover:bg-red-500 hover:text-white rounded-full transition-all shadow-sm" title="View Report">
-                             <FileText className="w-4 h-4" />
-                           </button>
-                           <button 
-                             onClick={() => handleWhatsApp(student)}
-                             className="flex items-center justify-center hover:scale-110 w-9 h-9 text-green-600 bg-green-50 hover:bg-green-500 hover:text-white rounded-full transition-all shadow-sm"
-                             title="Notify Parent"
-                           >
-                             <MessageCircle className="w-4 h-4" />
-                           </button>
-                           <button className="flex items-center justify-center hover:scale-110 w-9 h-9 text-gray-500 hover:text-white hover:bg-gray-800 rounded-full transition-all">
-                             <MoreVertical className="w-4 h-4" />
-                           </button>
-                         </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-                {students.length === 0 && (
-                  <tr>
-                    <td colSpan="8" className="px-4 py-12 text-center text-gray-500 bg-gray-50/50">
-                      <div className="flex flex-col items-center justify-center">
-                        <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-3 text-brand-purple">
-                           <Upload className="w-8 h-8 opacity-50" />
+                              {isSaved
+                                ? <CheckCircle2 className="w-4 h-4" />
+                                : <Save className="w-4 h-4" />
+                              }
+                            </button>
+                          </Tooltip>
+                          <Tooltip text="View report">
+                            <button
+                              className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-accent-rose/10 text-gray-500 hover:text-accent-rose transition-all duration-200"
+                              aria-label={`View report for ${student.name}`}
+                            >
+                              <FileText className="w-4 h-4" />
+                            </button>
+                          </Tooltip>
+                          <Tooltip text="Notify via WhatsApp">
+                            <button
+                              onClick={() => handleWhatsApp(student)}
+                              className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-emerald-100 text-gray-500 hover:text-emerald-600 transition-all duration-200"
+                              aria-label={`Notify parent of ${student.name} via WhatsApp`}
+                            >
+                              <MessageCircle className="w-4 h-4" />
+                            </button>
+                          </Tooltip>
+                          <Tooltip text="More options">
+                            <button
+                              className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-gray-200/70 text-gray-500 hover:text-gray-700 transition-all duration-200"
+                              aria-label={`More options for ${student.name}`}
+                            >
+                              <MoreVertical className="w-4 h-4" />
+                            </button>
+                          </Tooltip>
                         </div>
-                        <p className="font-semibold text-gray-600 text-lg">No students to display</p>
-                        <p className="text-gray-400 text-sm max-w-sm mt-1">Upload an Excel or CSV file to populate the table, or add a student manually.</p>
                       </div>
                     </td>
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                );
+              })}
+
+              {/* ─── Empty State ─── */}
+              {students.length === 0 && (
+                <tr>
+                  <td colSpan="8" className="px-4 py-20">
+                    <div className="flex flex-col items-center justify-center text-center">
+                      {/* Decorative icon cluster */}
+                      <div className="relative mb-6">
+                        <div className="w-20 h-20 bg-gradient-to-br from-brand-purple/5 to-brand-orange/5 rounded-2xl flex items-center justify-center rotate-3">
+                          <FileSpreadsheet className="w-9 h-9 text-brand-purple/40" />
+                        </div>
+                        <div className="absolute -top-2 -right-3 w-10 h-10 bg-gradient-to-br from-accent-emerald/10 to-emerald-100/30 rounded-xl flex items-center justify-center -rotate-12 shadow-sm">
+                          <TrendingUp className="w-5 h-5 text-accent-emerald/60" />
+                        </div>
+                        <div className="absolute -bottom-2 -left-3 w-10 h-10 bg-gradient-to-br from-accent-amber/10 to-amber-100/30 rounded-xl flex items-center justify-center rotate-6 shadow-sm">
+                          <Award className="w-5 h-5 text-accent-amber/60" />
+                        </div>
+                      </div>
+                      <h3 className="text-lg font-bold text-gray-700 mb-1.5">No students to display</h3>
+                      <p className="text-sm text-gray-400 max-w-sm mb-6 leading-relaxed">
+                        Upload an Excel or CSV file to populate the table, or add a student manually to get started.
+                      </p>
+                      <div className="flex items-center gap-3">
+                        <div className="relative group">
+                          <input
+                            type="file"
+                            accept=".xlsx, .csv"
+                            onChange={handleFileUpload}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                            title="Upload Excel or CSV"
+                            aria-label="Upload spreadsheet file"
+                          />
+                          <button className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-brand-purple to-brand-purple-light text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 duration-200 text-sm">
+                            <CloudUpload className="w-4 h-4" />
+                            Upload Sheet
+                          </button>
+                        </div>
+                        <button className="flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-gray-50 text-gray-600 font-semibold rounded-xl border border-gray-200 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 duration-200 text-sm">
+                          <UserPlus className="w-4 h-4" />
+                          Add Manually
+                        </button>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              )}
+
+              {/* Search no results */}
+              {students.length > 0 && filteredStudents.length === 0 && (
+                <tr>
+                  <td colSpan="8" className="px-4 py-16">
+                    <div className="flex flex-col items-center justify-center text-center">
+                      <div className="w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center mb-4">
+                        <Search className="w-6 h-6 text-gray-400" />
+                      </div>
+                      <h3 className="text-base font-bold text-gray-600 mb-1">No results found</h3>
+                      <p className="text-sm text-gray-400">
+                        No students match "<span className="font-medium text-gray-500">{searchTerm}</span>"
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
 
-        {/* Summary Footer */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-gradient-to-br from-indigo-500 to-blue-600 rounded-3xl p-6 flex items-center gap-5 shadow-lg border border-white/20 text-white transform hover:-translate-y-1 transition-all duration-300">
-            <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center">
-              <Users className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <p className="text-sm text-blue-100 font-semibold tracking-wide uppercase drop-shadow-sm">Students</p>
-              <p className="text-3xl font-black drop-shadow-sm">{totalStudents}</p>
-            </div>
-          </div>
-          
-          <div className="bg-gradient-to-br from-emerald-400 to-teal-500 rounded-3xl p-6 flex items-center gap-5 shadow-lg border border-white/20 text-white transform hover:-translate-y-1 transition-all duration-300">
-            <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center">
-              <BarChart className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <p className="text-sm text-emerald-100 font-semibold tracking-wide uppercase drop-shadow-sm">Avg. Marks</p>
-              <p className="text-3xl font-black drop-shadow-sm">{avgMarks} <span className="text-sm text-emerald-100 font-medium ml-1">/ 900</span></p>
+        {/* Table footer with count */}
+        {students.length > 0 && (
+          <div className="px-5 py-3.5 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between">
+            <p className="text-xs text-gray-400 font-medium">
+              Showing <span className="text-gray-600 font-semibold">{filteredStudents.length}</span> of{' '}
+              <span className="text-gray-600 font-semibold">{students.length}</span> students
+            </p>
+            <div className="flex items-center gap-1.5 text-xs text-gray-400">
+              <Sparkles className="w-3.5 h-3.5 text-brand-purple/50" />
+              <span>Percentiles are approximate</span>
             </div>
           </div>
-
-          <div className="bg-gradient-to-br from-orange-400 to-amber-500 rounded-3xl p-6 flex items-center gap-5 shadow-lg border border-white/20 text-white transform hover:-translate-y-1 transition-all duration-300">
-            <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center">
-              <Award className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <p className="text-sm text-orange-100 font-semibold tracking-wide uppercase drop-shadow-sm">Highest %ile</p>
-              <p className="text-3xl font-black drop-shadow-sm">{highestPercentile}%</p>
-            </div>
-          </div>
-
-          <div className="bg-gradient-to-br from-pink-500 to-rose-600 rounded-3xl p-6 flex items-center gap-5 shadow-lg border border-white/20 text-white transform hover:-translate-y-1 transition-all duration-300">
-            <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center">
-              <MessageCircle className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <p className="text-sm text-pink-100 font-semibold tracking-wide uppercase drop-shadow-sm">Parents Notified</p>
-              <p className="text-3xl font-black drop-shadow-sm">{parentsNotified}</p>
-            </div>
-          </div>
-        </div>
-      </div>
+        )}
+      </section>
+    </main>
   );
 }
