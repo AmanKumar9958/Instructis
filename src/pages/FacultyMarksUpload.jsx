@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { db } from '../firebase/firebase';
-import { collection, addDoc, query, where, getDocs, doc, getDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, query, where, getDocs, doc, getDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import Seo from '../components/Seo';
 import examData from '../data/examData';
 import { aiMlCourses } from '../data/aiMlData';
@@ -556,11 +556,30 @@ export default function FacultyMarksUpload() {
   };
 
   // ── WhatsApp notification ──
-  const handleWhatsApp = (student) => {
+  const handleWhatsApp = async (student) => {
+    let phone = student.parentPhone || student.phone;
+
+    if (!phone) {
+      phone = window.prompt(`Enter WhatsApp number for ${student.name}'s parent (include country code, e.g., 919876543210):`);
+      if (!phone) return; // User cancelled
+
+      try {
+        const userRef = doc(db, 'users', student.id);
+        await updateDoc(userRef, { parentPhone: phone });
+        // Update local state so it doesn't prompt again in this session
+        setStudents(prev => prev.map(s => s.id === student.id ? { ...s, parentPhone: phone } : s));
+      } catch (err) {
+        console.error("Could not save phone number:", err);
+      }
+    }
+
     const batchName = assignedBatches.find(b => b.id === selectedBatchId)?.name || selectedBatchId;
     const marksLines = subjects.map(sub => `${sub}: ${student.marks[sub] || 0}/${maxMarks}`).join('\n');
     const message = `Hello Parent, here is the recent performance of ${student.name} for the ${batchName} (${testName || 'Test'}):\n${marksLines}\nTotal: ${student.total}/${totalMaxMarks}\nPercentile: ${student.percentile}%\nBest Regards, Instructis.`;
-    const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    
+    // Remove all non-numeric characters for the WhatsApp URL
+    const cleanPhone = phone.replace(/\D/g, '');
+    const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
     setParentsNotified(prev => prev + 1);
   };

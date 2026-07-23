@@ -36,6 +36,7 @@ const TeacherClasses = lazy(() => import('./pages/teacher/TeacherClasses'));
 const TeacherQuizzes = lazy(() => import('./pages/teacher/TeacherQuizzes'));
 const TeacherQuizResults = lazy(() => import('./pages/teacher/TeacherQuizResults'));
 const TeacherStudents = lazy(() => import('./pages/teacher/TeacherStudents'));
+const FacultyMarksHistory = lazy(() => import('./pages/FacultyMarksHistory'));
 
 // Student panel
 const StudentLayout = lazy(() => import('./components/student/StudentLayout'));
@@ -91,6 +92,7 @@ function App() {
             <Route path="quizzes" element={<TeacherQuizzes />} />
             <Route path="quizzes/:quizId/results" element={<TeacherQuizResults />} />
             <Route path="marks-upload" element={<FacultyMarksUpload />} />
+            <Route path="marks-history" element={<FacultyMarksHistory />} />
             <Route path="students" element={<TeacherStudents />} />
           </Route>
 

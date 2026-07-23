@@ -14,6 +14,7 @@ import {
   Shield,
   Loader2,
   UploadCloud,
+  History,
 } from 'lucide-react'
 
 const NAV_ITEMS = [
@@ -21,6 +22,7 @@ const NAV_ITEMS = [
   { to: '/teacher/classes', label: 'Live Classes', icon: Video },
   { to: '/teacher/quizzes', label: 'Quizzes', icon: FileQuestion },
   { to: '/teacher/marks-upload', label: 'Marks Upload', icon: UploadCloud },
+  { to: '/teacher/marks-history', label: 'Marks History', icon: History },
   { to: '/teacher/students', label: 'My Students', icon: Users },
 ]
 
