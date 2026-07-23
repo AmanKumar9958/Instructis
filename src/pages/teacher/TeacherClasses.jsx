@@ -33,10 +33,26 @@ export default function TeacherClasses() {
       setLoading(true)
       try {
         // Fetch Batches assigned to teacher
-        if (user.assigned_batches && user.assigned_batches.length > 0) {
-          const batchesQuery = query(collection(db, 'batches'))
-          const batchesSnapshot = await getDocs(batchesQuery)
-          const firebaseBatchList = batchesSnapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+        let assignedBatchesArr = user.assigned_batches || []
+        try {
+          const userDocRef = doc(db, 'users', user.uid)
+          const userDocSnap = await getDoc(userDocRef)
+          if (userDocSnap.exists()) {
+            assignedBatchesArr = userDocSnap.data().assigned_batches || assignedBatchesArr
+          }
+        } catch (err) {
+          console.warn("Could not fetch fresh user", err)
+        }
+
+        if (assignedBatchesArr.length > 0) {
+          let firebaseBatchList = []
+          try {
+            const batchesQuery = query(collection(db, 'batches'))
+            const batchesSnapshot = await getDocs(batchesQuery)
+            firebaseBatchList = batchesSnapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+          } catch (batchErr) {
+            console.warn("Could not fetch batches", batchErr)
+          }
           
           const staticBatches = [
             ...examData.map(e => ({ id: e.id, name: e.shortName || e.name })),
@@ -49,7 +65,7 @@ export default function TeacherClasses() {
           allSystemBatches.forEach(b => uniqueBatchesMap.set(b.id, b))
           const finalBatchList = Array.from(uniqueBatchesMap.values())
 
-          const assigned = finalBatchList.filter(b => user.assigned_batches.includes(b.id))
+          const assigned = finalBatchList.filter(b => assignedBatchesArr.includes(b.id))
           setBatches(assigned)
           
           if (assigned.length > 0) {

@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react'
-import { collection, query, where, getDocs } from 'firebase/firestore'
+import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore'
 import { db } from '../../firebase/firebase'
 import { useAuth } from '../../hooks/useAuth'
 import { useToast } from '../../components/admin/Toast'
 import { Users, Search, Mail, Calendar, BookOpen, Loader2 } from 'lucide-react'
+import examData from '../../data/examData'
+import { aiMlCourses } from '../../data/aiMlData'
+import { codingCourses } from '../../data/codingData'
 
 export default function TeacherStudents() {
   const { user } = useAuth()
@@ -23,11 +26,39 @@ export default function TeacherStudents() {
       if (!user) return
       setLoadingBatches(true)
       try {
-        if (user.assigned_batches && user.assigned_batches.length > 0) {
-          const batchesQuery = query(collection(db, 'batches'))
-          const batchesSnapshot = await getDocs(batchesQuery)
-          const allBatches = batchesSnapshot.docs.map(d => ({ id: d.id, ...d.data() }))
-          const assigned = allBatches.filter(b => user.assigned_batches.includes(b.id))
+        let assignedBatchesArr = user.assigned_batches || []
+        try {
+          const userDocRef = doc(db, 'users', user.uid)
+          const userDocSnap = await getDoc(userDocRef)
+          if (userDocSnap.exists()) {
+            assignedBatchesArr = userDocSnap.data().assigned_batches || assignedBatchesArr
+          }
+        } catch (err) {
+          console.warn("Could not fetch fresh user", err)
+        }
+
+        if (assignedBatchesArr.length > 0) {
+          let firebaseBatchList = []
+          try {
+            const batchesQuery = query(collection(db, 'batches'))
+            const batchesSnapshot = await getDocs(batchesQuery)
+            firebaseBatchList = batchesSnapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+          } catch (batchErr) {
+            console.warn("Could not fetch batches", batchErr)
+          }
+          
+          const staticBatches = [
+            ...examData.map(e => ({ id: e.id, name: e.shortName || e.name })),
+            ...aiMlCourses.map(c => ({ id: c.title.toLowerCase().replace(/\s+/g, '-'), name: c.title })),
+            ...codingCourses.map(c => ({ id: c.title.toLowerCase().replace(/\s+/g, '-'), name: c.title }))
+          ]
+
+          const allSystemBatches = [...staticBatches, ...firebaseBatchList]
+          const uniqueBatchesMap = new Map()
+          allSystemBatches.forEach(b => uniqueBatchesMap.set(b.id, b))
+          const finalBatchList = Array.from(uniqueBatchesMap.values())
+
+          const assigned = finalBatchList.filter(b => assignedBatchesArr.includes(b.id))
           setBatches(assigned)
           
           if (assigned.length > 0) {
@@ -56,7 +87,7 @@ export default function TeacherStudents() {
       try {
         const studentsQuery = query(
           collection(db, 'users'),
-          where('role', '==', 'student'),
+          where('role', '==', 'Student'),
           where('assigned_batches', 'array-contains', selectedBatchId)
         )
         
