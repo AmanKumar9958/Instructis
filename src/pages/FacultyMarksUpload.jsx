@@ -1,37 +1,89 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { db } from '../firebase/firebase';
-import { collection, addDoc, doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import * as XLSX from 'xlsx';
+import { collection, addDoc, query, where, getDocs, doc, getDoc, serverTimestamp } from 'firebase/firestore';
 import Seo from '../components/Seo';
+import examData from '../data/examData';
+import { aiMlCourses } from '../data/aiMlData';
+import { codingCourses } from '../data/codingData';
 import {
   Save,
   FileText,
   MessageCircle,
   MoreVertical,
-  Plus,
-  Upload,
   BarChart3,
   Award,
   Users,
   GraduationCap,
-  Filter,
   FileSpreadsheet,
   CheckCircle2,
-  AlertCircle,
   BookOpen,
   TrendingUp,
   ChevronRight,
   Search,
   X,
   Sparkles,
-  ArrowUpRight,
-  CloudUpload,
   UserPlus,
+  Loader2,
+  CheckSquare,
+  Square,
+  MinusSquare,
+  Hash,
 } from 'lucide-react';
 
-/* ── Animated Number Counter ── */
+/* ────────────────────────────────────────────────
+   Subject mappings per batch / exam type
+   ──────────────────────────────────────────────── */
+const SUBJECT_MAP = {
+  // Competitive Exams — keyed by examData id
+  jee: ['Physics', 'Chemistry', 'Mathematics'],
+  neet: ['Physics', 'Chemistry', 'Biology'],
+  upsc: ['General Studies', 'CSAT', 'Optional Subject', 'Essay'],
+  ssc: ['Quantitative Aptitude', 'English Language', 'General Intelligence & Reasoning', 'General Awareness'],
+  banking: ['Quantitative Aptitude', 'Reasoning Ability', 'English Language', 'General/Banking Awareness', 'Computer Knowledge'],
+  cat: ['Verbal Ability & Reading Comprehension', 'Data Interpretation & Logical Reasoning', 'Quantitative Ability'],
+  gate: ['Core Engineering Subject', 'Engineering Mathematics', 'General Aptitude'],
+  cuet: ['Languages', 'Domain Subjects', 'General Test'],
+  clat: ['English Language', 'Current Affairs & GK', 'Legal Reasoning', 'Logical Reasoning', 'Quantitative Techniques'],
+  nda: ['Mathematics', 'Geography', 'History', 'English', 'General Knowledge', 'Science'],
+  ielts: ['Reading', 'Writing', 'Listening', 'Speaking'],
+};
+
+// For coding / AI-ML courses, build keys the same way TeacherDashboard does
+const buildCourseSubjects = () => {
+  const map = {};
+  aiMlCourses.forEach(c => {
+    const key = c.title.toLowerCase().replace(/\s+/g, '-');
+    map[key] = c.tags || ['Project Work'];
+  });
+  codingCourses.forEach(c => {
+    const key = c.title.toLowerCase().replace(/\s+/g, '-');
+    map[key] = c.tags || ['Project Work'];
+  });
+  return map;
+};
+
+const COURSE_SUBJECT_MAP = buildCourseSubjects();
+
+/** Returns the subject list for a given batch id */
+function getSubjectsForBatch(batchId) {
+  if (SUBJECT_MAP[batchId]) return SUBJECT_MAP[batchId];
+  if (COURSE_SUBJECT_MAP[batchId]) return COURSE_SUBJECT_MAP[batchId];
+  return ['General'];
+}
+
+/** Suggested default max marks for a batch (faculty can override) */
+function getDefaultMaxMarks(batchId) {
+  if (['jee', 'neet'].includes(batchId)) return 300;
+  return 100;
+}
+
+/* ────────────────────────────────────────────────
+   Reusable sub-components
+   ──────────────────────────────────────────────── */
+
+/* Animated Number Counter */
 function AnimatedNumber({ value, duration = 1200, suffix = '' }) {
   const [display, setDisplay] = useState(0);
   const ref = useRef(null);
@@ -55,7 +107,7 @@ function AnimatedNumber({ value, duration = 1200, suffix = '' }) {
   return <span>{display}{suffix}</span>;
 }
 
-/* ── Tooltip wrapper ── */
+/* Tooltip */
 function Tooltip({ children, text }) {
   return (
     <div className="relative group/tooltip">
@@ -68,8 +120,8 @@ function Tooltip({ children, text }) {
   );
 }
 
-/* ── Filter Select ── */
-function FilterSelect({ icon: Icon, label, value, onChange, children }) {
+/* Filter Select */
+function FilterSelect({ icon: Icon, label, value, onChange, children, disabled }) {
   return (
     <div className="flex flex-col gap-1.5 min-w-[160px]">
       <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
@@ -77,7 +129,8 @@ function FilterSelect({ icon: Icon, label, value, onChange, children }) {
         {label}
       </label>
       <select
-        className="appearance-none bg-white/80 border border-gray-200/80 rounded-xl py-2.5 px-3.5 pr-8 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-purple/30 focus:border-brand-purple transition-all cursor-pointer hover:border-gray-300 hover:bg-white"
+        disabled={disabled}
+        className="appearance-none bg-white/80 border border-gray-200/80 rounded-xl py-2.5 px-3.5 pr-8 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-purple/30 focus:border-brand-purple transition-all cursor-pointer hover:border-gray-300 hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed"
         value={value}
         onChange={onChange}
         style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
@@ -88,7 +141,26 @@ function FilterSelect({ icon: Icon, label, value, onChange, children }) {
   );
 }
 
-/* ── Percentile Bar ── */
+/* Filter Input (for test name) */
+function FilterInput({ icon: Icon, label, value, onChange, placeholder }) {
+  return (
+    <div className="flex flex-col gap-1.5 min-w-[180px]">
+      <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+        <Icon className="w-3.5 h-3.5" />
+        {label}
+      </label>
+      <input
+        type="text"
+        className="bg-white/80 border border-gray-200/80 rounded-xl py-2.5 px-3.5 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-purple/30 focus:border-brand-purple transition-all hover:border-gray-300 hover:bg-white placeholder:text-gray-400 placeholder:font-normal"
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+      />
+    </div>
+  );
+}
+
+/* Percentile Bar */
 function PercentileBar({ value }) {
   const color = value >= 90
     ? 'from-emerald-400 to-emerald-500'
@@ -123,19 +195,196 @@ function PercentileBar({ value }) {
   );
 }
 
+/* ────────────────────────────────────────────────
+   Student Picker Modal
+   ──────────────────────────────────────────────── */
+function StudentPickerModal({ students, loading, onConfirm, onClose }) {
+  const [selected, setSelected] = useState(new Set());
+  const [search, setSearch] = useState('');
+
+  const filtered = search
+    ? students.filter(s => (s.name || '').toLowerCase().includes(search.toLowerCase()))
+    : students;
+
+  const allFilteredSelected = filtered.length > 0 && filtered.every(s => selected.has(s.id));
+  const someFilteredSelected = filtered.some(s => selected.has(s.id));
+
+  const toggleAll = () => {
+    if (allFilteredSelected) {
+      setSelected(prev => {
+        const next = new Set(prev);
+        filtered.forEach(s => next.delete(s.id));
+        return next;
+      });
+    } else {
+      setSelected(prev => {
+        const next = new Set(prev);
+        filtered.forEach(s => next.add(s.id));
+        return next;
+      });
+    }
+  };
+
+  const toggleOne = (id) => {
+    setSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={onClose}>
+      <div
+        className="bg-white rounded-2xl shadow-elevated w-full max-w-lg max-h-[80vh] flex flex-col overflow-hidden animate-in zoom-in-95 fade-in duration-200"
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="p-5 border-b border-gray-100">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-gray-900">Select Students</h2>
+            <button onClick={onClose} className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-all" aria-label="Close">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search by name..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="w-full pl-9 pr-4 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-purple/30 focus:border-brand-purple transition-all"
+              aria-label="Search students"
+            />
+          </div>
+        </div>
+
+        {/* Student list */}
+        <div className="flex-1 overflow-y-auto p-2">
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-16 text-brand-purple">
+              <Loader2 className="w-7 h-7 animate-spin mb-3" />
+              <p className="text-sm text-gray-500 font-medium">Loading students…</p>
+            </div>
+          ) : students.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 text-center px-4">
+              <div className="w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center mb-3">
+                <Users className="w-6 h-6 text-gray-400" />
+              </div>
+              <p className="text-sm font-semibold text-gray-600">No students found</p>
+              <p className="text-xs text-gray-400 mt-1">There are no students enrolled in your selected batch.</p>
+            </div>
+          ) : (
+            <>
+              {/* Select all */}
+              <button
+                onClick={toggleAll}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors text-sm font-semibold text-gray-700 mb-1"
+              >
+                {allFilteredSelected
+                  ? <CheckSquare className="w-5 h-5 text-brand-purple" />
+                  : someFilteredSelected
+                    ? <MinusSquare className="w-5 h-5 text-brand-purple/60" />
+                    : <Square className="w-5 h-5 text-gray-400" />
+                }
+                Select all ({filtered.length})
+              </button>
+
+              {filtered.map(student => {
+                const isSelected = selected.has(student.id);
+                return (
+                  <button
+                    key={student.id}
+                    onClick={() => toggleOne(student.id)}
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors text-sm ${isSelected ? 'bg-brand-purple/5' : 'hover:bg-gray-50'
+                      }`}
+                  >
+                    {isSelected
+                      ? <CheckSquare className="w-5 h-5 text-brand-purple flex-shrink-0" />
+                      : <Square className="w-5 h-5 text-gray-300 flex-shrink-0" />
+                    }
+                    <div className="w-8 h-8 rounded-full bg-brand-purple/10 flex items-center justify-center text-brand-purple font-bold text-xs overflow-hidden flex-shrink-0">
+                      {student.profile_url ? (
+                        <img src={student.profile_url} alt={student.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" onError={(e) => { e.target.onerror = null; e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name || 'S')}&background=random`; }} />
+                      ) : (
+                        (student.name || '?').charAt(0).toUpperCase()
+                      )}
+                    </div>
+                    <div className="text-left min-w-0">
+                      <p className={`font-medium truncate ${isSelected ? 'text-brand-purple' : 'text-gray-800'}`}>
+                        {student.name || 'Unknown Student'}
+                      </p>
+                      <p className="text-xs text-gray-400 truncate">{student.email || 'No email'}</p>
+                    </div>
+                  </button>
+                );
+              })}
+            </>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="p-4 border-t border-gray-100 flex items-center justify-between bg-gray-50/50">
+          <p className="text-xs text-gray-500 font-medium">
+            {selected.size} student{selected.size !== 1 ? 's' : ''} selected
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 text-sm font-semibold text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => onConfirm(students.filter(s => selected.has(s.id)))}
+              disabled={selected.size === 0}
+              className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-brand-purple to-brand-purple-light rounded-xl shadow-md hover:shadow-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:-translate-y-0.5 duration-200"
+            >
+              Add {selected.size > 0 ? selected.size : ''} Student{selected.size !== 1 ? 's' : ''}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ────────────────────────────────────────────────
+   Main Component
+   ──────────────────────────────────────────────── */
 export default function FacultyMarksUpload() {
   const { user, role, loading } = useAuth();
   const navigate = useNavigate();
+
+  // ── Batches state ──
+  const [assignedBatches, setAssignedBatches] = useState([]);
+  const [loadingBatches, setLoadingBatches] = useState(true);
+
+  // ── Filter state ──
+  const [selectedBatchId, setSelectedBatchId] = useState('');
+  const [subject, setSubject] = useState('All Subjects');
+  const [testName, setTestName] = useState('');
+  const [maxMarks, setMaxMarks] = useState(100);
+
+  // ── Student picker ──
+  const [showPicker, setShowPicker] = useState(false);
+  const [batchStudents, setBatchStudents] = useState([]); // raw from Firestore
+  const [loadingStudents, setLoadingStudents] = useState(false);
+
+  // ── Table students (added to marks table) ──
   const [students, setStudents] = useState([]);
-  const [exam, setExam] = useState('JEE');
-  const [batch, setBatch] = useState('Select a batch');
-  const [subject, setSubject] = useState('Select a subject');
-  const [testName, setTestName] = useState('Select a test');
-  const [uploading, setUploading] = useState(false);
   const [savedIds, setSavedIds] = useState(new Set());
   const [searchTerm, setSearchTerm] = useState('');
+  const [parentsNotified, setParentsNotified] = useState(0);
 
-  // Stats
+  // Derived subjects for selected batch
+  const subjects = selectedBatchId ? getSubjectsForBatch(selectedBatchId) : [];
+  const totalMaxMarks = subjects.length * maxMarks;
+
+  // ── Stats ──
   const totalStudents = students.length;
   const avgMarks = students.length > 0
     ? Math.round(students.reduce((acc, curr) => acc + (curr.total || 0), 0) / students.length)
@@ -143,9 +392,8 @@ export default function FacultyMarksUpload() {
   const highestPercentile = students.length > 0
     ? Math.max(...students.map(s => s.percentile || 0)).toFixed(1)
     : 0;
-  const [parentsNotified, setParentsNotified] = useState(0);
 
-  // Protect route
+  // ── Protect route ──
   useEffect(() => {
     if (!loading) {
       if (!user || (role !== 'Faculty' && role !== 'SuperAdmin')) {
@@ -154,81 +402,148 @@ export default function FacultyMarksUpload() {
     }
   }, [user, role, loading, navigate]);
 
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  // ── Fetch assigned batches (same pattern as TeacherDashboard / TeacherStudents) ──
+  useEffect(() => {
+    async function fetchBatches() {
+      if (!user) return;
+      setLoadingBatches(true);
+      try {
+        let assignedBatchesArr = user.assigned_batches || [];
+        try {
+          const userDocRef = doc(db, 'users', user.uid);
+          const userDocSnap = await getDoc(userDocRef);
+          if (userDocSnap.exists()) {
+            assignedBatchesArr = userDocSnap.data().assigned_batches || assignedBatchesArr;
+          }
+        } catch (err) {
+          console.warn("Could not fetch fresh user", err);
+        }
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const data = new Uint8Array(event.target.result);
-      const workbook = XLSX.read(data, { type: 'array' });
-      const firstSheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[firstSheetName];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet);
+        if (assignedBatchesArr.length > 0) {
+          let firebaseBatchList = [];
+          try {
+            const batchesQuery = query(collection(db, 'batches'));
+            const batchesSnapshot = await getDocs(batchesQuery);
+            firebaseBatchList = batchesSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+          } catch (batchErr) {
+            console.warn("Could not fetch batches", batchErr);
+          }
 
-      const parsedStudents = jsonData.map((row) => {
-        const math = row.Math || row.math || 0;
-        const physics = row.Physics || row.physics || 0;
-        const chemistry = row.Chemistry || row.chemistry || 0;
-        const total = math + physics + chemistry;
-        // Mock percentile calculation based on total out of 900
-        const percentage = (total / 900) * 100;
-        const percentile = isNaN(percentage) ? 0 : Math.min(percentage + (Math.random() * 5), 100); // just a mock bump
+          const staticBatches = [
+            ...examData.map(e => ({ id: e.id, name: e.shortName || e.name })),
+            ...aiMlCourses.map(c => ({ id: c.title.toLowerCase().replace(/\s+/g, '-'), name: c.title })),
+            ...codingCourses.map(c => ({ id: c.title.toLowerCase().replace(/\s+/g, '-'), name: c.title }))
+          ];
 
+          const allSystemBatches = [...staticBatches, ...firebaseBatchList];
+          const uniqueBatchesMap = new Map();
+          allSystemBatches.forEach(b => uniqueBatchesMap.set(b.id, b));
+          const finalBatchList = Array.from(uniqueBatchesMap.values());
+
+          const assigned = finalBatchList.filter(b => assignedBatchesArr.includes(b.id));
+          setAssignedBatches(assigned);
+
+          if (assigned.length > 0) {
+            setSelectedBatchId(assigned[0].id);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching batches:", error);
+      } finally {
+        setLoadingBatches(false);
+      }
+    }
+    fetchBatches();
+  }, [user]);
+
+  // ── Reset table & subject when batch changes ──
+  useEffect(() => {
+    setStudents([]);
+    setSavedIds(new Set());
+    setSubject('All Subjects');
+    setTestName('');
+    setMaxMarks(selectedBatchId ? getDefaultMaxMarks(selectedBatchId) : 100);
+  }, [selectedBatchId]);
+
+  // ── Fetch students for the picker (when it opens) ──
+  const openStudentPicker = async () => {
+    if (!selectedBatchId) return;
+    setShowPicker(true);
+    setLoadingStudents(true);
+    try {
+      const studentsQuery = query(
+        collection(db, 'users'),
+        where('role', '==', 'Student'),
+        where('assigned_batches', 'array-contains', selectedBatchId)
+      );
+      const snap = await getDocs(studentsQuery);
+      setBatchStudents(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    } catch (err) {
+      console.error("Error fetching students:", err);
+    } finally {
+      setLoadingStudents(false);
+    }
+  };
+
+  // ── Confirm student selection from picker ──
+  const handleStudentsConfirmed = (selectedStudents) => {
+    // Only add students not already in the table
+    const existingIds = new Set(students.map(s => s.id));
+    const newStudents = selectedStudents
+      .filter(s => !existingIds.has(s.id))
+      .map(s => {
+        // Build an object with a marks field for each subject
+        const marks = {};
+        subjects.forEach(sub => {
+          marks[sub] = 0;
+        });
         return {
-          id: row.id || Math.random().toString(36).substring(7),
-          name: row.Name || row.name || 'Unknown',
-          math: parseInt(math),
-          physics: parseInt(physics),
-          chemistry: parseInt(chemistry),
-          total: total,
-          percentile: parseFloat(percentile.toFixed(1)),
-          // Mock points for demonstration
-          mp: Math.floor(Math.random() * 20),
-          pp: Math.floor(Math.random() * 20),
-          cp: Math.floor(Math.random() * 20),
+          id: s.id,
+          name: s.name || 'Unknown',
+          email: s.email || '',
+          profile_url: s.profile_url || '',
+          marks,
+          total: 0,
+          percentile: 0,
         };
       });
 
-      setStudents(parsedStudents);
-      setSavedIds(new Set());
-    };
-    reader.readAsArrayBuffer(file);
+    setStudents(prev => [...prev, ...newStudents]);
+    setShowPicker(false);
   };
 
-  const handleMarksChange = (id, field, value) => {
+  // ── Inline marks editing ──
+  const handleMarksChange = (studentId, subjectName, value) => {
     const numValue = value === '' ? 0 : parseInt(value);
     setStudents(prev => prev.map(student => {
-      if (student.id === id) {
-        const updated = { ...student, [field]: numValue };
-        updated.total = updated.math + updated.physics + updated.chemistry;
-        updated.percentile = parseFloat(((updated.total / 900) * 100 + (Math.random() * 5)).toFixed(1)); // mock update
-        return updated;
+      if (student.id === studentId) {
+        const updatedMarks = { ...student.marks, [subjectName]: numValue };
+        const total = Object.values(updatedMarks).reduce((sum, v) => sum + (v || 0), 0);
+        const percentage = (total / totalMaxMarks) * 100;
+        const percentile = isNaN(percentage) ? 0 : parseFloat(Math.min(percentage + (Math.random() * 5), 100).toFixed(1));
+        return { ...student, marks: updatedMarks, total, percentile };
       }
       return student;
     }));
-    // Remove saved state if edited again
     setSavedIds(prev => {
       const next = new Set(prev);
-      next.delete(id);
+      next.delete(studentId);
       return next;
     });
   };
 
+  // ── Save marks to Firestore ──
   const handleSave = async (student) => {
     try {
       const marksRef = collection(db, 'marks');
       await addDoc(marksRef, {
         studentName: student.name,
-        subjectMarks: {
-          Math: student.math,
-          Physics: student.physics,
-          Chemistry: student.chemistry,
-        },
+        studentId: student.id,
+        subjectMarks: student.marks,
         total: student.total,
         percentile: student.percentile,
-        batch,
-        examType: exam,
+        batchId: selectedBatchId,
+        batchName: assignedBatches.find(b => b.id === selectedBatchId)?.name || selectedBatchId,
         testName,
         facultyUid: user?.uid || 'unknown',
         timestamp: serverTimestamp()
@@ -236,23 +551,26 @@ export default function FacultyMarksUpload() {
       setSavedIds(prev => new Set(prev).add(student.id));
     } catch (error) {
       console.error("Error saving marks:", error);
-      alert("Failed to save marks.");
+      alert("Failed to save marks: " + error.message);
     }
   };
 
+  // ── WhatsApp notification ──
   const handleWhatsApp = (student) => {
-    const message = `Hello Parent, here is the recent performance of ${student.name} for the ${exam} (${testName}) test:\nMath: ${student.math}/300\nPhysics: ${student.physics}/300\nChemistry: ${student.chemistry}/300\nTotal: ${student.total}/900\nPercentile: ${student.percentile}%\nBest Regards, Instructis.`;
+    const batchName = assignedBatches.find(b => b.id === selectedBatchId)?.name || selectedBatchId;
+    const marksLines = subjects.map(sub => `${sub}: ${student.marks[sub] || 0}/${maxMarks}`).join('\n');
+    const message = `Hello Parent, here is the recent performance of ${student.name} for the ${batchName} (${testName || 'Test'}):\n${marksLines}\nTotal: ${student.total}/${totalMaxMarks}\nPercentile: ${student.percentile}%\nBest Regards, Instructis.`;
     const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
     setParentsNotified(prev => prev + 1);
   };
 
-  // Filtered students by search
+  // ── Filtered students for search ──
   const filteredStudents = searchTerm
     ? students.filter(s => s.name.toLowerCase().includes(searchTerm.toLowerCase()))
     : students;
 
-  // Performance tier for avatar ring
+  // ── Performance tier for avatar ring ──
   const getAvatarRing = (percentile) => {
     if (percentile >= 90) return 'ring-2 ring-emerald-400 ring-offset-2';
     if (percentile >= 70) return 'ring-2 ring-amber-400 ring-offset-2';
@@ -260,7 +578,10 @@ export default function FacultyMarksUpload() {
   };
 
   // Mark validation
-  const isMarkValid = (val) => val >= 0 && val <= 300;
+  const isMarkValid = (val) => val >= 0 && val <= maxMarks;
+
+  // Current batch name
+  const currentBatchName = assignedBatches.find(b => b.id === selectedBatchId)?.name || '';
 
   return (
     <main className="font-sans space-y-6" aria-label="Faculty Marks Upload">
@@ -284,7 +605,7 @@ export default function FacultyMarksUpload() {
             </span>
           </h1>
           <p className="text-sm text-gray-500 mt-1">
-            Upload student marks, track performance, and notify parents — all in one place.
+            Select a batch, add students, enter marks, and notify parents — all in one place.
           </p>
         </div>
         {students.length > 0 && (
@@ -321,72 +642,81 @@ export default function FacultyMarksUpload() {
         <div className="flex flex-col xl:flex-row xl:items-end gap-5">
           {/* Filters */}
           <div className="flex flex-wrap items-end gap-4 flex-1">
+            {/* Exam / Batch dropdown — dynamically populated from assigned batches */}
             <FilterSelect
               icon={GraduationCap}
-              label="Exam"
-              value={exam}
-              onChange={e => setExam(e.target.value)}
+              label="Exam / Batch"
+              value={selectedBatchId}
+              onChange={e => setSelectedBatchId(e.target.value)}
+              disabled={loadingBatches}
             >
-              <option>JEE</option>
-              <option>NEET</option>
+              {loadingBatches ? (
+                <option value="">Loading batches…</option>
+              ) : assignedBatches.length === 0 ? (
+                <option value="">No batches assigned</option>
+              ) : (
+                <>
+                  <option value="">Select a batch</option>
+                  {assignedBatches.map(b => (
+                    <option key={b.id} value={b.id}>{b.name}</option>
+                  ))}
+                </>
+              )}
             </FilterSelect>
 
-            <FilterSelect
-              icon={BookOpen}
-              label="Batch"
-              value={batch}
-              onChange={e => setBatch(e.target.value)}
-            >
-              <option>Select a batch</option>
-              <option>Titanium 2026</option>
-              <option>Alpha 2025</option>
-            </FilterSelect>
-
+            {/* Subject dropdown — dynamic based on selected batch */}
             <FilterSelect
               icon={Sparkles}
               label="Subject"
               value={subject}
               onChange={e => setSubject(e.target.value)}
+              disabled={!selectedBatchId}
             >
-              <option>Select a subject</option>
-              <option>All Subjects</option>
-              <option>Maths</option>
+              <option value="All Subjects">All Subjects</option>
+              {subjects.map(s => (
+                <option key={s} value={s}>{s}</option>
+              ))}
             </FilterSelect>
 
-            <FilterSelect
+            {/* Test Name — text input */}
+            <FilterInput
               icon={FileText}
               label="Test Name"
               value={testName}
               onChange={e => setTestName(e.target.value)}
-            >
-              <option>Select a test</option>
-              <option>Mains Mock Test 1</option>
-              <option>Advanced Full Test</option>
-            </FilterSelect>
+              placeholder="e.g. Mock Test 1"
+            />
+
+            {/* Max Marks per subject — faculty editable */}
+            <div className="flex flex-col gap-1.5 min-w-[120px]">
+              <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <Hash className="w-3.5 h-3.5" />
+                Max Marks <span className="text-gray-400 font-normal normal-case">(per subject)</span>
+              </label>
+              <input
+                type="number"
+                min="1"
+                className="bg-white/80 border border-gray-200/80 rounded-xl py-2.5 px-3.5 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-purple/30 focus:border-brand-purple transition-all hover:border-gray-300 hover:bg-white w-full tabular-nums"
+                value={maxMarks}
+                onChange={e => {
+                  const v = parseInt(e.target.value);
+                  if (!isNaN(v) && v > 0) setMaxMarks(v);
+                }}
+                aria-label="Maximum marks per subject"
+              />
+            </div>
           </div>
 
-          {/* Action Buttons */}
+          {/* Add Student button */}
           <div className="flex gap-3 flex-shrink-0">
-            <div className="relative group">
-              <input
-                type="file"
-                accept=".xlsx, .csv"
-                onChange={handleFileUpload}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                title="Upload Excel or CSV"
-                aria-label="Upload spreadsheet file"
-              />
-              <button className="flex items-center gap-2.5 px-5 py-2.5 bg-white hover:bg-gray-50 text-gray-700 font-semibold rounded-xl transition-all border border-gray-200 shadow-sm hover:shadow-md group-hover:-translate-y-0.5 duration-200">
-                <CloudUpload className="w-4.5 h-4.5 text-brand-purple group-hover:scale-110 transition-transform duration-200" />
-                <span className="text-sm">Upload Sheet</span>
-              </button>
-            </div>
             <button
-              className="flex items-center gap-2.5 px-5 py-2.5 bg-gradient-to-r from-brand-purple to-brand-purple-light text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 duration-200 border border-brand-purple/20"
-              aria-label="Add a student manually"
+              onClick={openStudentPicker}
+              disabled={!selectedBatchId}
+              className="flex items-center gap-2.5 px-5 py-2.5 bg-gradient-to-r from-brand-purple to-brand-purple-light text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 duration-200 border border-brand-purple/20 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-md"
+              aria-label="Add students from batch"
             >
               <UserPlus className="w-4.5 h-4.5" />
-              <span className="text-sm">Add Student</span>
+              <span className="text-sm">Add Students</span>
             </button>
           </div>
         </div>
@@ -416,7 +746,7 @@ export default function FacultyMarksUpload() {
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Avg. Marks</p>
             <p className="text-2xl font-extrabold text-gray-900 tabular-nums leading-tight mt-0.5">
               <AnimatedNumber value={avgMarks} />
-              <span className="text-sm text-gray-400 font-medium ml-1">/ 900</span>
+              <span className="text-sm text-gray-400 font-medium ml-1">/ {totalMaxMarks}</span>
             </p>
           </div>
         </div>
@@ -467,17 +797,14 @@ export default function FacultyMarksUpload() {
                 <th scope="col" className="px-4 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">
                   Student Name
                 </th>
+                {/* Dynamic subject columns */}
+                {(subject === 'All Subjects' ? subjects : subjects.filter(s => s === subject)).map(sub => (
+                  <th key={sub} scope="col" className="px-4 py-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
+                    {sub} <span className="text-gray-400 font-normal">({maxMarks})</span>
+                  </th>
+                ))}
                 <th scope="col" className="px-4 py-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
-                  Math <span className="text-gray-400 font-normal">(300)</span>
-                </th>
-                <th scope="col" className="px-4 py-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
-                  Physics <span className="text-gray-400 font-normal">(300)</span>
-                </th>
-                <th scope="col" className="px-4 py-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
-                  Chemistry <span className="text-gray-400 font-normal">(300)</span>
-                </th>
-                <th scope="col" className="px-4 py-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
-                  Total <span className="text-gray-400 font-normal">(900)</span>
+                  Total <span className="text-gray-400 font-normal">({totalMaxMarks})</span>
                 </th>
                 <th scope="col" className="px-4 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">
                   Percentile
@@ -490,13 +817,12 @@ export default function FacultyMarksUpload() {
             <tbody className="divide-y divide-gray-100/80">
               {filteredStudents.map((student, index) => {
                 const isSaved = savedIds.has(student.id);
-                const pointsTotal = student.mp + student.pp + student.cp;
+                const visibleSubjects = subject === 'All Subjects' ? subjects : subjects.filter(s => s === subject);
 
                 return (
                   <tr
                     key={student.id}
                     className="hover:bg-brand-purple/[0.02] transition-colors duration-150 group/row"
-                    style={{ animationDelay: `${index * 40}ms` }}
                   >
                     {/* Checkbox */}
                     <td className="p-4 text-center">
@@ -510,11 +836,23 @@ export default function FacultyMarksUpload() {
                     {/* Student Name + Avatar */}
                     <td className="px-4 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
-                        <img
-                          src={`https://api.dicebear.com/7.x/notionists/svg?seed=${student.name}`}
-                          alt={`${student.name} avatar`}
-                          className={`w-10 h-10 rounded-full bg-gray-50 ${getAvatarRing(student.percentile)} transition-all duration-300`}
-                        />
+                        <div className={`w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center overflow-hidden flex-shrink-0 ${getAvatarRing(student.percentile)} transition-all duration-300`}>
+                          {student.profile_url ? (
+                            <img
+                              src={student.profile_url}
+                              alt={`${student.name} avatar`}
+                              className="w-full h-full object-cover"
+                              referrerPolicy="no-referrer"
+                              onError={(e) => { e.target.onerror = null; e.target.src = `https://api.dicebear.com/7.x/notionists/svg?seed=${student.name}`; }}
+                            />
+                          ) : (
+                            <img
+                              src={`https://api.dicebear.com/7.x/notionists/svg?seed=${student.name}`}
+                              alt={`${student.name} avatar`}
+                              className="w-full h-full object-cover"
+                            />
+                          )}
+                        </div>
                         <div>
                           <span className="font-semibold text-gray-800 text-sm">{student.name}</span>
                           {isSaved && (
@@ -526,68 +864,31 @@ export default function FacultyMarksUpload() {
                       </div>
                     </td>
 
-                    {/* Math */}
-                    <td className="px-4 py-4">
-                      <div className="flex justify-center">
-                        <input
-                          type="number"
-                          min="0"
-                          max="300"
-                          className={`w-[72px] text-center py-2 text-sm font-medium rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 ${
-                            !isMarkValid(student.math)
+                    {/* Dynamic subject mark inputs */}
+                    {visibleSubjects.map(sub => (
+                      <td key={sub} className="px-4 py-4">
+                        <div className="flex justify-center">
+                          <input
+                            type="number"
+                            min="0"
+                            max={maxMarks}
+                            className={`w-[72px] text-center py-2 text-sm font-medium rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 ${!isMarkValid(student.marks[sub] || 0)
                               ? 'border-rose-300 bg-rose-50/50 text-rose-700 focus:ring-rose-300'
                               : 'border-gray-200 bg-white text-gray-800 hover:border-gray-300 focus:ring-brand-purple/30 focus:border-brand-purple'
-                          }`}
-                          value={student.math}
-                          onChange={(e) => handleMarksChange(student.id, 'math', e.target.value)}
-                          aria-label={`${student.name} Math marks`}
-                        />
-                      </div>
-                    </td>
-
-                    {/* Physics */}
-                    <td className="px-4 py-4">
-                      <div className="flex justify-center">
-                        <input
-                          type="number"
-                          min="0"
-                          max="300"
-                          className={`w-[72px] text-center py-2 text-sm font-medium rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 ${
-                            !isMarkValid(student.physics)
-                              ? 'border-rose-300 bg-rose-50/50 text-rose-700 focus:ring-rose-300'
-                              : 'border-gray-200 bg-white text-gray-800 hover:border-gray-300 focus:ring-brand-purple/30 focus:border-brand-purple'
-                          }`}
-                          value={student.physics}
-                          onChange={(e) => handleMarksChange(student.id, 'physics', e.target.value)}
-                          aria-label={`${student.name} Physics marks`}
-                        />
-                      </div>
-                    </td>
-
-                    {/* Chemistry */}
-                    <td className="px-4 py-4">
-                      <div className="flex justify-center">
-                        <input
-                          type="number"
-                          min="0"
-                          max="300"
-                          className={`w-[72px] text-center py-2 text-sm font-medium rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 ${
-                            !isMarkValid(student.chemistry)
-                              ? 'border-rose-300 bg-rose-50/50 text-rose-700 focus:ring-rose-300'
-                              : 'border-gray-200 bg-white text-gray-800 hover:border-gray-300 focus:ring-brand-purple/30 focus:border-brand-purple'
-                          }`}
-                          value={student.chemistry}
-                          onChange={(e) => handleMarksChange(student.id, 'chemistry', e.target.value)}
-                          aria-label={`${student.name} Chemistry marks`}
-                        />
-                      </div>
-                    </td>
+                              }`}
+                            value={student.marks[sub] || 0}
+                            onChange={(e) => handleMarksChange(student.id, sub, e.target.value)}
+                            aria-label={`${student.name} ${sub} marks`}
+                          />
+                        </div>
+                      </td>
+                    ))}
 
                     {/* Total */}
                     <td className="px-4 py-4 text-center">
                       <div className="inline-flex items-baseline gap-1">
                         <span className="text-base font-bold text-gray-900 tabular-nums">{student.total}</span>
-                        <span className="text-xs text-gray-400 font-medium">/ 900</span>
+                        <span className="text-xs text-gray-400 font-medium">/ {totalMaxMarks}</span>
                       </div>
                     </td>
 
@@ -603,25 +904,16 @@ export default function FacultyMarksUpload() {
                           <Tooltip text={isSaved ? 'Saved!' : 'Save marks'}>
                             <button
                               onClick={() => handleSave(student)}
-                              className={`flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200 ${
-                                isSaved
-                                  ? 'bg-emerald-100 text-emerald-600'
-                                  : 'hover:bg-brand-purple/10 text-gray-500 hover:text-brand-purple'
-                              }`}
+                              className={`flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200 ${isSaved
+                                ? 'bg-emerald-100 text-emerald-600'
+                                : 'hover:bg-brand-purple/10 text-gray-500 hover:text-brand-purple'
+                                }`}
                               aria-label={`Save marks for ${student.name}`}
                             >
                               {isSaved
                                 ? <CheckCircle2 className="w-4 h-4" />
                                 : <Save className="w-4 h-4" />
                               }
-                            </button>
-                          </Tooltip>
-                          <Tooltip text="View report">
-                            <button
-                              className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-accent-rose/10 text-gray-500 hover:text-accent-rose transition-all duration-200"
-                              aria-label={`View report for ${student.name}`}
-                            >
-                              <FileText className="w-4 h-4" />
                             </button>
                           </Tooltip>
                           <Tooltip text="Notify via WhatsApp">
@@ -631,14 +923,6 @@ export default function FacultyMarksUpload() {
                               aria-label={`Notify parent of ${student.name} via WhatsApp`}
                             >
                               <MessageCircle className="w-4 h-4" />
-                            </button>
-                          </Tooltip>
-                          <Tooltip text="More options">
-                            <button
-                              className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-gray-200/70 text-gray-500 hover:text-gray-700 transition-all duration-200"
-                              aria-label={`More options for ${student.name}`}
-                            >
-                              <MoreVertical className="w-4 h-4" />
                             </button>
                           </Tooltip>
                         </div>
@@ -651,7 +935,7 @@ export default function FacultyMarksUpload() {
               {/* ─── Empty State ─── */}
               {students.length === 0 && (
                 <tr>
-                  <td colSpan="8" className="px-4 py-20">
+                  <td colSpan={subjects.length + 5} className="px-4 py-20">
                     <div className="flex flex-col items-center justify-center text-center">
                       {/* Decorative icon cluster */}
                       <div className="relative mb-6">
@@ -665,30 +949,22 @@ export default function FacultyMarksUpload() {
                           <Award className="w-5 h-5 text-accent-amber/60" />
                         </div>
                       </div>
-                      <h3 className="text-lg font-bold text-gray-700 mb-1.5">No students to display</h3>
+                      <h3 className="text-lg font-bold text-gray-700 mb-1.5">No students added yet</h3>
                       <p className="text-sm text-gray-400 max-w-sm mb-6 leading-relaxed">
-                        Upload an Excel or CSV file to populate the table, or add a student manually to get started.
+                        {selectedBatchId
+                          ? `Click "Add Students" to fetch students from the ${currentBatchName} batch and start entering marks.`
+                          : 'Select a batch from the filters above first, then add students to start entering marks.'
+                        }
                       </p>
-                      <div className="flex items-center gap-3">
-                        <div className="relative group">
-                          <input
-                            type="file"
-                            accept=".xlsx, .csv"
-                            onChange={handleFileUpload}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            title="Upload Excel or CSV"
-                            aria-label="Upload spreadsheet file"
-                          />
-                          <button className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-brand-purple to-brand-purple-light text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 duration-200 text-sm">
-                            <CloudUpload className="w-4 h-4" />
-                            Upload Sheet
-                          </button>
-                        </div>
-                        <button className="flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-gray-50 text-gray-600 font-semibold rounded-xl border border-gray-200 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 duration-200 text-sm">
+                      {selectedBatchId && (
+                        <button
+                          onClick={openStudentPicker}
+                          className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-brand-purple to-brand-purple-light text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 duration-200 text-sm"
+                        >
                           <UserPlus className="w-4 h-4" />
-                          Add Manually
+                          Add Students
                         </button>
-                      </div>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -697,7 +973,7 @@ export default function FacultyMarksUpload() {
               {/* Search no results */}
               {students.length > 0 && filteredStudents.length === 0 && (
                 <tr>
-                  <td colSpan="8" className="px-4 py-16">
+                  <td colSpan={subjects.length + 5} className="px-4 py-16">
                     <div className="flex flex-col items-center justify-center text-center">
                       <div className="w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center mb-4">
                         <Search className="w-6 h-6 text-gray-400" />
@@ -728,6 +1004,16 @@ export default function FacultyMarksUpload() {
           </div>
         )}
       </section>
+
+      {/* ─── Student Picker Modal ─── */}
+      {showPicker && (
+        <StudentPickerModal
+          students={batchStudents}
+          loading={loadingStudents}
+          onConfirm={handleStudentsConfirmed}
+          onClose={() => setShowPicker(false)}
+        />
+      )}
     </main>
   );
 }
