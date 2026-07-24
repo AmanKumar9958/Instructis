@@ -502,6 +502,8 @@ export default function FacultyMarksUpload() {
           name: s.name || 'Unknown',
           email: s.email || '',
           profile_url: s.profile_url || '',
+          parentPhone: s.parentPhone || '',
+          phone: s.phone || '',
           marks,
           total: 0,
           percentile: 0,
@@ -556,21 +558,21 @@ export default function FacultyMarksUpload() {
   };
 
   // ── WhatsApp notification ──
-  const handleWhatsApp = async (student) => {
+  const handleWhatsApp = (student) => {
     let phone = student.parentPhone || student.phone;
 
     if (!phone) {
       phone = window.prompt(`Enter WhatsApp number for ${student.name}'s parent (include country code, e.g., 919876543210):`);
       if (!phone) return; // User cancelled
 
-      try {
-        const userRef = doc(db, 'users', student.id);
-        await updateDoc(userRef, { parentPhone: phone });
-        // Update local state so it doesn't prompt again in this session
-        setStudents(prev => prev.map(s => s.id === student.id ? { ...s, parentPhone: phone } : s));
-      } catch (err) {
+      const userRef = doc(db, 'users', student.id);
+      // Fire and forget to avoid popup blockers from async delay
+      updateDoc(userRef, { parentPhone: phone }).catch(err => {
         console.error("Could not save phone number:", err);
-      }
+      });
+      // Update local state so it doesn't prompt again in this session
+      setStudents(prev => prev.map(s => s.id === student.id ? { ...s, parentPhone: phone } : s));
+      student.parentPhone = phone; // Update current object too
     }
 
     const batchName = assignedBatches.find(b => b.id === selectedBatchId)?.name || selectedBatchId;
