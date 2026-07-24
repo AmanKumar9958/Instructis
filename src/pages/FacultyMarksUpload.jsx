@@ -558,32 +558,85 @@ export default function FacultyMarksUpload() {
   };
 
   // ── WhatsApp notification ──
-  const handleWhatsApp = (student) => {
-    let phone = student.parentPhone || student.phone;
+  const [whatsAppTarget, setWhatsAppTarget] = useState(null); // student object awaiting phone input
+  const [whatsAppPhone, setWhatsAppPhone] = useState('');
 
-    if (!phone) {
-      phone = window.prompt(`Enter WhatsApp number for ${student.name}'s parent (include country code, e.g., 919876543210):`);
-      if (!phone) return; // User cancelled
+  /** Normalize phone: strip non-digits, auto-prepend 91 for 10-digit Indian numbers */
+  const normalizePhone = (raw) => {
+    const digits = raw.replace(/\D/g, '');
+    if (digits.length === 10) return `91${digits}`;
+    return digits;
+  };
 
-      const userRef = doc(db, 'users', student.id);
-      // Fire and forget to avoid popup blockers from async delay
-      updateDoc(userRef, { parentPhone: phone }).catch(err => {
-        console.error("Could not save phone number:", err);
-      });
-      // Update local state so it doesn't prompt again in this session
-      setStudents(prev => prev.map(s => s.id === student.id ? { ...s, parentPhone: phone } : s));
-      student.parentPhone = phone; // Update current object too
-    }
-
+  /** Build the WhatsApp message for a student */
+  const buildWhatsAppMessage = (student) => {
     const batchName = assignedBatches.find(b => b.id === selectedBatchId)?.name || selectedBatchId;
-    const marksLines = subjects.map(sub => `${sub}: ${student.marks[sub] || 0}/${maxMarks}`).join('\n');
-    const message = `Hello Parent, here is the recent performance of ${student.name} for the ${batchName} (${testName || 'Test'}):\n${marksLines}\nTotal: ${student.total}/${totalMaxMarks}\nPercentile: ${student.percentile}%\nBest Regards, Instructis.`;
-    
-    // Remove all non-numeric characters for the WhatsApp URL
-    const cleanPhone = phone.replace(/\D/g, '');
-    const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
-    window.open(url, '_blank');
+    const marksLines = subjects.map(sub => `📘 ${sub}: ${student.marks[sub] || 0}/${maxMarks}`).join('\n');
+    return (
+      `📋 *Instructis — Student Report*\n\n` +
+      `👤 *Student:* ${student.name}\n` +
+      `📚 *Batch:* ${batchName}\n` +
+      `📝 *Test:* ${testName || 'Test'}\n\n` +
+      `${marksLines}\n\n` +
+      `📊 *Total:* ${student.total}/${totalMaxMarks}\n` +
+      `🏆 *Percentile:* ${student.percentile}%\n\n` +
+      `_Best Regards, Instructis._`
+    );
+  };
+
+  /** Open WhatsApp with the given phone and message */
+  const openWhatsApp = (phone, student) => {
+    const cleanPhone = normalizePhone(phone);
+    const message = buildWhatsAppMessage(student);
+    const url = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(message)}`;
+
+    // Use a dynamically created anchor to bypass popup blockers
+    const a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
     setParentsNotified(prev => prev + 1);
+  };
+
+  /** Main handler: if phone exists, open immediately; otherwise show phone input modal */
+  const handleWhatsApp = (student) => {
+    const phone = student.parentPhone || student.phone;
+
+    if (phone) {
+      openWhatsApp(phone, student);
+    } else {
+      // Show inline phone input modal
+      setWhatsAppTarget(student);
+      setWhatsAppPhone('');
+    }
+  };
+
+  /** Called when faculty submits the phone number from the modal */
+  const handleWhatsAppPhoneSubmit = () => {
+    if (!whatsAppPhone.trim() || !whatsAppTarget) return;
+
+    const phone = whatsAppPhone.trim();
+    const studentId = whatsAppTarget.id;
+
+    // Save phone to Firestore (fire-and-forget)
+    const userRef = doc(db, 'users', studentId);
+    updateDoc(userRef, { parentPhone: phone }).catch(err => {
+      console.error("Could not save phone number:", err);
+    });
+
+    // Update local state so it doesn't ask again
+    setStudents(prev => prev.map(s => s.id === studentId ? { ...s, parentPhone: phone } : s));
+
+    // Open WhatsApp
+    openWhatsApp(phone, whatsAppTarget);
+
+    // Close modal
+    setWhatsAppTarget(null);
+    setWhatsAppPhone('');
   };
 
   // ── Filtered students for search ──
@@ -1034,6 +1087,64 @@ export default function FacultyMarksUpload() {
           onConfirm={handleStudentsConfirmed}
           onClose={() => setShowPicker(false)}
         />
+      )}
+
+      {/* ─── WhatsApp Phone Input Modal ─── */}
+      {whatsAppTarget && (
+        <div
+          className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4"
+          onClick={() => setWhatsAppTarget(null)}
+        >
+          <div
+            className="w-full max-w-sm bg-white rounded-2xl shadow-2xl p-6 space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
+                <MessageCircle className="w-5 h-5 text-emerald-600" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-gray-900">Send via WhatsApp</h3>
+                <p className="text-xs text-gray-500">Enter parent's number for <span className="font-semibold text-gray-700">{whatsAppTarget.name}</span></p>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">WhatsApp Number</label>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-semibold text-gray-400 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5">+91</span>
+                <input
+                  type="tel"
+                  autoFocus
+                  value={whatsAppPhone}
+                  onChange={(e) => setWhatsAppPhone(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleWhatsAppPhoneSubmit()}
+                  placeholder="9876543210"
+                  className="flex-1 bg-white border border-gray-200 rounded-xl py-2.5 px-3.5 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all placeholder:text-gray-400"
+                  maxLength={15}
+                />
+              </div>
+              <p className="text-[10px] text-gray-400 mt-1.5">Enter 10 digit mobile number (91 prefix is added automatically)</p>
+            </div>
+
+            <div className="flex gap-2 pt-1">
+              <button
+                onClick={() => setWhatsAppTarget(null)}
+                className="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-600 bg-gray-100 border border-gray-200 rounded-xl hover:bg-gray-200 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleWhatsAppPhoneSubmit}
+                disabled={!whatsAppPhone.trim()}
+                className="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-emerald-500 rounded-xl shadow-md hover:bg-emerald-600 hover:shadow-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                <MessageCircle className="w-4 h-4" />
+                Send on WhatsApp
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </main>
   );

@@ -8,6 +8,7 @@ import Advantage from '../components/landing/Advantage';
 import PartnerCTA from '../components/landing/PartnerCTA';
 import About from '../components/landing/About';
 import FAQSection from '../components/landing/FAQSection';
+import DownloadAppBanner from '../components/landing/DownloadAppBanner';
 import Seo from '../components/Seo';
 
 const Centers = lazy(() => import('../components/landing/Centers'));
@@ -79,6 +80,7 @@ export default function LandingPage() {
       <Suspense fallback={<SectionFallback title="Student Success" />}>
         <Testimonials />
       </Suspense>
+      <DownloadAppBanner />
       <PartnerCTA />
       <Suspense fallback={<SectionFallback title="Centers" />}>
         <Centers />

@@ -78,7 +78,16 @@ export default function Navbar() {
     }
   };
 
-
+  // Redirect students to dashboard after login when on a public page
+  useEffect(() => {
+    if (!user || !role) return;
+    const isPublicPage = !pathname.startsWith('/student') && !pathname.startsWith('/teacher') && !pathname.startsWith('/admin');
+    if (isPublicPage) {
+      if (role === 'Student') navigate('/student', { replace: true });
+      else if (role === 'Faculty') navigate('/teacher', { replace: true });
+      else if (role === 'SuperAdmin') navigate('/admin', { replace: true });
+    }
+  }, [user, role, pathname, navigate]);
 
   const closeMobileMenu = useCallback(() => setIsMobileMenuOpen(false), []);
 
